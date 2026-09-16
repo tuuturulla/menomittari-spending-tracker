@@ -1,100 +1,51 @@
 # Projektisuunnitelma
 
-## Tarkoitus
-
-Menomittari on pienimuotoinen harjoitusprojekti, jossa käyttäjä saa nopean vastauksen kysymykseen: mihin rahat menevät. Kurssiversio ei yritä ratkaista koko henkilökohtaisen taloudenhallinnan kenttää, vaan toteuttaa pienen analyysityökalun, joka toimii manuaalisesti ladatun tilioteaineiston päällä.
-
-## Ydinkonsepti
-
-Kurssiprojektin ajatus tiivistyy kolmeen vaiheeseen:
-
-1. tunnista, mihin rahat menevät
-2. vertaa uutta aineistoa aiempaan aineistoon
-3. nosta esiin muutama säästö- tai huomiohavainto
-
-Tarkoitus ei ole rakentaa vielä aidosti "älykästä" talousvalmentajaa, vaan siisti ensimmäinen versio, josta on helppo jatkaa myöhemmin.
-
 ## Tavoite
 
-Käyttäjä pystyy:
+Menomittari auttaa vastaamaan kysymykseen: mihin rahat menevät ja mikä omassa kulutuksessa muuttui? Kurssityön ensimmäinen toimiva versio osoittaa ketjun **tunnista menot → vertaa historiaan → näytä perusteltu huomio**. Havainto kertoo lasketun muutoksen, ei päätä käyttäjän puolesta, mikä ostos oli tarpeeton.
 
-- tuomaan CSV-muotoisen tiliotteen sovellukseen
-- selaamaan aineiston tapahtumia
-- näkemään kulutuksen yhteenvedon kategorioittain tai kauppiaittain
-- vertaamaan uusinta tuontia edelliseen tuontiin
-- näkemään muutaman yksinkertaisen havainnon kulutuksen muutoksista
+Oppimistavoitteet ovat selainsovelluksen rakentaminen, tiedon tallentaminen, laskennan testaaminen ja tekoälyavustajan käyttäminen rajatuissa kehitystehtävissä. Työn tekijä tarkistaa ja ymmärtää toteutuksen ennen sen hyväksymistä.
 
-## Kurssiprojektin MVP-rajaus
+## Kurssityöhön kuuluu
 
-Tähän toteutukseen otetaan vain ominaisuudet, jotka ehtii tehdä luotettavasti parissa opiskelupäivässä:
+- Yksi kuvitteellinen eurotili ja yksi sovittu CSV-tiedostomuoto.
+- Tapahtumien tuonti, tallennettu historia ja tapahtumalista.
+- Menojen ryhmittely neljällä esimerkkikauppiaan säännöllä; muut jäävät tunnistamattomiksi.
+- Menojen yhteissumma ja ryhmäkohtaiset summat. Palautukset näytetään erikseen.
+- Kahden peräkkäisen, yhtä pitkän ajanjakson vertailu ja enintään kolme muutoksesta kertovaa havaintoa.
+- Varmuuskopion lataaminen ja palauttaminen tyhjään sovellukseen.
+- Yksi selkeä sivu, joka mukautuu myös puhelimen levyiseen näkymään.
 
-- yksi kevyt käyttäjävirta tai vaihtoehtoisesti demokäyttäjä ilman laajaa tunnistautumislogiikkaa
-- CSV-tuonti valmiiksi tunnetulla tiliotepohjalla
-- tapahtumien perustallennus tietokantaan
-- kevyt luokittelu ennalta määritellyillä säännöillä
-- analyysin etusivu, joka näyttää:
-  - kokonaiskulut
-  - suurimmat kategoriat tai kauppiaat
-  - uusimman tuonnin erot edelliseen tuontiin
-  - 2-3 havaintoa sääntöpohjaisesti
+Käyttö esitetään kahdella pienellä, keksityllä aineistolla yhdessä työpöytäselaimessa. Historiaa voi tallentaa useammalta jaksolta, mutta vertailu käyttää aina vain valittua ja sitä lähinnä edeltävää jaksoa. Tarkat tiedosto- ja laskentasäännöt ovat [aineistokuvauksessa](data-contract.md).
 
-## Mitä jätetään myöhemmäksi
+## Kurssityön ulkopuolelle jää
 
-Seuraavat ominaisuudet sopivat hyvin jatkopoluksi, mutta ne eivät kuulu kurssin ensimmäiseen toteutukseen:
+Ei oikeiden pankkitiedostojen tukea, kirjautumista, pilvipalvelua, automaattista laitteiden välistä tiedonsiirtoa tai julkista käyttöönottoa. Ei muokattavia luokittelusääntöjä, kaavioita tai erillistä puhelinsovellusta.
 
-- pidempi historiallinen baseline käyttäjän normaalille kulutukselle
-- käyttäytymismuutosten tarkempi tunnistus usean kuukauden yli
-- recurring-maksujen automaattinen tunnistus ja seuranta
-- hinnankorotusten tunnistus
-- kampanjoiden tai sopimusten päättymismuistutukset
-- konkreettiset säästöehdotukset, kuten palvelujen päällekkäisyydet
-- useiden pankkien tai tilien tuki
-- Open Banking -integraatiot
-- AI-pohjainen tulkinta tai keskusteleva avustaja
+Myöhemmäksi jäävät pidemmän historian normaalitason laskeminen, käytösmuutokset, toistuvat maksut, hinnankorotukset, kampanjamuistutukset ja säästöehdotukset. Myös ilman verkkoyhteyttä käynnistyminen, automaattinen välilehtien päivitys ja kattava puhelin- ja selaintestaus ovat jatkokehitystä.
 
-## Tekninen toteutus
+## Teknologiat ja rakenne
 
-- Käyttöliittymä: React, TypeScript ja Vite
-- Palvelin: Python ja FastAPI
-- Tietokanta: SQLite
-- Tietokantakerros: SQLAlchemy ja Alembic
-- Paikallinen ajo: Docker Compose
-- Versionhallinta: Git ja GitLab
+| Osa | Valinta ja tarkoitus |
+| --- | --- |
+| Käyttöliittymä | React ja TypeScript näyttävät tiedot ja käsittelevät käyttäjän valinnat. |
+| Kehitystyökalut | Vite käynnistää kehitysympäristön ja kokoaa sovelluksen. |
+| Tallennus | IndexedDB on selaimen tietokanta. Dexie helpottaa sen käyttöä. |
+| Tiedoston lukeminen | Papa Parse lukee CSV:n kentät, jotka sovellus tarkistaa ennen tallennusta. |
+| Testaus | Vitest tarkistaa laskennan; fake-indexeddb mahdollistaa tallennustestit ilman selaimen avaamista. Lisäksi tehdään kirjattu käyttötesti oikeassa selaimessa. |
 
-SQLite on kurssiversion ja ensimmäisen pilotin kevyt tietokanta. SQLAlchemy erottaa sovelluslogiikan tietokannasta, ja Alembic tallentaa tietokantarakenteen muutokset migraatioiksi. Kun sovellus kasvaa usean käyttäjän palveluksi, tietokanta voidaan vaihtaa PostgreSQL:ään ilman sovelluslogiikan uudelleenkirjoitusta.
+Erillistä sovelluspalvelinta tai palvelintietokantaa ei tarvita. Sovellus jakautuu neljään osaan: näkymä, käyttäjän toimintojen käsittely, laskenta ja tallennus. **Laskenta pidetään tietokantariippumattomana:** tallennustavan vaihtaminen ei saa vaatia laskentasääntöjen kirjoittamista uudelleen. Tarkempi [arkkitehtuurikuvaus](architecture.md) on toteuttajia varten.
 
-## Tietomallit
+## Työmäärä ja valmistuminen
 
-Alkuun riittävät seuraavat taulut:
+Suunnitteluarvio on **18–24 tuntia**, noin 3–4 kuuden tunnin työpäivää, kun kehitysympäristö on käytettävissä ja toteutusta tehdään avustetusti. Tämä ei ole toteutukseen perustuva mittaus. Uusien työkalujen opettelu tai asennusongelmat voivat kasvattaa aikaa. 
 
-- `users` tai vaihtoehtoisesti yksinkertainen demo-user-ratkaisu
-- `imports`
-- `transactions`
-- `categories`
-- `merchant_rules` tai muu hyvin kevyt luokittelusääntöjen rakenne
+[Työlista](backlog.md) jakaa työn kuuteen kokonaisuuteen. Arvio tarkistetaan heti ensimmäisen toimivan tiedostotuonnin jälkeen. Jos aikaa on vähemmän, esittelyn laajuudesta sovitaan erikseen. Tallennuksen oikeellisuutta, laskennan tarkistuksia tai palautuksen testausta ei jätetä huomaamatta pois.
 
-Keskeinen ajatus on, että analyysi rakentuu yksittäisistä tapahtumista, ei vain käsin syötetyistä kuukausimaksuista. Rahasummat tallennetaan sentteinä kokonaislukuina, jotta laskenta pysyy tarkkana.
+Työ on esittelyvalmis, kun kaksi aineistoa voidaan tuoda, vertailu antaa odotetut luvut, historia säilyy sivun uudelleenavauksessa ja varmuuskopio palautuu toisessa selaimen käyttöympäristössä. Käynnistys ja nämä tarkistukset on dokumentoitu.
 
-## Arkkitehtuurin jatkopolku
+## Jatkokehityksen perusta
 
-Kurssiversio kannattaa suunnitella niin, että myöhemmät laajennukset istuvat samaan malliin ilman uudelleenkirjoitusta:
+Sama paikallinen tietokanta voi säilyä myöhemmässä tuotteessa. Selkeät osarajat ja versionoitu varmuuskopio helpottavat kehittämistä, mutta eivät tee tietokannan vaihtamisesta tai synkronoinnista automaattista.
 
-- `imports` mahdollistaa aineiston vertailun eri ajankohtien välillä
-- `transactions` toimii pohjana baseline-analyysille, recurring-tunnistukselle ja hinnanmuutoksille
-- luokittelusäännöt voi myöhemmin korvata paremmalla tunnistuksella
-- sääntöpohjaiset havainnot voi myöhemmin korvata rikkaammalla insights-kerroksella
-- CSV-tuonti voidaan myöhemmin vaihtaa Open Banking -syötteeseen ilman, että analyysin perusmalli muuttuu
-
-### Muistisääntö: tietokantariippumaton sovelluskoodi
-
-Sovelluskoodi ei saa olla riippuvainen SQLite:stä. Tietokantayhteys ja -asetukset pidetään yhdessä paikassa, mallit ja kyselyt tehdään SQLAlchemyllä, ja rakenteen muutokset tehdään Alembic-migraatioina. SQLite-kohtaista SQL:ää, tiedostopolkuja tai ominaisuuksia ei käytetä sovelluslogiikassa. Näin PostgreSQL voidaan ottaa käyttöön myöhemmin vaihtamalla yhteysasetus ja ajamalla samat migraatiot.
-
-## Valmiin projektin kriteerit
-
-- käyttäjä saa tuotua ainakin yhden tunnetun CSV-aineiston onnistuneesti
-- sovellus tallentaa tapahtumat ja näyttää ne käyttöliittymässä
-- sovellus tuottaa yhteenvedon siitä, mihin rahat menivät
-- jos aineistoja on vähintään kaksi, sovellus näyttää yksinkertaisen vertailun niiden välillä
-- sovellus nostaa esiin ainakin muutaman selitettävän havainnon
-- perustestit menevät läpi
-- README kertoo käynnistyksen, rajauksen ja esittelyn olennaiset vaiheet
+Mahdollinen kaupallinen julkaisu tarvitsee erillisen turvallisuus- ja käytettävyysarvioinnin. Paikallinen käsittely vähentää palvelimelle päätyvää tietoa, mutta ei yksin takaa tietoturvaa. Maksullinen salattu synkronointi on mahdollinen jatkosuunta. 

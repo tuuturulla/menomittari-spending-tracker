@@ -1,0 +1,42 @@
+# Agentin työohje
+
+Koskee vain lopputyo/menomittari-kansiota. Git-repositoryn juuri on sara_pyky_web-ohjelmointi, jossa on myös kurssiharjoituksia. Älä muuta harjoituksia. Tämä on projektin ainoa agenttikohtainen ohjetiedosto.
+
+## Ehdoton main-suoja
+
+- Älä committoi, yhdistä, cherry-pickaa tai puske mainiin äläkä siirrä sen viitettä muullakaan tavalla.
+- Kielto koskee myös etäpalvelun rajapintoja, mainiin osoittavia refspecejä, kaikkien haarojen pushia, peilausta, MR:n hyväksymistä/yhdistämistä ja automergeä.
+- Käyttäjä lukee muutokset ja suorittaa yhdistämisen itse. Testitulokset, itsenäinen työskentely tai yleinen commitointilupa eivät korvaa tätä.
+- Älä muuta tai kierrä haarasuojausta. Ohjetiedosto ei ole tekninen esto; GitLabin suojausta ei ole todennettu tai asetettu tämän dokumentin perusteella.
+
+## Aloitus
+
+1. Lue README.md, docs/project-plan.md ja docs/backlog.md. Lue toteutettavaan tehtävään liittyvät docs/architecture.md, docs/data-contract.md ja docs/api.md. Paikalliset muistiinpanot eivät ole vaatimuksia.
+2. Tarkista git rev-parse --show-toplevel, git status --short --branch, git diff --cached ja git worktree list. Kirjaa lähtöcommit ja tarkista aiempi toteutus.
+3. Toteuta vain toimeksiannon tehtävät. Backlog ei ole lupa aloittaa kaikkea, ajastaa työtä, julkaista tai hankkia maksullisia palveluita. Ristiriita käyttäjän muutoksen tai tuotepäätöksen kanssa selvitetään ennen siihen perustuvaa toteutusta.
+
+## Haara ja oikeudet
+
+Käytä tehtävähaaraa, esimerkiksi menomittari/p0-01-runko. Tarkista nimen vapaus. Älä korvaa olemassa olevaa haaraa tai stäshää, nollaa tai committoi muiden muutoksia. Samaan tehtävään kuuluvat muutokset voi säilyttää luomalla uuden haaran nykyisessä työpuussa mainin viitettä muuttamatta.
+
+Rinnakkaiseen tai taustalla tehtävään työhön käytä erillistä worktreetä kurssirepositoryn ulkopuolella. Committoimattomat muutokset eivät siirry siihen; käytä hyväksyttyä commitoitua lähtötilaa. Älä poista worktreetä tai haaraa automaattisesti.
+
+Commitit ja tehtävähaaran push tarvitsevat erikseen toimeksiannon valtuutuksen. Lisää stageen vain nimetyt tehtävätiedostot, ei koko repositoryn git add . -komentoa. Tarkista koko staged-diff ennen committia. Säilytä kehityscommitit; älä muuta vanhoja committeja tai force-pushaa. Pushin kohteen on oltava tarkistettu tehtävähaara, ei main. MR:n voi valmistella vain toimeksiannon rajoissa.
+
+## Toteutus ja seuranta
+
+1. Valitse sallituista tehtävistä ensimmäinen Ei aloitettu, jonka riippuvuudet ovat Valmis. Hyväksytyssä usean tehtävän yhteishaarassa testattu Tarkistettavana-riippuvuus riittää, jos toteutus on mukana samassa haarassa.
+2. Merkitse tehtävä Työn alla. Toteuta vain sen hyväksymisehdot, testit ja tarvittavat dokumentaatiopäivitykset.
+3. Aja tehtävän testit ja vaikutusalueen regressiotestit. P0-01 lisää README:hen oikeasti todennetut komennot; älä keksi myöhemmissä tehtävissä testaustuloksia.
+4. Merkitse testattu työ Tarkistettavana. Estynyt-tilaan kirjataan täsmällinen este. Valmis edellyttää käyttäjän hyväksyntää ja todennettua yhdistämistä mainiin.
+5. Lisää backlogin tarkistusosioon lyhyt työmerkintä: ID, haara, työtila, lähtöcommit, muutos, testikomennot/tulokset, ajamattomat testit ja puutteet. Lopeta toimeksiannon rajaan.
+6. Luovuta tiedostot, tulokset ja seuraava askel käyttäjälle. Kerro tehdyt commitit ja push erikseen; älä tee kumpaakaan raportoinnin vuoksi. Mainiin ei tehdä tilapäivityscommittia: mahdollinen myöhempi dokumenttipäivitys kuuluu uuteen tehtävähaaraan.
+
+## Toteutuksen suojarajat
+
+- Pino ja scope ovat projektisuunnitelmassa. Älä lisää backendia, toista tietokantaa, yleistä repository-kehystä tai roadmap-ominaisuuksia varmuuden vuoksi.
+- Domain-laskenta ei tuo Reactia, Dexietä, IndexedDB:tä tai selain-API:a. Säilytä arkkitehtuurikuvauksen osarajat.
+- Käytä vain fiktiivistä aineistoa. Ei tapahtumia tai raakaa CSV:tä verkkopyyntöihin, lokeihin, analytiikkaan tai AI-palveluun. Ei ulkoisia ajonaikaisia skriptejä tai CDN-fontteja.
+- Testit käyttävät omaa tietokantaa ja selainprofiilia. Älä tyhjennä käyttäjän historiaa. Worktree ei eristä IndexedDB:tä: pidä työtilojen osoitteet/portit erillään ja yhden työtilan portti vakaana (Vite strictPort, vain loopback).
+- .local-notes/ on versionhallinnan ulkopuolista taustaa, ei riippuvuus sovelluksen ajamiselle tai toteuttamiselle. Älä lisää sitä Gitiin edes force-addilla. Pysyvät päätökset kuuluvat dokumentaatioon, todennetut työtulokset backlogiin.
+- Älä poista vanhoja kansioita tarkistamatta niiden nykyistä sisältöä. 
