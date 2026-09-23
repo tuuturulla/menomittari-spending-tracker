@@ -1,0 +1,14 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      # Keep the development server reachable from this computer only.
+      - "127.0.0.1:5173:5173"
+    volumes:
+      # Mount sources for live updates, but keep Linux dependencies inside Docker.
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+
+volumes:
+  frontend_node_modules:

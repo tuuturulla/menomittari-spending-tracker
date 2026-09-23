@@ -32,11 +32,18 @@ Commitit ja tehtävähaaran push tarvitsevat erikseen toimeksiannon valtuutuksen
 5. Lisää backlogin tarkistusosioon lyhyt työmerkintä: ID, haara, työtila, lähtöcommit, muutos, testikomennot/tulokset, ajamattomat testit ja puutteet. Lopeta toimeksiannon rajaan.
 6. Luovuta tiedostot, tulokset ja seuraava askel käyttäjälle. Kerro tehdyt commitit ja push erikseen; älä tee kumpaakaan raportoinnin vuoksi. Mainiin ei tehdä tilapäivityscommittia: mahdollinen myöhempi dokumenttipäivitys kuuluu uuteen tehtävähaaraan.
 
+## Koodikommentit
+
+- Kommentoi tärkeät työvaiheet, komponenttien vastuut ja vaikeasti pääteltävät ratkaisut selkeällä englannilla. Kommentin tulee auttaa tekijää muistamaan myöhemmin, mitä osa tekee, ja antaa tarkastajalle nopeasti oikea asiayhteys.
+- Kerro ensisijaisesti tarkoitus tai syy. Älä toista kommentissa suoraan sitä, minkä yksittäinen koodirivi jo ilmaisee.
+- Pidä kommentointi maltillisena: käytä lyhyitä kommentteja kokonaisuuksien, rajapintojen ja olennaisten rajoitteiden kohdalla, älä jokaisella rivillä.
+- Päivitä tai poista kommentti samalla, kun sitä kuvaava toteutus muuttuu. Vanhentunut kommentti on virheellistä dokumentaatiota.
+
 ## Toteutuksen suojarajat
 
-- Pino ja scope ovat projektisuunnitelmassa. Älä lisää backendia, toista tietokantaa, yleistä repository-kehystä tai roadmap-ominaisuuksia varmuuden vuoksi.
+- Pino ja scope ovat projektisuunnitelmassa. Backend rajataan käyttäjätileihin ja palvelinpuolisiin istuntoihin. Älä lisää taloustietojen palvelintallennusta, yleistä repository-kehystä tai roadmap-ominaisuuksia varmuuden vuoksi.
 - Domain-laskenta ei tuo Reactia, Dexietä, IndexedDB:tä tai selain-API:a. Säilytä arkkitehtuurikuvauksen osarajat.
-- Käytä vain fiktiivistä aineistoa. Ei tapahtumia tai raakaa CSV:tä verkkopyyntöihin, lokeihin, analytiikkaan tai AI-palveluun. Ei ulkoisia ajonaikaisia skriptejä tai CDN-fontteja.
+- Käytä vain fiktiivistä aineistoa. Ei tapahtumia, summia, kuvauksia, kategorioita, analyysejä tai raakaa CSV:tä backendin pyyntöihin, palvelintietokantaan, lokeihin, analytiikkaan tai AI-palveluun. Ei ulkoisia ajonaikaisia skriptejä tai CDN-fontteja.
 - Testit käyttävät omaa tietokantaa ja selainprofiilia. Älä tyhjennä käyttäjän historiaa. Worktree ei eristä IndexedDB:tä: pidä työtilojen osoitteet/portit erillään ja yhden työtilan portti vakaana (Vite strictPort, vain loopback).
 - .local-notes/ on versionhallinnan ulkopuolista taustaa, ei riippuvuus sovelluksen ajamiselle tai toteuttamiselle. Älä lisää sitä Gitiin edes force-addilla. Pysyvät päätökset kuuluvat dokumentaatioon, todennetut työtulokset backlogiin.
 - Älä poista vanhoja kansioita tarkistamatta niiden nykyistä sisältöä. 

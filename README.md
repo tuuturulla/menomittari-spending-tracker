@@ -13,13 +13,57 @@ Ensimmäinen versio käyttää vain keksittyjä tapahtumia ja yhtä sovittua tau
 
 ## Missä tiedot säilyvät?
 
-Tiedostot käsitellään ja historia tallennetaan omassa selaimessa. Tätä kutsutaan local-first-toteutukseksi. Tapahtumia ei lähetetä palvelimelle.
+Tiedostot käsitellään ja taloushistoria tallennetaan omassa selaimessa. Tätä kutsutaan local-first-toteutukseksi. Tapahtumia ei lähetetä palvelimelle. Backend tallentaa erikseen vain käyttäjätilin ja kirjautumisistunnon tiedot.
 
 Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietojen poistaminen voi poistaa historian, joten varmuuskopio kannattaa ladata. Kurssiversion varmuuskopio ei ole salattu.
 
 ## Projektin tila
 
-Projekti on suunnitteluvaiheessa. Sovellusta ei vielä voi käynnistää; asennus- ja käyttöohjeet lisätään toteutuksen ensimmäisessä vaiheessa. Toteutuskansiot ovat toistaiseksi tyhjiä.
+P0-01-vaiheen sovellusrunko on toteutettu tehtävähaaraan. React- ja TypeScript-sovellus käynnistyy Docker-kontissa Vitellä. FastAPI-backend, käyttäjätilit, tiedoston tuonti, paikallinen tallennus ja analyysi lisätään myöhemmissä työvaiheissa.
+
+## Kehitysympäristön käynnistäminen
+
+Tarvitset Docker Desktopin tai muun ympäristön, jossa `docker compose` toimii. Node.js:ää, pnpm:ää tai Pythonia ei asenneta isäntäkoneelle. Siirry komentorivillä tähän `lopputyo/menomittari`-kansioon.
+
+Rakenna kehityskuva. Komento asentaa lukitut JavaScript-riippuvuudet kontin sisälle:
+
+```powershell
+docker compose build
+```
+
+Käynnistä sovellus:
+
+```powershell
+docker compose up
+```
+
+Avaa selaimessa <http://127.0.0.1:5173>. Pysäytä sovellus näppäinyhdistelmällä `Ctrl+C` ja poista käynnistetty kontti sekä projektiverkko:
+
+```powershell
+docker compose down
+```
+
+Vite seuraa lähdetiedostoja polling-menetelmällä, jotta muutokset välittyvät luotettavasti Windowsin Docker Desktop -liitoshakemiston läpi. Kun esimerkiksi `frontend/src/App.tsx` tallennetaan, avoimen selainikkunan pitäisi päivittyä ilman Docker-kuvan uudelleenrakennusta. Jos `vite.config.ts`-asetusta muutetaan palvelimen ollessa jo käynnissä, lataa asetus uudelleen komennolla `docker compose restart frontend`.
+
+## Tarkistukset
+
+Seuraavat komennot on todennettu Docker-kontissa. Ne eivät vaadi paikallista Node.js-asennusta.
+
+```powershell
+docker compose run --rm frontend pnpm test
+docker compose run --rm frontend pnpm typecheck
+docker compose run --rm frontend pnpm lint
+docker compose run --rm frontend pnpm build
+```
+
+- `test` ajaa Vitest-testit kerran.
+- `typecheck` tarkistaa TypeScript-tyypit tuottamatta tiedostoja.
+- `lint` etsii tavallisia koodivirheitä Oxlintillä.
+- `build` tekee tyyppitarkistuksen ja kokoaa julkaisutiedostot `frontend/dist`-kansioon.
+
+Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `frontend/pnpm-lock.yaml`-tiedostoissa. Backendin Python-riippuvuudet lisätään P0-02-vaiheessa `uv`:lla ja suoritetaan Docker-kontissa; `pip`:iä ei käytetä.
+
+
 
 ## Dokumentaatio
 
@@ -29,5 +73,6 @@ Projekti on suunnitteluvaiheessa. Sovellusta ei vielä voi käynnistää; asennu
 | [Työlista](docs/backlog.md) | Toteutusjärjestys ja valmistumisen ehdot |
 | [Arkkitehtuuri](docs/architecture.md) | Tekninen rakenne ja tallennus |
 | [Aineisto ja laskenta](docs/data-contract.md) | Tiedostomuoto, laskentasäännöt ja testien odotusarvot |
-| [Sovelluksen sisäiset toiminnot](docs/api.md) | Tekninen kuvaus osien välisestä tiedonkulusta |
+| [Sovelluksen rajapinnat](docs/api.md) | Frontendin sisäiset toiminnot ja käyttäjätilien HTTP-rajapinta |
+| [P0-01-oppituntimateriaali](docs/p0-01-oppituntimateriaali.md) | Ensimmäisen toteutusvaiheen työseloste ja käsitteet |
 | [Agenttiohje](AGENTS.md) | Tekoälyavustajan työskentely ja rajatut oikeudet |

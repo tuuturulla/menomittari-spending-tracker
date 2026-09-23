@@ -67,7 +67,7 @@ Tyhjän historian kopio on sallittu. Palautus säilyttää tunnisteet ja luokitu
 
 ## Demojen odotusarvot
 
-P0-03 tuottaa jaksot 2026-04-01–2026-04-30 ja 2026-05-01–2026-05-30, kumpikin 30 päivää.
+P0-05 tuottaa jaksot 2026-04-01–2026-04-30 ja 2026-05-01–2026-05-30, kumpikin 30 päivää.
 
 | Tapahtumat euroina | Huhtikuu | Toukokuu |
 | --- | ---: | ---: |

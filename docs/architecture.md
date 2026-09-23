@@ -10,16 +10,38 @@ frontend/src/application/  tuonti, analyysin kokoaminen ja varmuuskopiot
 frontend/src/domain/       kenttävalidointi, luokittelu ja laskenta
 frontend/src/storage/      Dexie, tietomalli ja tietokantakyselyt
 frontend/tests/fixtures/   fiktiiviset testi- ja esittelyaineistot
+backend/app/api/           käyttäjätilien HTTP-reitit
+backend/app/services/      tunnistautuminen ja istuntojen käsittely
+backend/app/db/            SQLAlchemy-mallit ja tietokantayhteys
+backend/migrations/        Alembic-migraatiot
 
 UI -> application -> domain
                   -> storage -> IndexedDB
+UI -> HTTP /api/auth -> FastAPI -> SQLAlchemy -> SQLite
 ```
 
 Application käyttää muutamaa tallennusfunktiota, jotka palauttavat tavallisia TypeScript-tietoja. Dexie-oliot eivät leviä muihin osiin. Domain saa aineiston parametreina eikä käytä tietokantaa, Reactia tai selain-API:a. UI muotoilee luvut, mutta ei laske toista versiota yhteenvedosta.
 
-CSV luetaan Papa Parsella merkkijonoiksi, tarkistetaan ja luokitellaan ennen tallennusta. Yksi tallennusoperaatio tarkistaa päällekkäisyyden ja lisää koko aineiston. Analyysi lasketaan yhteisestä lukutransaktiosta saadusta aineistosta. Ei palvelinkutsuja tai toista pysyvää analyysikantaa.
+CSV luetaan Papa Parsella merkkijonoiksi, tarkistetaan ja luokitellaan ennen tallennusta. Yksi tallennusoperaatio tarkistaa päällekkäisyyden ja lisää koko aineiston. Analyysi lasketaan yhteisestä lukutransaktiosta saadusta aineistosta. Taloustietoja ei lähetetä palvelimelle eikä niille tehdä toista pysyvää analyysikantaa.
+
+## Backendin vastuu ja tietoraja
+
+FastAPI-backend vastaa käyttäjän rekisteröinnistä, kirjautumisesta, kirjautumistilan tarkistamisesta ja uloskirjautumisesta. SQLAlchemy käyttää MVP:ssä SQLitea, ja Alembic hallitsee tietokannan rakenteen muutokset. Python-riippuvuudet lukitaan ja suoritetaan `uv`:lla backendin Docker-kontissa.
+
+Backendin tietokannassa on kaksi taulua:
+
+| Taulu | Kentät |
+| --- | --- |
+| users | id: UUID, email_normalized: yksilöllinen merkkijono, password_hash, created_at: UTC-aikaleima |
+| sessions | token_hash: yksilöllinen merkkijono, user_id: viite käyttäjään, created_at ja expires_at: UTC-aikaleimat |
+
+Salasana hajautetaan Argon2id-algoritmilla. Satunnainen istuntotunniste annetaan selaimelle `HttpOnly`-evästeessä, mutta tietokantaan tallennetaan vain sen hajautus. Evästeen `SameSite`, `Secure` ja voimassaoloaika asetetaan ympäristön mukaan. Tilaa muuttavat pyynnöt tarkistavat CSRF-tunnisteen, kirjautumisyrityksiä rajoitetaan ja kehitysympäristön CORS sallii vain määritetyn frontend-osoitteen.
+
+CSV-tiedostot, tuontijaksot, tapahtumat, summat, kuvaukset, kategoriat, analyysit ja varmuuskopiot pysyvät frontendissä. Niitä ei hyväksytä backendin pyyntöihin, tallenneta palvelintietokantaan tai kirjoiteta backendin lokeihin.
 
 ## Tietomalli, versio 1
+
+Tämä tietomalli koskee selaimen paikallista IndexedDB-tietokantaa. Tietokanta nimetään kirjautuneen käyttäjän tunnisteen perusteella, jotta samalla selaimella käytettävät tilit eivät jaa taloushistoriaa. Istuntotunnistetta ei tallenneta IndexedDB:hen.
 
 | Taulu | Kentät |
 | --- | --- |
@@ -42,7 +64,7 @@ Tiedostonlukua tai muuta erillistä async-työtä ei tehdä Dexie-kirjoitustrans
 
 Dexien skeemaversio on aluksi 1. Seuraava versio ja datan säilyttävä migraatio lisätään vasta, kun tietomalli oikeasti muuttuu. Varmuuskopion format_version on erillinen siirtomuodon versio. Tietokannan vaihtaminen vaatii uuden tallennustoteutuksen ja tiedonsiirron, vaikka laskenta pysyisi samana.
 
-Vitest testaa domain- ja sovellusfunktiot, fake-indexeddb tallennuksen sekä peruuntuvan kirjoituksen. Lisäksi tehdään [työlistan](backlog.md#p0-06-varmuuskopio-ja-esittelyn-viimeistely) käyttötesti oikeassa selaimessa. Automaattinen selaintestaus ei ole tämän version vaatimus.
+Vitest testaa domain- ja sovellusfunktiot, fake-indexeddb tallennuksen sekä peruuntuvan kirjoituksen. Backendin testit käyttävät erillistä tietokantaa ja tarkistavat käyttäjätilit, salasanatiivisteet, istunnot, evästeasetukset, CSRF-suojauksen ja kirjautumisyritysten rajoituksen. Lisäksi tehdään [työlistan](backlog.md#p0-08-varmuuskopio-ja-esittelyn-viimeistely) käyttötesti oikeassa selaimessa. Automaattinen selaintestaus ei ole tämän version vaatimus.
 
 ## Tekninen tausta
 

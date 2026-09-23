@@ -1,8 +1,8 @@
-# Sovelluksen sisäiset toiminnot
+# Sovelluksen rajapinnat
 
-Tekninen sopimus käyttöliittymän ja sovelluslogiikan välille. Kaikki toiminnot suoritetaan selaimessa; tämä ei ole HTTP-rajapinta. [Aineistosopimus](data-contract.md) määrittelee laskennan ja [arkkitehtuuri](architecture.md) tallennuksen.
+Tekninen sopimus frontendin sisäisille toiminnoille ja käyttäjätilien HTTP-rajapinnalle. [Aineistosopimus](data-contract.md) määrittelee laskennan ja [arkkitehtuuri](architecture.md) tallennuksen sekä tietorajan.
 
-## Toiminnot
+## Frontendin sisäiset toiminnot
 
 Jokainen toiminto palauttaa Promise<Result<T>>: {ok: true, data: T} tai {ok: false, error: {code, message, row, field}}. Virheen row ja field ovat null, kun ne eivät sovellu tilanteeseen. Tekstit ovat käyttäjälle suomeksi.
 
@@ -49,3 +49,19 @@ Tyhjässä kannassa listImports palauttaa tyhjän listan eikä UI pyydä analyys
 CSV-tuonnin tarkistusjärjestys: tiedostokoko, parametrit ja jakso, tapahtumien validointi, päällekkäisyys ja kannan kokonaismääräraja. Viimeiset kaksi tarkistetaan tallennuksen yhteydessä. Virhe ei sisällä raakaa tapahtumaa tai pinotulostetta. Erottuvat storage_error-viestit voivat neuvoa esimerkiksi sulkemaan toisen välilehden; kantaa ei poisteta.
 
 Varmuuskopion oletusnimi on YYYY-MM-DD.menomittari-backup.json. Virheellinen tai ei-tyhjään kantaan tehty palautus ei muuta tallennettuja tietoja.
+
+## Backendin HTTP-rajapinta
+
+Backend käsittelee vain käyttäjätilejä ja kirjautumisistuntoja. Pyynnöissä tai vastauksissa ei ole CSV-tiedostoja, tapahtumia, summia, kuvauksia, kategorioita tai analyysituloksia.
+
+| Menetelmä ja polku | Tarkoitus | Onnistunut vastaus |
+| --- | --- | --- |
+| `GET /api/health` | Backendin toimintakunnon tarkistus | `{status: "ok"}` |
+| `POST /api/auth/register` | Luo käyttäjän normalisoidusta sähköpostista ja salasanasta | Käyttäjän julkiset tiedot |
+| `POST /api/auth/login` | Tarkistaa tunnukset ja luo palvelinpuolisen istunnon | Käyttäjän julkiset tiedot ja `HttpOnly`-istuntoeväste |
+| `GET /api/auth/me` | Palauttaa kirjautuneen käyttäjän | Käyttäjän julkiset tiedot |
+| `POST /api/auth/logout` | Mitätöi nykyisen istunnon ja poistaa evästeen | Ei sisältöä |
+
+Käyttäjän julkisissa tiedoissa ovat `id`, `email` ja `created_at`; salasanatiivistettä tai istuntotunnistetta ei palauteta. Rekisteröinti ja kirjautuminen validoivat syötteen. Epäonnistunut kirjautuminen ei paljasta, puuttuuko käyttäjä vai oliko salasana väärä.
+
+Selain lähettää istuntoevästeen `credentials: "include"` -asetuksella. Frontend ei lue tai tallenna istuntotunnistetta. Rekisteröinti, kirjautuminen ja uloskirjautuminen käyttävät CSRF-suojausta, ja backend hyväksyy tunnistetiedot sisältävät selainpyynnöt vain määritetystä frontend-alkuperästä.
