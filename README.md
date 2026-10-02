@@ -19,7 +19,7 @@ Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietoj
 
 ## Projektin tila
 
-P0-01-vaiheen React–TypeScript–Vite-runko on valmis. P0-02-vaiheen FastAPI-backend, SQLite-yhteys, Alembic-migraatiopohja ja health-rajapinta on toteutettu tehtävähaaraan. Käyttäjätilit, tiedoston tuonti, paikallinen tallennus ja analyysi lisätään myöhemmissä työvaiheissa.
+P0-01-vaiheen React–TypeScript–Vite-runko on valmis. P0-02-vaiheen FastAPI-backend on toteutettu ja tarkistettavana. Backend sisältää SQLite-yhteyden, Alembic-migraatiopohjan ja health-rajapinnan. Käyttäjätilit, tiedoston tuonti, paikallinen tallennus ja analyysi lisätään myöhemmissä työvaiheissa.
 
 ## Kehitysympäristön käynnistäminen
 
@@ -83,8 +83,6 @@ docker compose run --rm frontend pnpm build
 
 Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `frontend/pnpm-lock.yaml`-tiedostoissa. Backendin Python-riippuvuudet määritellään `backend/pyproject.toml`-tiedostossa ja lukitaan `backend/uv.lock`-tiedostoon. `uv` suoritetaan Docker-kontissa; `pip`:iä ei käytetä.
 
-
-
 ## Dokumentaatio
 
 | Tiedosto | Sisältö |
@@ -96,4 +94,3 @@ Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `
 | [Sovelluksen rajapinnat](docs/api.md) | Frontendin sisäiset toiminnot ja käyttäjätilien HTTP-rajapinta |
 | [P0-01-oppituntimateriaali](docs/p0-01-oppituntimateriaali.md) | Ensimmäisen toteutusvaiheen työseloste ja käsitteet |
 | [P0-02-oppituntimateriaali](docs/p0-02-oppituntimateriaali.md) | Backendin perustan työseloste ja käsitteet |
-| [Agenttiohje](AGENTS.md) | Tekoälyavustajan työskentely ja rajatut oikeudet |

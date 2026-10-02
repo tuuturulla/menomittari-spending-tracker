@@ -4,7 +4,7 @@
 
 Menomittari auttaa vastaamaan kysymykseen: mihin rahat menevät ja mikä omassa kulutuksessa muuttui? Kurssityön ensimmäinen toimiva versio osoittaa ketjun **tunnista menot → vertaa historiaan → näytä perusteltu huomio**. Havainto kertoo lasketun muutoksen, ei päätä käyttäjän puolesta, mikä ostos oli tarpeeton.
 
-Oppimistavoitteet ovat selainsovelluksen rakentaminen, tiedon tallentaminen, laskennan testaaminen ja tekoälyavustajan käyttäminen rajatuissa kehitystehtävissä. Työn tekijä tarkistaa ja ymmärtää toteutuksen ennen sen hyväksymistä.
+Oppimistavoitteet ovat selainsovelluksen rakentaminen, paikallisen ja palvelinpuolisen tiedon tallentaminen, HTTP-rajapinnan toteuttaminen sekä laskennan ja eri sovelluskerrosten testaaminen.
 
 ## Kurssityöhön kuuluu
 
@@ -42,7 +42,7 @@ Backend tallentaa vain käyttäjätilit ja kirjautumisistunnot. CSV-tiedostot, t
 
 ## Työmäärä ja valmistuminen
 
-Suunnitteluarvio on **25–32 tuntia**, noin 4–6 kuuden tunnin työpäivää, kun kehitysympäristö on käytettävissä ja toteutusta tehdään avustetusti. Tämä ei ole toteutukseen perustuva mittaus. Uusien työkalujen opettelu tai asennusongelmat voivat kasvattaa aikaa.
+Suunnitteluarvio on **25–32 tuntia**, noin 4–6 kuuden tunnin työpäivää, kun kehitysympäristö on käytettävissä. Tämä ei ole toteutukseen perustuva mittaus. Uusien työkalujen opettelu tai asennusongelmat voivat kasvattaa aikaa.
 
 [Työlista](backlog.md) jakaa työn kahdeksaan kokonaisuuteen. Arvio tarkistetaan heti ensimmäisen toimivan tiedostotuonnin jälkeen. Jos aikaa on vähemmän, esittelyn laajuudesta sovitaan erikseen. Tunnistautumisen turvallisuutta, tallennuksen oikeellisuutta, laskennan tarkistuksia tai palautuksen testausta ei jätetä huomaamatta pois.
 

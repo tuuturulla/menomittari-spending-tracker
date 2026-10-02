@@ -6,19 +6,16 @@ Ensimmäisen vaiheen tarkoitus oli tehdä Menomittarille mahdollisimman pieni mu
 
 Työ rajattiin P0-01-tehtävän hyväksymisehtoihin. Paikallista tallennusta, CSV-tuontia, laskentaa ja varmuuskopioita ei aloitettu, koska ne kuuluvat myöhempiin tehtäviin.
 
-## Lähtötilanne ja työjärjestys
+## Toteutusjärjestys
 
-Ennen toteutusta tarkistettiin projektin README, projektisuunnitelma, työlista, arkkitehtuuri, aineistosopimus, sisäisten toimintojen sopimus ja agenttiohje. Git-työpuu oli puhdas, lähtöcommit oli `9e38ee7d1983f065713e5c304b8ad9c2d211ae7f` ja lähtöhaara oli `main`.
+Työvaihe eteni näin:
 
-Työ tehtiin uudella haaralla `menomittari/p0-01-runko`. Main-haaraa ei muutettu, eikä työstä tehty committia tai pushia. Työvaihe eteni näin:
-
-1. P0-01 merkittiin työlistassa työn alle.
-2. `frontend`-kansioon luotiin React–TypeScript–Vite-runko.
-3. Oletusnäkymä korvattiin Menomittarin omalla aloitusnäkymällä.
-4. Vitest lisättiin ja näkymälle kirjoitettiin yksi yksinkertainen testi.
-5. Riippuvuudet lukittiin täsmällisiin versioihin.
-6. Kehitys- ja testausympäristö vietiin Docker Composeen.
-7. Asennus, testi, tyyppitarkistus, linttaus, tuotantokoonti ja HTTP-käynnistys tarkistettiin kontissa.
+1. `frontend`-kansioon luotiin React–TypeScript–Vite-runko.
+2. Oletusnäkymä korvattiin Menomittarin omalla aloitusnäkymällä.
+3. Vitest lisättiin ja näkymälle kirjoitettiin yksi yksinkertainen testi.
+4. Riippuvuudet lukittiin täsmällisiin versioihin.
+5. Kehitys- ja testausympäristö vietiin Docker Composeen.
+6. Asennus, testi, tyyppitarkistus, linttaus, tuotantokoonti ja HTTP-käynnistys tarkistettiin kontissa.
 
 ## Mikä teknologia tekee mitä?
 
@@ -31,7 +28,6 @@ Työ tehtiin uudella haaralla `menomittari/p0-01-runko`. Main-haaraa ei muutettu
 | Oxlint | Tarkistaa koodista tavallisia virheitä ja epäselviä rakenteita. | Antaa nopean lisätarkistuksen tyyppitarkistuksen rinnalle. |
 | pnpm | Asentaa JavaScript-riippuvuudet lukitustiedoston mukaan. | Täsmällinen lukitustiedosto tekee asennuksesta toistettavan. |
 | Docker Compose | Rakentaa ja ajaa saman kehitysympäristön kontissa. | Node.js:ää tai pnpm:ää ei tarvitse asentaa isäntäkoneelle. |
-
 
 ## Tärkeimmät tiedostot
 
@@ -76,7 +72,7 @@ Testi ei vielä todista mitään tapahtumien tuonnista, laskennasta tai tallennu
 
 ## Tarkistusten tulokset
 
-Kaikki tarkistukset ajettiin Docker-kontissa 23.9.2026:
+Vaiheen lopuksi kaikki tarkistukset ajettiin Docker-kontissa:
 
 | Tarkistus | Tulos |
 | --- | --- |
@@ -86,8 +82,6 @@ Kaikki tarkistukset ajettiin Docker-kontissa 23.9.2026:
 | `pnpm lint` | 0 varoitusta ja 0 virhettä |
 | `pnpm build` | Tuotantokoonti onnistui |
 | Kehityspalvelimen HTTP-tarkistus | `HTTP 200`, HTML-otsikko oli Menomittari |
-
-Kehityskontti pysäytettiin tarkistuksen jälkeen. Dockerin riippuvuusvolyymi jätettiin paikalleen, jotta seuraava käynnistys on nopeampi. Sen poistaminen ei poista sovelluksen lähdekoodia.
 
 ## Kokeile ja varmista itse
 
@@ -99,6 +93,6 @@ Kehityskontti pysäytettiin tarkistuksen jälkeen. Dockerin riippuvuusvolyymi j�
 
 Näiden kokeiden jälkeen pitäisi olla selvää, miten lähdekoodi kulkee Reactilta Viten kautta selaimeen ja miten testit, tyyppitarkistus sekä tuotantokoonti suojaavat seuraavia työvaiheita.
 
-## Seuraava vaihe
+## Jatkokehitys
 
-P0-02 lisää FastAPI-backendin perustan, SQLite-tietokannan sekä SQLAlchemy- ja Alembic-rakenteen. P0-02:ta ei aloiteta ennen kuin P0-01 on tarkistettu ja hyväksytty.
+P0-02 rakensi sovellukselle FastAPI-backendin perustan, SQLite-tietokannan sekä SQLAlchemy- ja Alembic-rakenteen. Seuraavassa tuotevaiheessa niiden päälle toteutetaan käyttäjätilit ja palvelinpuoliset istunnot.
