@@ -5,6 +5,12 @@ services:
     environment:
       MENOMITTARI_CORS_ORIGIN: http://127.0.0.1:5173
       MENOMITTARI_DATABASE_URL: sqlite+pysqlite:////data/menomittari.db
+      # Local HTTP development cannot use Secure cookies; production must enable it.
+      MENOMITTARI_SESSION_COOKIE_SECURE: "false"
+      MENOMITTARI_SESSION_COOKIE_SAMESITE: lax
+      MENOMITTARI_SESSION_TTL_SECONDS: "28800"
+      MENOMITTARI_LOGIN_MAX_ATTEMPTS: "5"
+      MENOMITTARI_LOGIN_WINDOW_SECONDS: "300"
     ports:
       # Keep the API reachable from this computer only during development.
       - "127.0.0.1:8000:8000"
