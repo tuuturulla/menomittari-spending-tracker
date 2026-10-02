@@ -19,7 +19,7 @@ Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietoj
 
 ## Projektin tila
 
-P0-01-vaiheen React–TypeScript–Vite-runko on valmis. P0-02-vaiheen FastAPI-backend on toteutettu ja tarkistettavana. Backend sisältää SQLite-yhteyden, Alembic-migraatiopohjan ja health-rajapinnan. Käyttäjätilit, tiedoston tuonti, paikallinen tallennus ja analyysi lisätään myöhemmissä työvaiheissa.
+P0-01- ja P0-02-vaiheet ovat valmiit. P0-03-vaiheen käyttäjätilit, kirjautuminen ja palvelinpuoliset istunnot on toteutettu ja ne ovat tarkistettavana. Tiedoston tuonti, paikallinen taloustietojen tallennus ja analyysi lisätään myöhemmissä työvaiheissa.
 
 ## Kehitysympäristön käynnistäminen
 
@@ -44,6 +44,8 @@ docker compose up
 ```
 
 Avaa frontend selaimessa <http://127.0.0.1:5173>. Backendin toimintakunnon voi tarkistaa osoitteesta <http://127.0.0.1:8000/api/health> ja sen automaattisen rajapintakuvauksen osoitteesta <http://127.0.0.1:8000/docs>.
+
+Kehitysympäristössä istuntoeväste käyttää `SameSite=Lax`-asetusta ja toimii paikallisen HTTP-yhteyden vuoksi ilman `Secure`-lippua. HTTPS-julkaisuympäristössä `MENOMITTARI_SESSION_COOKIE_SECURE` asetetaan arvoon `true`. `SameSite=None` hyväksytään vain yhdessä `Secure`-asetuksen kanssa.
 
 Pysäytä sovellus näppäinyhdistelmällä `Ctrl+C` ja poista käynnistetyt kontit sekä projektiverkko:
 
@@ -94,3 +96,4 @@ Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `
 | [Sovelluksen rajapinnat](docs/api.md) | Frontendin sisäiset toiminnot ja käyttäjätilien HTTP-rajapinta |
 | [P0-01-oppituntimateriaali](docs/p0-01-oppituntimateriaali.md) | Ensimmäisen toteutusvaiheen työseloste ja käsitteet |
 | [P0-02-oppituntimateriaali](docs/p0-02-oppituntimateriaali.md) | Backendin perustan työseloste ja käsitteet |
+| [P0-03-oppituntimateriaali](docs/p0-03-oppituntimateriaali.md) | Käyttäjätilien ja palvelinpuolisten istuntojen työseloste |

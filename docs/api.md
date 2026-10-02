@@ -57,6 +57,7 @@ Backend käsittelee vain käyttäjätilejä ja kirjautumisistuntoja. Pyynnöiss�
 | Menetelmä ja polku | Tarkoitus | Onnistunut vastaus |
 | --- | --- | --- |
 | `GET /api/health` | Backendin toimintakunnon tarkistus | `{status: "ok"}` |
+| `GET /api/auth/csrf` | Luo tilaa muuttavissa pyynnöissä käytettävän CSRF-tunnisteen | `{token: "..."}` ja CSRF-eväste |
 | `POST /api/auth/register` | Luo käyttäjän normalisoidusta sähköpostista ja salasanasta | Käyttäjän julkiset tiedot |
 | `POST /api/auth/login` | Tarkistaa tunnukset ja luo palvelinpuolisen istunnon | Käyttäjän julkiset tiedot ja `HttpOnly`-istuntoeväste |
 | `GET /api/auth/me` | Palauttaa kirjautuneen käyttäjän | Käyttäjän julkiset tiedot |
@@ -64,4 +65,4 @@ Backend käsittelee vain käyttäjätilejä ja kirjautumisistuntoja. Pyynnöiss�
 
 Käyttäjän julkisissa tiedoissa ovat `id`, `email` ja `created_at`; salasanatiivistettä tai istuntotunnistetta ei palauteta. Rekisteröinti ja kirjautuminen validoivat syötteen. Epäonnistunut kirjautuminen ei paljasta, puuttuuko käyttäjä vai oliko salasana väärä.
 
-Selain lähettää istuntoevästeen `credentials: "include"` -asetuksella. Frontend ei lue tai tallenna istuntotunnistetta. Rekisteröinti, kirjautuminen ja uloskirjautuminen käyttävät CSRF-suojausta, ja backend hyväksyy tunnistetiedot sisältävät selainpyynnöt vain määritetystä frontend-alkuperästä.
+Selain lähettää istuntoevästeen `credentials: "include"` -asetuksella. Frontend ei lue tai tallenna istuntotunnistetta. Se hakee CSRF-tunnisteen ennen tilaa muuttavaa pyyntöä ja lähettää sen `X-CSRF-Token`-otsakkeessa. Backend vertaa otsaketta CSRF-evästeeseen ja hyväksyy pyynnön vain määritetystä frontend-alkuperästä.

@@ -37,6 +37,8 @@ Backendin tietokannassa on kaksi taulua:
 
 Salasana hajautetaan Argon2id-algoritmilla. Satunnainen istuntotunniste annetaan selaimelle `HttpOnly`-evästeessä, mutta tietokantaan tallennetaan vain sen hajautus. Evästeen `SameSite`, `Secure` ja voimassaoloaika asetetaan ympäristön mukaan. Tilaa muuttavat pyynnöt tarkistavat CSRF-tunnisteen, kirjautumisyrityksiä rajoitetaan ja kehitysympäristön CORS sallii vain määritetyn frontend-osoitteen.
 
+CSRF-suojaus käyttää kaksinkertaisen tunnisteen mallia: frontend hakee tunnisteen backendiltä, selain saa samansisältöisen CSRF-evästeen ja tilaa muuttava pyyntö lähettää tunnisteen myös `X-CSRF-Token`-otsakkeessa. Backend vaatii tunnisteiden täsmäävän ja tarkistaa pyynnön `Origin`-otsakkeen. Kirjautumisyritysten rajoitus säilytetään MVP:ssä yhden backend-prosessin muistissa; usean palvelinprosessin julkaisu vaatisi yhteisen rajoitustallennuksen.
+
 CSV-tiedostot, tuontijaksot, tapahtumat, summat, kuvaukset, kategoriat, analyysit ja varmuuskopiot pysyvät frontendissä. Niitä ei hyväksytä backendin pyyntöihin, tallenneta palvelintietokantaan tai kirjoiteta backendin lokeihin.
 
 ## Tietomalli, versio 1
