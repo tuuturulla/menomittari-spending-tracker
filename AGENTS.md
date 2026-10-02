@@ -21,7 +21,9 @@ Käytä tehtävähaaraa, esimerkiksi menomittari/p0-01-runko. Tarkista nimen vap
 
 Rinnakkaiseen tai taustalla tehtävään työhön käytä erillistä worktreetä kurssirepositoryn ulkopuolella. Committoimattomat muutokset eivät siirry siihen; käytä hyväksyttyä commitoitua lähtötilaa. Älä poista worktreetä tai haaraa automaattisesti.
 
-Commitit ja tehtävähaaran push tarvitsevat erikseen toimeksiannon valtuutuksen. Lisää stageen vain nimetyt tehtävätiedostot, ei koko repositoryn git add . -komentoa. Tarkista koko staged-diff ennen committia. Säilytä kehityscommitit; älä muuta vanhoja committeja tai force-pushaa. Pushin kohteen on oltava tarkistettu tehtävähaara, ei main. MR:n voi valmistella vain toimeksiannon rajoissa.
+Agentti saa tehdä committeja tarkistetulle aktiiviselle tehtävähaaralle ilman erillistä lupaa, kun muutokset kuuluvat käyttäjän antamaan toimeksiantoon. Tee pieniä, loogisia committeja, jotta historia pysyy selkeänä ja muutosten syyt ovat jäljitettävissä. Yksi commit käsittelee yhtä kokonaisuutta; erota toisistaan itsenäisesti tarkastettavat toteutus-, testi- ja dokumentaatiomuutokset, mutta älä pilko tiiviisti yhteen kuuluvaa muutosta keinotekoisesti.
+
+Lisää stageen vain nimetyt tehtävätiedostot, ei koko repositoryn `git add .` -komentoa. Tarkista koko staged-diff ennen committia ja aja muutoksen laajuuteen sopivat tarkistukset. Säilytä kehityscommitit; älä muuta vanhoja committeja tai force-pushaa. Tehtävähaaran push tarvitsee erillisen luvan, ja kohteen on oltava tarkistettu tehtävähaara, ei main. MR:n voi valmistella vain toimeksiannon rajoissa. Käyttäjä tarkistaa ja yhdistää tehtävähaaran mainiin.
 
 ## Toteutus ja seuranta
 
@@ -29,8 +31,8 @@ Commitit ja tehtävähaaran push tarvitsevat erikseen toimeksiannon valtuutuksen
 2. Merkitse tehtävä Työn alla. Toteuta vain sen hyväksymisehdot, testit ja tarvittavat dokumentaatiopäivitykset.
 3. Aja tehtävän testit ja vaikutusalueen regressiotestit. P0-01 lisää README:hen oikeasti todennetut komennot; älä keksi myöhemmissä tehtävissä testaustuloksia.
 4. Merkitse testattu työ Tarkistettavana. Estynyt-tilaan kirjataan täsmällinen este. Valmis edellyttää käyttäjän hyväksyntää ja todennettua yhdistämistä mainiin.
-5. Lisää backlogin tarkistusosioon lyhyt työmerkintä: ID, haara, työtila, lähtöcommit, muutos, testikomennot/tulokset, ajamattomat testit ja puutteet. Lopeta toimeksiannon rajaan.
-6. Luovuta tiedostot, tulokset ja seuraava askel käyttäjälle. Kerro tehdyt commitit ja push erikseen; älä tee kumpaakaan raportoinnin vuoksi. Mainiin ei tehdä tilapäivityscommittia: mahdollinen myöhempi dokumenttipäivitys kuuluu uuteen tehtävähaaraan.
+5. Pidä julkinen backlog tiiviinä: päivitä tehtävän tila ja hyväksymisehdot, mutta jätä haara-, commit- ja työpäiväkirjat Git-historiaan. Lopeta toimeksiannon rajaan.
+6. Commitoi tarkistettu työ tehtävähaaralle loogisina kokonaisuuksina ja luovuta käyttäjälle tiedostot, testitulokset sekä commit-tunnisteet. Älä pushaa ilman erillistä lupaa. Mainiin ei tehdä committeja tai tilapäivityksiä; käyttäjä tarkistaa ja yhdistää tehtävähaaran itse.
 
 ## Koodikommentit
 
