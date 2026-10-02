@@ -1,0 +1,1 @@
+"""Menomittari backend application package."""

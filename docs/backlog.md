@@ -6,8 +6,8 @@ Tämä lista kuvaa [projektisuunnitelman](project-plan.md) toteutuksen. Kaikki k
 
 | ID | Tehtävä | Edellyttää | Arvio | Tila |
 | --- | --- | --- | --- | --- |
-| P0-01 | Sovelluksen runko | Ei aiempia tehtäviä | 2 h | Tarkistettavana |
-| P0-02 | Backendin perusta | P0-01 | 3 h | Ei aloitettu |
+| P0-01 | Sovelluksen runko | Ei aiempia tehtäviä | 2 h | Valmis |
+| P0-02 | Backendin perusta | P0-01 | 3 h | Tarkistettavana |
 | P0-03 | Käyttäjätilit ja istunnot | P0-02 | 4–5 h | Ei aloitettu |
 | P0-04 | Paikallinen tallennus | P0-03 | 3 h | Ei aloitettu |
 | P0-05 | Tiedoston tuonti ja luokittelu | P0-04 | 3–4 h | Ei aloitettu |
@@ -124,9 +124,19 @@ Tehtäväkohtaiset työmerkinnät lisätään tähän toteutuksen aikana: tehtä
 ### P0-01 – sovelluksen runko
 
 - Haara: `menomittari/p0-01-runko`
-- Työtila: Tarkistettavana
+- Työtila: Valmis
 - Lähtöcommit: `9e38ee7d1983f065713e5c304b8ad9c2d211ae7f`
 - Muutos: React–TypeScript–Vite-runko, Windowsin Docker-liitoksessa toimiva polling/HMR-kehitysympäristö, lukitut pnpm-riippuvuudet, Menomittarin aloitusnäkymä, yksi Vitest-testi, maltillinen englanninkielinen koodikommentointi sekä asennus- ja tarkistusohjeet.
 - Tarkistukset 23.9.2026 Docker-kontissa: `docker compose build --pull` onnistui; `pnpm test` 1/1 läpäisi; `pnpm typecheck` onnistui; `pnpm lint` 0 varoitusta ja 0 virhettä; `pnpm build` onnistui; kehityspalvelin vastasi `HTTP 200` osoitteessa `http://127.0.0.1:5173` ja palautti Menomittari-otsikon; tilapäinen `App.tsx`-otsikkomuutos ja sen palautus tuottivat molemmat Viten `hmr update /src/App.tsx` -lokimerkinnän polling-seurannalla.
 - Ajamattomat testit: ei erillistä visuaalista selaintarkistusta; sitä ei vaadita P0-01:n hyväksymisehdoissa.
-- Puutteet: käyttäjän tarkistus ja hyväksyntä puuttuvat. Ei committia eikä pushia.
+- Puutteet: ei tunnettuja P0-01:n puutteita. Commit `f1a007a` on käyttäjän hyväksymänä yhdistetty `main`-haaraan ja näkyy `origin/main`-viitteessä.
+
+### P0-02 – backendin perusta
+
+- Haara: `menomittari/p0-02-backend`
+- Työtila: Tarkistettavana
+- Lähtöcommit: `f1a007a8dbabe024d670b1eac0e240a9682e1a20`
+- Muutos: Dockerissa toimiva FastAPI-backend, `uv`-lukitus, SQLAlchemy-yhteys SQLiteen, Alembic-migraatiopohja, rajattu CORS-asetus, tietokannan tarkistava `GET /api/health`, kaksi backend-testiä sekä P0-02-oppituntimateriaali ja päivitetyt käyttöohjeet.
+- Tarkistukset 23.9.2026 Docker-konteissa: koko Compose-ympäristön rakennus onnistui; Alembic päivitti tyhjän väliaikaisen SQLite-kannan revisioon `0001`; Pytest 2/2 läpäisi varoitukset virheinä; samanaikaisesti käynnistetyt frontend ja backend vastasivat `HTTP 200`; health-vastaus oli `{"status":"ok"}` ja sallittu CORS-alkuperä täsmälleen `http://127.0.0.1:5173`. Frontendin Vitest 1/1, tyyppitarkistus, linttaus ilman varoituksia ja tuotantokooste läpäisivät.
+- Ajamattomat testit: ei selaimessa tehtyä visuaalista tarkistusta; P0-02 ei muuta käyttöliittymää.
+- Puutteet: käyttäjän tarkistus ja hyväksyntä puuttuvat. Käyttäjä- ja istuntotaulut sekä kirjautumisreitit kuuluvat P0-03:een.

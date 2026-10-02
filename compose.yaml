@@ -1,4 +1,18 @@
 services:
+  backend:
+    build:
+      context: ./backend
+    environment:
+      MENOMITTARI_CORS_ORIGIN: http://127.0.0.1:5173
+      MENOMITTARI_DATABASE_URL: sqlite+pysqlite:////data/menomittari.db
+    ports:
+      # Keep the API reachable from this computer only during development.
+      - "127.0.0.1:8000:8000"
+    volumes:
+      # Mount sources for reloads and keep the SQLite file in a Docker volume.
+      - ./backend:/app
+      - backend_data:/data
+
   frontend:
     build:
       context: ./frontend
@@ -11,4 +25,5 @@ services:
       - frontend_node_modules:/app/node_modules
 
 volumes:
+  backend_data:
   frontend_node_modules:

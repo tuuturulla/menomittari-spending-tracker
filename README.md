@@ -19,16 +19,22 @@ Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietoj
 
 ## Projektin tila
 
-P0-01-vaiheen sovellusrunko on toteutettu tehtävähaaraan. React- ja TypeScript-sovellus käynnistyy Docker-kontissa Vitellä. FastAPI-backend, käyttäjätilit, tiedoston tuonti, paikallinen tallennus ja analyysi lisätään myöhemmissä työvaiheissa.
+P0-01-vaiheen React–TypeScript–Vite-runko on valmis. P0-02-vaiheen FastAPI-backend, SQLite-yhteys, Alembic-migraatiopohja ja health-rajapinta on toteutettu tehtävähaaraan. Käyttäjätilit, tiedoston tuonti, paikallinen tallennus ja analyysi lisätään myöhemmissä työvaiheissa.
 
 ## Kehitysympäristön käynnistäminen
 
 Tarvitset Docker Desktopin tai muun ympäristön, jossa `docker compose` toimii. Node.js:ää, pnpm:ää tai Pythonia ei asenneta isäntäkoneelle. Siirry komentorivillä tähän `lopputyo/menomittari`-kansioon.
 
-Rakenna kehityskuva. Komento asentaa lukitut JavaScript-riippuvuudet kontin sisälle:
+Rakenna frontendin ja backendin kehityskuvat. Komento asentaa lukitut JavaScript- ja Python-riippuvuudet konttien sisälle:
 
 ```powershell
 docker compose build
+```
+
+Alusta tai päivitä backendin SQLite-tietokanta Alembic-migraatioilla:
+
+```powershell
+docker compose run --rm backend uv run --no-sync alembic upgrade head
 ```
 
 Käynnistä sovellus:
@@ -37,7 +43,9 @@ Käynnistä sovellus:
 docker compose up
 ```
 
-Avaa selaimessa <http://127.0.0.1:5173>. Pysäytä sovellus näppäinyhdistelmällä `Ctrl+C` ja poista käynnistetty kontti sekä projektiverkko:
+Avaa frontend selaimessa <http://127.0.0.1:5173>. Backendin toimintakunnon voi tarkistaa osoitteesta <http://127.0.0.1:8000/api/health> ja sen automaattisen rajapintakuvauksen osoitteesta <http://127.0.0.1:8000/docs>.
+
+Pysäytä sovellus näppäinyhdistelmällä `Ctrl+C` ja poista käynnistetyt kontit sekä projektiverkko:
 
 ```powershell
 docker compose down
@@ -47,7 +55,19 @@ Vite seuraa lähdetiedostoja polling-menetelmällä, jotta muutokset välittyvä
 
 ## Tarkistukset
 
-Seuraavat komennot on todennettu Docker-kontissa. Ne eivät vaadi paikallista Node.js-asennusta.
+Seuraavat komennot on todennettu Docker-konteissa. Ne eivät vaadi paikallista Node.js- tai Python-asennusta.
+
+Backend:
+
+```powershell
+docker compose run --rm backend uv run --no-sync alembic upgrade head
+docker compose run --rm backend uv run --no-sync pytest -W error
+```
+
+- `alembic upgrade head` suorittaa kaikki vielä ajamattomat tietokantamigraatiot.
+- `pytest -W error` ajaa backendin testit ja käsittelee myös varoitukset virheinä.
+
+Frontend:
 
 ```powershell
 docker compose run --rm frontend pnpm test
@@ -61,7 +81,7 @@ docker compose run --rm frontend pnpm build
 - `lint` etsii tavallisia koodivirheitä Oxlintillä.
 - `build` tekee tyyppitarkistuksen ja kokoaa julkaisutiedostot `frontend/dist`-kansioon.
 
-Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `frontend/pnpm-lock.yaml`-tiedostoissa. Backendin Python-riippuvuudet lisätään P0-02-vaiheessa `uv`:lla ja suoritetaan Docker-kontissa; `pip`:iä ei käytetä.
+Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `frontend/pnpm-lock.yaml`-tiedostoissa. Backendin Python-riippuvuudet määritellään `backend/pyproject.toml`-tiedostossa ja lukitaan `backend/uv.lock`-tiedostoon. `uv` suoritetaan Docker-kontissa; `pip`:iä ei käytetä.
 
 
 
@@ -75,4 +95,5 @@ Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `
 | [Aineisto ja laskenta](docs/data-contract.md) | Tiedostomuoto, laskentasäännöt ja testien odotusarvot |
 | [Sovelluksen rajapinnat](docs/api.md) | Frontendin sisäiset toiminnot ja käyttäjätilien HTTP-rajapinta |
 | [P0-01-oppituntimateriaali](docs/p0-01-oppituntimateriaali.md) | Ensimmäisen toteutusvaiheen työseloste ja käsitteet |
+| [P0-02-oppituntimateriaali](docs/p0-02-oppituntimateriaali.md) | Backendin perustan työseloste ja käsitteet |
 | [Agenttiohje](AGENTS.md) | Tekoälyavustajan työskentely ja rajatut oikeudet |

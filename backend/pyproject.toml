@@ -1,0 +1,22 @@
+[project]
+name = "menomittari-backend"
+version = "0.1.0"
+description = "Account and session backend for the Menomittari course project"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "alembic>=1.20,<2",
+    "fastapi[standard]>=0.116,<1",
+    "sqlalchemy>=2.0,<3",
+]
+
+[dependency-groups]
+dev = [
+    "httpx2>=2,<3",
+    "pytest>=9,<10",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.uv]
+package = false
