@@ -5,6 +5,7 @@ from sqlalchemy import create_engine, pool
 
 from app.config import load_settings
 from app.db.base import Base
+from app.db import models as _models  # noqa: F401 -- registers tables in metadata
 
 config = context.config
 if config.config_file_name is not None:
