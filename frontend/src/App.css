@@ -1,4 +1,4 @@
-/* Center the small P0-01 shell while leaving room for later application sections. */
+/* Center the account view while leaving room for later application sections. */
 .app-shell {
   min-height: 100vh;
   display: grid;
@@ -7,7 +7,7 @@
 }
 
 .intro {
-  width: min(100%, 42rem);
+  width: min(100%, 46rem);
   padding: clamp(2rem, 6vw, 4rem);
   border: 1px solid #d8e3de;
   border-radius: 1.5rem;
@@ -31,7 +31,8 @@ h1 {
   line-height: 1;
 }
 
-.lead {
+.lead,
+.account-panel p {
   max-width: 35rem;
   margin: 1.25rem 0 2.25rem;
   color: #486158;
@@ -39,35 +40,113 @@ h1 {
   line-height: 1.65;
 }
 
-/* Keep the current implementation status visually separate from product content. */
-.status {
-  display: flex;
-  gap: 1rem;
-  padding: 1.25rem;
+.auth-card {
+  padding: clamp(1.25rem, 4vw, 2rem);
   border-radius: 1rem;
   background: #edf7f2;
 }
 
-.status-dot {
-  width: 0.75rem;
-  height: 0.75rem;
-  flex: 0 0 auto;
-  margin-top: 0.4rem;
-  border-radius: 50%;
-  background: #2f8f6f;
-  box-shadow: 0 0 0 0.35rem rgba(47, 143, 111, 0.15);
+.auth-card h2 {
+  margin: 1.25rem 0;
+  font-size: clamp(1.25rem, 4vw, 1.65rem);
 }
 
-.status h2 {
-  margin: 0 0 0.35rem;
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.3rem;
+  border-radius: 0.75rem;
+  background: #dfeee7;
+}
+
+.auth-tabs button {
+  color: #31574b;
+  background: transparent;
+  box-shadow: none;
+}
+
+.auth-tabs button.active {
   color: #173d32;
-  font-size: 1rem;
+  background: #fff;
 }
 
-.status p {
+form {
+  display: grid;
+  gap: 0.65rem;
+}
+
+label {
+  margin-top: 0.45rem;
+  font-weight: 700;
+}
+
+input {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #adc8bc;
+  border-radius: 0.65rem;
+  color: #173d32;
+  background: #fff;
+  font: inherit;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 3px solid rgba(47, 143, 111, 0.35);
+  outline-offset: 2px;
+}
+
+button {
+  margin-top: 0.75rem;
+  padding: 0.8rem 1rem;
+  border: 0;
+  border-radius: 0.65rem;
+  color: #fff;
+  background: #27745d;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.field-hint,
+.feedback p {
   margin: 0;
+  font-size: 0.9rem;
+}
+
+.field-hint {
   color: #486158;
-  line-height: 1.5;
+}
+
+.feedback {
+  min-height: 1.4rem;
+  margin-top: 1rem;
+}
+
+.success-message {
+  color: #21634f;
+}
+
+.error-message {
+  color: #a12b2b;
+}
+
+.account-panel .eyebrow {
+  margin-bottom: 0;
+}
+
+.account-panel h2 {
+  overflow-wrap: anywhere;
+}
+
+.account-panel button {
+  width: 100%;
 }
 
 @media (max-width: 30rem) {
