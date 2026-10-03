@@ -14,6 +14,7 @@ def utc_now() -> datetime:
 class User(Base):
     __tablename__ = "users"
 
+    # SQLAlchemy calls uuid4 when a new user is inserted; this id also scopes IndexedDB.
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     email_normalized: Mapped[str] = mapped_column(String(320), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(512))

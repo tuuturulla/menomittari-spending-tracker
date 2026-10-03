@@ -16,6 +16,7 @@ export const CATEGORY_CODES = [
 export type TransactionKind = (typeof TRANSACTION_KINDS)[number]
 export type CategoryCode = (typeof CATEGORY_CODES)[number]
 
+// One import record identifies the time period covered by a single CSV import.
 export interface ImportRecord {
   id: string
   period_start: string
@@ -23,6 +24,7 @@ export interface ImportRecord {
   created_at: string
 }
 
+// Each transaction points back to its import through import_id.
 export interface TransactionRecord {
   id: string
   import_id: string

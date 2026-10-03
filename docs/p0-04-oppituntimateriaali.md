@@ -53,7 +53,7 @@ Projektin riippuvuudet määritellään [package.jsonissa](../frontend/package.j
 
 ## Käyttäjäkohtainen tietokanta
 
-Backend palauttaa kirjautuneen käyttäjän UUID-tunnisteen. [App.tsx](../frontend/src/App.tsx) avaa sen perusteella tietokannan:
+Backend luo käyttäjän UUID-tunnisteen `uuid4`-funktiolla uuden käyttäjän tallennuksen yhteydessä [models.py-tiedostossa](../backend/app/db/models.py). Kirjautumisrajapinta palauttaa julkisten käyttäjätietojen mukana saman tunnisteen frontendille. [App.tsx](../frontend/src/App.tsx) avaa sen perusteella tietokannan:
 
 ```text
 käyttäjä 1111… → menomittari-1111…
@@ -74,6 +74,8 @@ Dexie-skeema määritellään [database.ts-tiedostossa](../frontend/src/storage/
 | `transactions` | `id`, uniikki `[import_id+source_row]`, hakuindeksi `[import_id+date+id]` | Tuontiin kuuluvat tapahtumat |
 
 Compound-indeksi tarkoittaa usean kentän muodostamaa indeksiä. Esimerkiksi `[import_id+date+id]` järjestää ensin tuonnin, sen sisällä päivän ja tasatilanteessa tapahtumatunnisteen mukaan.
+
+Uniikki `[period_start+period_end]` estää vain täsmälleen saman alku- ja loppupäivän yhdistelmän tallentamisen kahdesti. Esimerkiksi jo tallennetun jakson `2026-01-01–2026-01-20` rinnalla yhdistelmäindeksi yksin sallisi jakson `2026-01-02–2026-01-10`. Siksi [repository.ts](../frontend/src/storage/repository.ts) tekee lisäksi aikavertailun ja hylkää kaikki kokonaan tai osittain päällekkäiset jaksot.
 
 Tietueiden TypeScript-muodot löytyvät [types.ts-tiedostosta](../frontend/src/storage/types.ts). `amount_cents` on kokonainen senttimäärä, koska liukuluvuilla tehtävä rahalaskenta voi aiheuttaa pyöristysvirheitä.
 

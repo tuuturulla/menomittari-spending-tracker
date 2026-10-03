@@ -33,6 +33,7 @@ function App() {
     }
 
     let active = true
+    // The backend user UUID selects a separate local database for this signed-in account.
     const storage = createLocalStorage(user.id)
     storage.open().catch(() => {
       if (active) {

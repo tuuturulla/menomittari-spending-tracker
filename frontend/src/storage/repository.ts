@@ -19,6 +19,7 @@ function wrapStorageError(error: unknown, message: string): never {
   throw new MenomittariStorageError('storage_error', message, { cause: error })
 }
 
+// The repository gives the rest of the app a small API without exposing Dexie objects.
 export class LocalStorageRepository {
   private readonly database: MenomittariDatabase
 
@@ -32,6 +33,7 @@ export class LocalStorageRepository {
 
   async open(): Promise<void> {
     try {
+      // Opening creates the IndexedDB database and its stores when they do not exist yet.
       await this.database.open()
     } catch (error) {
       wrapStorageError(error, 'Paikallista tietokantaa ei voitu avata.')
@@ -55,6 +57,7 @@ export class LocalStorageRepository {
         this.database.imports,
         this.database.transactions,
         async () => {
+          // Reject every intersecting period, not only an exact duplicate of both dates.
           const overlappingImport = await this.database.imports
             .filter(
               (storedImport) =>
@@ -92,6 +95,7 @@ export class LocalStorageRepository {
   async listImports(): Promise<ImportRecord[]> {
     try {
       const imports = await this.database.imports.toArray()
+      // The UI expects the newest period first, with id as a stable tie-breaker.
       return imports.sort(
         (left, right) =>
           right.period_start.localeCompare(left.period_start) ||
@@ -118,6 +122,7 @@ export class LocalStorageRepository {
         )
       }
 
+      // The compound index returns one import's transactions in date and id order.
       return await this.database.transactions
         .where('[import_id+date+id]')
         .between(

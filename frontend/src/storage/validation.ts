@@ -109,6 +109,7 @@ export function validateImportWrite(
   importRecord: ImportRecord,
   transactions: TransactionRecord[],
 ): void {
+  // Validate the complete parent-child batch before the repository starts writing it.
   validateImportRecord(importRecord)
   if (
     transactions.length === 0 ||
@@ -119,6 +120,7 @@ export function validateImportWrite(
 
   const transactionIds = new Set<string>()
   const sourceRows = new Set<number>()
+  // Sets catch duplicates inside the incoming batch before IndexedDB sees the records.
   for (const transaction of transactions) {
     validateTransactionRecord(transaction, importRecord)
     if (transactionIds.has(transaction.id)) {
