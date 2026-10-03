@@ -8,6 +8,7 @@ import {
   register,
   type PublicUser,
 } from './auth-api'
+import { createLocalStorage } from './storage/repository'
 
 function App() {
   const [mode, setMode] = useState<'login' | 'register'>('login')
@@ -25,6 +26,26 @@ function App() {
       .catch(() => setError('Kirjautumistilaa ei voitu tarkistaa.'))
       .finally(() => setBusy(false))
   }, [])
+
+  useEffect(() => {
+    if (!user) {
+      return
+    }
+
+    let active = true
+    const storage = createLocalStorage(user.id)
+    storage.open().catch(() => {
+      if (active) {
+        setError('Paikallista taloushistoriaa ei voitu avata tässä selaimessa.')
+      }
+    })
+
+    // Closing releases this tab's connection but deliberately keeps the user's data.
+    return () => {
+      active = false
+      storage.close()
+    }
+  }, [user])
 
   const submitCredentials = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
