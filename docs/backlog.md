@@ -8,8 +8,8 @@ Tämä lista kuvaa [projektisuunnitelman](project-plan.md) toteutuksen. Kaikki k
 | --- | --- | --- | --- | --- |
 | P0-01 | Sovelluksen runko | Ei aiempia tehtäviä | 2 h | Valmis |
 | P0-02 | Backendin perusta | P0-01 | 3 h | Valmis |
-| P0-03 | Käyttäjätilit ja istunnot | P0-02 | 4–5 h | Tarkistettavana |
-| P0-04 | Paikallinen tallennus | P0-03 | 3 h | Ei aloitettu |
+| P0-03 | Käyttäjätilit ja istunnot | P0-02 | 4–5 h | Valmis |
+| P0-04 | Paikallinen tallennus | P0-03 | 3 h | Tarkistettavana |
 | P0-05 | Tiedoston tuonti ja luokittelu | P0-04 | 3–4 h | Ei aloitettu |
 | P0-06 | Tapahtumat ja yhteenveto | P0-05 | 3–4 h | Ei aloitettu |
 | P0-07 | Vertailu ja havainnot | P0-06 | 2–3 h | Ei aloitettu |

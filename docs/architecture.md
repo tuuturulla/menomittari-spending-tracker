@@ -43,7 +43,7 @@ CSV-tiedostot, tuontijaksot, tapahtumat, summat, kuvaukset, kategoriat, analyysi
 
 ## Tietomalli, versio 1
 
-Tämä tietomalli koskee selaimen paikallista IndexedDB-tietokantaa. Tietokanta nimetään kirjautuneen käyttäjän tunnisteen perusteella, jotta samalla selaimella käytettävät tilit eivät jaa taloushistoriaa. Istuntotunnistetta ei tallenneta IndexedDB:hen.
+Tämä tietomalli koskee selaimen paikallista IndexedDB-tietokantaa. Tietokannan nimi on `menomittari-<käyttäjän UUID>`, jotta samalla selaimella käytettävät tilit eivät jaa taloushistoriaa. Kanta avataan käyttäjän kirjautuessa ja yhteys suljetaan käyttäjän vaihtuessa tai kirjautuessa ulos. Sulkeminen ei poista historiaa. Istuntotunnistetta ei tallenneta IndexedDB:hen.
 
 | Taulu | Kentät |
 | --- | --- |
