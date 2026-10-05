@@ -9,13 +9,13 @@ Tämä lista kuvaa [projektisuunnitelman](project-plan.md) toteutuksen. Kaikki k
 | P0-01 | Sovelluksen runko | Ei aiempia tehtäviä | 2 h | Valmis |
 | P0-02 | Backendin perusta | P0-01 | 3 h | Valmis |
 | P0-03 | Käyttäjätilit ja istunnot | P0-02 | 4–5 h | Valmis |
-| P0-04 | Paikallinen tallennus | P0-03 | 3 h | Tarkistettavana |
-| P0-05 | Tiedoston tuonti ja luokittelu | P0-04 | 3–4 h | Ei aloitettu |
+| P0-04 | Paikallinen tallennus | P0-03 | 3 h | Valmis |
+| P0-05 | Tiedoston tuonti ja luokittelu | P0-04 | 3–4 h | Tarkistettavana |
 | P0-06 | Tapahtumat ja yhteenveto | P0-05 | 3–4 h | Ei aloitettu |
 | P0-07 | Vertailu ja havainnot | P0-06 | 2–3 h | Ei aloitettu |
 | P0-08 | Varmuuskopio ja esittelyn viimeistely | P0-07 | 3–4 h | Ei aloitettu |
 
-Toteutusarvio on 23–28 tuntia, lisäksi 2–4 tuntia yhteiseen läpikäyntiin ja korjauksiin. Tilat: Ei aloitettu, Työn alla, Estynyt, Tarkistettavana, Valmis.
+Alkuperäinen toteutusarvio on 23–28 tuntia, lisäksi 2–4 tuntia yhteiseen läpikäyntiin ja korjauksiin. Ensimmäisen toimivan tiedostotuonnin jälkeen jäljellä olevien P0-06–P0-08-vaiheiden toteutusarvio on 8–11 tuntia, lisäksi 2–4 tuntia yhteiseen läpikäyntiin ja korjauksiin. Tilat: Ei aloitettu, Työn alla, Estynyt, Tarkistettavana, Valmis.
 
 ## P0-01: Sovelluksen runko
 

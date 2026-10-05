@@ -19,7 +19,7 @@ Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietoj
 
 ## Projektin tila
 
-P0-01–P0-03-vaiheet ovat valmiit. P0-04-vaiheen käyttäjäkohtainen IndexedDB-tallennus on toteutettu ja tarkistettavana. CSV-tiedoston tuonti, tapahtumanäkymä ja analyysi lisätään myöhemmissä työvaiheissa.
+P0-01–P0-04-vaiheet ovat valmiit. P0-05-vaiheen paikallinen CSV-tuonti ja kiinteä kauppiasluokittelu on toteutettu ja tarkistettavana. Tapahtumanäkymä ja analyysi lisätään myöhemmissä työvaiheissa.
 
 ## Kehitysympäristön käynnistäminen
 
@@ -98,3 +98,4 @@ Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `
 | [P0-02-oppituntimateriaali](docs/p0-02-oppituntimateriaali.md) | Backendin perustan työseloste ja käsitteet |
 | [P0-03-oppituntimateriaali](docs/p0-03-oppituntimateriaali.md) | Käyttäjätilien ja palvelinpuolisten istuntojen työseloste |
 | [P0-04-oppituntimateriaali](docs/p0-04-oppituntimateriaali.md) | IndexedDB:n, Dexien ja atomisen paikallistallennuksen työseloste |
+| [P0-05-oppituntimateriaali](docs/p0-05-oppituntimateriaali.md) | CSV-tuonnin, validoinnin ja kauppiasluokittelun työseloste |
