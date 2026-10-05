@@ -180,8 +180,9 @@ function App() {
               <section className="import-card" aria-labelledby="import-title">
                 <h3 id="import-title">Tuo tapahtumat</h3>
                 <p id="import-help">
-                  Valitse Menomittarin demo-CSV ja ilmoita koko tiedoston kattama
-                  ajanjakso. Tiedosto käsitellään vain tässä selaimessa.
+                  Valitse Menomittarin demo-CSV tai tuettu S-Pankin
+                  tilitapahtuma-CSV ja ilmoita koko tiedoston kattama ajanjakso.
+                  Tiedosto käsitellään vain tässä selaimessa.
                 </p>
                 <form onSubmit={submitImport} aria-describedby="import-help">
                   <label htmlFor="csv-file">CSV-tiedosto</label>

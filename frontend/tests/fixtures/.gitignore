@@ -1,0 +1,3 @@
+# Keep locally exported real bank data out of version control.
+demo_tilitapahtuma.csv
+private-*.csv

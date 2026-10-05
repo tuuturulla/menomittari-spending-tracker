@@ -1,0 +1,4 @@
+Kirjauspäivä;Maksupäivä;Summa;Tapahtumalaji;Maksaja;Saajan nimi;Saajan tilinumero;Saajan BIC-tunnus;Viitenumero;Viesti;Arkistointitunnus
+2.6.2026;1.6.2026;-30,00;Korttiosto;;Demo Market;DEMO-TILI;DEMO-BIC;;;DEMO-ARKISTO-001
+05.06.2026;05.06.2026;-12,50;Korttiosto;;;;;;Demo Cafe;DEMO-ARKISTO-002
+15.6.2026;15.6.2026;+2000,00;Tilisiirto;Demo Employer;;;;;Demo salary;DEMO-ARKISTO-003

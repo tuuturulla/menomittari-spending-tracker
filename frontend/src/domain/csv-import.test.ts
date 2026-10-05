@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import aprilCsv from '../../tests/fixtures/demo-2026-04.csv?raw'
 import mayCsv from '../../tests/fixtures/demo-2026-05.csv?raw'
+import sPankkiCsv from '../../tests/fixtures/s-pankki-demo-2026-06.csv?raw'
 import { CsvImportValidationError, parseImportCsv } from './csv-import'
 
 function validationError(action: () => unknown): CsvImportValidationError {
@@ -63,6 +64,70 @@ describe('CSV import domain', () => {
         category_code: 'unknown',
       },
     ])
+  })
+
+  it('recognizes the S-Pankki field layout and normalizes fictional transactions', () => {
+    const rows = parseImportCsv(sPankkiCsv, '2026-06-01', '2026-06-30')
+
+    expect(rows).toMatchObject([
+      {
+        source_row: 2,
+        date: '2026-06-02',
+        description: 'Demo Market',
+        amount_cents: -3_000,
+        kind: 'expense',
+        category_code: 'groceries',
+      },
+      {
+        source_row: 3,
+        date: '2026-06-05',
+        description: 'Demo Cafe',
+        amount_cents: -1_250,
+        kind: 'expense',
+        category_code: 'dining',
+      },
+      {
+        source_row: 4,
+        date: '2026-06-15',
+        description: 'Demo Employer',
+        amount_cents: 200_000,
+        kind: 'income',
+        category_code: 'unknown',
+      },
+    ])
+  })
+
+  it('does not guess an S-Pankki layout when the complete header does not match', () => {
+    const unknownHeader = sPankkiCsv.replace(
+      'Kirjauspäivä;Maksupäivä',
+      'Maksupäivä;Kirjauspäivä',
+    )
+
+    expect(
+      validationError(() =>
+        parseImportCsv(unknownHeader, '2026-06-01', '2026-06-30'),
+      ),
+    ).toMatchObject({ code: 'invalid_csv', row: 1 })
+  })
+
+  it('rejects an invalid S-Pankki amount without storing an approximate value', () => {
+    const invalidAmount = sPankkiCsv.replace('-30,00', '-30.00')
+
+    expect(
+      validationError(() =>
+        parseImportCsv(invalidAmount, '2026-06-01', '2026-06-30'),
+      ),
+    ).toMatchObject({ code: 'invalid_csv', row: 2, field: 'amount' })
+  })
+
+  it('rejects an impossible S-Pankki booking date', () => {
+    const invalidDate = sPankkiCsv.replace('2.6.2026', '31.2.2026')
+
+    expect(
+      validationError(() =>
+        parseImportCsv(invalidDate, '2026-02-01', '2026-06-30'),
+      ),
+    ).toMatchObject({ code: 'invalid_csv', row: 2, field: 'date' })
   })
 
   it('keeps identical purchases as separate source records', () => {
