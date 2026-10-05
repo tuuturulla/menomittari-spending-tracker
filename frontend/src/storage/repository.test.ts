@@ -142,4 +142,32 @@ describe('local storage repository', () => {
       storedTransaction,
     ])
   })
+
+  it('rejects a partially overlapping period and preserves the old import', async () => {
+    const storage = repository()
+    await storage.open()
+    const oldImport = importRecord({
+      period_start: '2026-01-01',
+      period_end: '2026-01-20',
+    })
+    await storage.saveImportWithTransactions(oldImport, [
+      transactionRecord({ date: '2026-01-05' }),
+    ])
+
+    const overlappingImport = importRecord({
+      id: IMPORT_B,
+      period_start: '2026-01-02',
+      period_end: '2026-01-10',
+    })
+    await expect(
+      storage.saveImportWithTransactions(overlappingImport, [
+        transactionRecord({
+          id: '20000000-0000-4000-8000-000000000002',
+          import_id: IMPORT_B,
+          date: '2026-01-06',
+        }),
+      ]),
+    ).rejects.toMatchObject({ code: 'overlapping_period' })
+    await expect(storage.listImports()).resolves.toEqual([oldImport])
+  })
 })

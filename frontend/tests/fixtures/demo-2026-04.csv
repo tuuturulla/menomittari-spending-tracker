@@ -1,0 +1,8 @@
+date;description;amount;kind
+2026-04-03;Demo Market;-30.00;expense
+2026-04-03;Demo Market;-30.00;expense
+2026-04-08;Demo Cafe;-20.00;expense
+2026-04-12;Demo Bus;-10.00;expense
+2026-04-15;Demo Salary;+2000.00;income
+2026-04-18;Demo Transfer;-100.00;transfer
+2026-04-22;Demo Market;+5.00;refund
