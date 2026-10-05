@@ -67,6 +67,8 @@ Maksupäivää, tilinumeroa, BIC-tunnusta, viitettä ja arkistointitunnusta ei t
 
 Sama toimintamalli voidaan myöhemmin laajentaa muille pankeille. Jos niiden otsikot tai kenttien merkitykset eroavat, niille lisätään oma tunnistus ja muunnos. Kaikki sovittimet palauttavat saman `ValidatedCsvTransaction`-rakenteen, joten tallennuksen ja analyysin ei tarvitse muuttua pankin mukaan.
 
+MVP mallintaa yhdelle käyttäjälle yhden loogisen EUR-tilin. Pankin vaihtuminen ei tarkoita käyttäjän vaihtamista. Varsinainen usean tilin tuki tarvitsee myöhemmin erillisen tilitietueen ja `account_id`-viitteen tuonneille. Silloin päällekkäiset tuontijaksot estetään tilikohtaisesti, mutta saman ajanjakson tapahtumat voidaan tuoda käyttäjän eri tileiltä.
+
 ## Mikä CSV on?
 
 CSV on tekstitiedosto, jossa yksi tietue muodostuu sovituista kentistä. Menomittarin oma demomuoto käyttää puolipistettä ja sen otsikon pitää olla täsmälleen:
@@ -243,7 +245,7 @@ Käyttöliittymä voi näyttää turvallisen suomenkielisen viestin ja tietuenum
 6. `imports`-object storessa pitäisi olla yksi tuonti ja `transactions`-object storessa seitsemän tapahtumaa.
 7. Yritä samaa tuontia uudelleen. Sovelluksen pitää hylätä päällekkäinen jakso eikä tapahtumamäärä saa kasvaa.
 8. Valitse [toukokuun demotiedosto](../frontend/tests/fixtures/demo-2026-05.csv) ja ajanjakso `2026-05-01–2026-05-30`. Sen pitää tallentua uutena jaksona.
-9. Tyhjennä testiprofiilin kanta tai käytä eri käyttäjää, valitse [fiktiivinen S-Pankki-tiedosto](../frontend/tests/fixtures/s-pankki-demo-2026-06.csv) ja anna ajanjaksoksi `2026-06-01–2026-06-30`. Kolmen tapahtuman pitäisi tallentua.
+9. Valitse samalla käyttäjällä [fiktiivinen S-Pankki-tiedosto](../frontend/tests/fixtures/s-pankki-demo-2026-06.csv) ja anna ajanjaksoksi `2026-06-01–2026-06-30`. Kolmen tapahtuman pitäisi tallentua uutena, aiempiin jaksoihin kuulumattomana tuontina.
 
 P0-06 lisää tallennettujen jaksojen ja tapahtumien varsinaisen näkymän. P0-05 näyttää vasta tuonnin onnistumisen tai virheen.
 
