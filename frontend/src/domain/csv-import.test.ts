@@ -78,6 +78,27 @@ describe('CSV import domain', () => {
     expect(rows.map((row) => row.source_row)).toEqual([2, 3])
   })
 
+  it('applies every fixed merchant rule to expenses and refunds', () => {
+    const rows = parseImportCsv(
+      'date;description;amount;kind\n' +
+        '2026-04-02;Demo Market;-1.00;expense\n' +
+        '2026-04-03;Demo Cafe;-1.00;expense\n' +
+        '2026-04-04;Demo Bus;-1.00;expense\n' +
+        '2026-04-05;Demo Stream;-1.00;expense\n' +
+        '2026-04-06;Demo Market;+1.00;refund\n',
+      '2026-04-01',
+      '2026-04-30',
+    )
+
+    expect(rows.map((row) => row.category_code)).toEqual([
+      'groceries',
+      'dining',
+      'transport',
+      'subscriptions',
+      'groceries',
+    ])
+  })
+
   it('requires the exact header and at least one transaction', () => {
     expect(
       validationError(() =>
