@@ -66,7 +66,7 @@ Tarkistus: erillisen testitietokannan tallennus, luku, virheellisen viitteen hyl
 
 Valmistumisen ehdot:
 
-- Mukana on kaksi keksittyä CSV-aineistoa [aineistokuvauksen](data-contract.md) odotusarvoilla.
+- Mukana on kaksi Menomittarin demoaineistoa ja yksi täysin fiktiivinen S-Pankin kenttärakennetta vastaava CSV-aineisto [aineistokuvauksen](data-contract.md) säännöillä.
 - Tiedoston valinta, ajanjakson syöttö ja tuontinappi toimivat yksinkertaisessa näkymässä.
 - Muoto, päivät, summat ja kokorajat tarkistetaan. Virheellinen aineisto ei tallennu osittain.
 - Sama tai päällekkäinen jakso hylätään. Tiedoston sisäiset samannäköiset ostokset säilyvät erillisinä.

@@ -13,6 +13,8 @@ tiukka UTF-8-purku
         ↓
 Papa Parse muodostaa CSV-tietueet
         ↓
+otsikko valitsee tiedostomuodon sovittimen
+        ↓
 kentät, päivät, summat ja rajat tarkistetaan
         ↓
 kauppias luokitellaan
@@ -36,6 +38,8 @@ Talousaineisto ei kulje FastAPI-backendin kautta. Backendiltä saatu käyttäjä
 | [App.tsx](../frontend/src/App.tsx) | Näyttää tiedostonvalinnan, päivämääräkentät ja palautteen |
 | [demo-2026-04.csv](../frontend/tests/fixtures/demo-2026-04.csv) | Ensimmäinen täysin fiktiivinen esittelyjakso |
 | [demo-2026-05.csv](../frontend/tests/fixtures/demo-2026-05.csv) | Toinen täysin fiktiivinen esittelyjakso |
+| [s-pankki-demo-2026-06.csv](../frontend/tests/fixtures/s-pankki-demo-2026-06.csv) | Fiktiivinen S-Pankin kenttärakennetta jäljittelevä testiaineisto |
+| [fixtures/.gitignore](../frontend/tests/fixtures/.gitignore) | Estää sovitulla nimellä tallennetun paikallisen pankkiaineiston lisäämisen Gitiin |
 
 Kerrokset muodostavat tarkoituksellisen ketjun:
 
@@ -46,9 +50,26 @@ React UI → application → domain
 
 Domain-koodi ei tunne Reactia, Dexietä tai selainkantaa. Siksi CSV-sääntöjä ja luokittelua voidaan testata tavallisilla merkkijonoilla.
 
+## Mitä S-Pankki-tuki tarkoittaa?
+
+Pankin CSV:ssä ei ole erillistä kenttää, jossa lukisi `S-Pankki`. Rakenne tunnetaan S-Pankin muodoksi tiedoston alkuperän ja koko otsikkorivin perusteella. Koodi vertaa kaikkia 11 otsikkoa oikeassa järjestyksessä `S_PANKKI_HEADER`-vakioon. Se ei etsi vain muutamaa samankaltaista sanaa eikä pysty todistamaan, mikä pankki tiedoston loi.
+
+Kun otsikko täsmää, sovitin muuntaa pankin kentät Menomittarin sisäiseen muotoon:
+
+```text
+Kirjauspäivä  → date
+Summa         → amount_cents
+Saajan nimi / Maksaja / Viesti / Tapahtumalaji → description
+summan etumerkki → kind (negatiivinen expense, positiivinen income)
+```
+
+Maksupäivää, tilinumeroa, BIC-tunnusta, viitettä ja arkistointitunnusta ei tallenneta. Näin sovellus säilyttää vain nykyisiin laskelmiin tarvittavat tiedot.
+
+Sama toimintamalli voidaan myöhemmin laajentaa muille pankeille. Jos niiden otsikot tai kenttien merkitykset eroavat, niille lisätään oma tunnistus ja muunnos. Kaikki sovittimet palauttavat saman `ValidatedCsvTransaction`-rakenteen, joten tallennuksen ja analyysin ei tarvitse muuttua pankin mukaan.
+
 ## Mikä CSV on?
 
-CSV on tekstitiedosto, jossa yksi tietue muodostuu sovituista kentistä. Menomittarin erotin on puolipiste ja otsikon pitää olla täsmälleen:
+CSV on tekstitiedosto, jossa yksi tietue muodostuu sovituista kentistä. Menomittarin oma demomuoto käyttää puolipistettä ja sen otsikon pitää olla täsmälleen:
 
 ```csv
 date;description;amount;kind
@@ -121,7 +142,7 @@ Sovellus ei päättele niiden olevan vahingossa duplikaatteja, koska ne voivat o
 
 ## Miksi rahaa käsitellään kokonaisina sentteinä?
 
-CSV:n summa tarkistetaan ensin merkkijonona. Sallittu muoto on esimerkiksi `-12.50` tai `+5.00`. Desimaalipilkku, tuhaterottimet ja puuttuva desimaali hylätään.
+CSV:n summa tarkistetaan ensin merkkijonona. Menomittarin demomuodon sallittu arvo on esimerkiksi `-12.50` tai `+5.00`. S-Pankki-sovitin hyväksyy vastaavan suomalaisen desimaalipilkun ja pankin käyttämän etumerkin, esimerkiksi `-12,50` tai `+2000,00`. Tuhaterottimet ja puuttuva desimaali hylätään.
 
 Summaa ei lasketa näin:
 
@@ -146,7 +167,7 @@ Sallitut tyypit määritellään [transactions.ts-tiedostossa](../frontend/src/d
 - `refund`: summan pitää olla positiivinen;
 - `transfer`: kumpikin etumerkki on sallittu.
 
-Etumerkki ei yksin kerro tapahtuman tyyppiä. Esimerkiksi positiivinen summa voi olla tulo tai palautus, joten `kind` tulee aina CSV-tiedostosta.
+Etumerkki ei yksin kerro tapahtuman todellista tyyppiä. Esimerkiksi positiivinen summa voi olla palkka, palautus tai siirto omalta tililtä. Menomittarin demomuodossa `kind` tulee CSV-tiedostosta. S-Pankin muodossa vastaavaa kenttää ei ole, joten MVP tulkitsee negatiivisen summan menoksi ja positiivisen tuloksi. Palautusten ja omien tilisiirtojen korjaaminen vaatii myöhemmin erillisen tarkistusvaiheen tai tarkemmat, testatut säännöt.
 
 ## Miten kauppias luokitellaan?
 
@@ -222,6 +243,7 @@ Käyttöliittymä voi näyttää turvallisen suomenkielisen viestin ja tietuenum
 6. `imports`-object storessa pitäisi olla yksi tuonti ja `transactions`-object storessa seitsemän tapahtumaa.
 7. Yritä samaa tuontia uudelleen. Sovelluksen pitää hylätä päällekkäinen jakso eikä tapahtumamäärä saa kasvaa.
 8. Valitse [toukokuun demotiedosto](../frontend/tests/fixtures/demo-2026-05.csv) ja ajanjakso `2026-05-01–2026-05-30`. Sen pitää tallentua uutena jaksona.
+9. Tyhjennä testiprofiilin kanta tai käytä eri käyttäjää, valitse [fiktiivinen S-Pankki-tiedosto](../frontend/tests/fixtures/s-pankki-demo-2026-06.csv) ja anna ajanjaksoksi `2026-06-01–2026-06-30`. Kolmen tapahtuman pitäisi tallentua.
 
 P0-06 lisää tallennettujen jaksojen ja tapahtumien varsinaisen näkymän. P0-05 näyttää vasta tuonnin onnistumisen tai virheen.
 
@@ -230,6 +252,7 @@ P0-06 lisää tallennettujen jaksojen ja tapahtumien varsinaisen näkymän. P0-0
 [Domain-testit](../frontend/src/domain/csv-import.test.ts) tarkistavat muun muassa:
 
 - molemmat demoaineistot ja niiden odotetut menosummat;
+- S-Pankin koko otsikon tunnistamisen sekä päivien, desimaalipilkun, kuvausten ja etumerkkien muunnoksen;
 - lainatut kentät, puolipisteet, rivinvaihdot, ääkköset ja BOM:n;
 - tyhjät ja rakenteeltaan virheelliset tiedostot;
 - virheelliset summat, päivät ja ajanjaksot;

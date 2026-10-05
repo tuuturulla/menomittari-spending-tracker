@@ -4,7 +4,13 @@ Tekninen määrittely toteutusta ja testejä varten. Koskee yhtä kuvitteellista
 
 ## CSV-tuonti
 
-UTF-8, valinnainen BOM, erotin puolipiste, otsikko täsmälleen `date;description;amount;kind`. CSV-kirjasto käsittelee lainatut kentät, myös niiden sisäiset puolipisteet ja rivinvaihdot. Tyhjät tietueet ohitetaan. Virheellinen UTF-8 hylätään.
+Tuetut tiedostot ovat UTF-8-tekstiä, niissä voi olla BOM ja niiden erotin on puolipiste. CSV-kirjasto käsittelee lainatut kentät, myös niiden sisäiset puolipisteet ja rivinvaihdot. Tyhjät tietueet ohitetaan. Virheellinen UTF-8 hylätään.
+
+Muoto tunnistetaan koko otsikkorivistä. Tunnistus kertoo käytettävän sarakekartan, ei todista tiedoston lähettänyttä pankkia. Tuntematonta tai vain osittain täsmäävää otsikkoa ei arvata.
+
+### Menomittarin demomuoto
+
+Otsikko on täsmälleen `date;description;amount;kind`.
 
 | Kenttä | Ehto |
 | --- | --- |
@@ -13,11 +19,23 @@ UTF-8, valinnainen BOM, erotin puolipiste, otsikko täsmälleen `date;descriptio
 | amount | Valinnainen plus/miinus, numeroita, piste ja tasan kaksi desimaalia; ei tuhaterottimia |
 | kind | expense: negatiivinen, income/refund: positiivinen, transfer: kumpikin etumerkki |
 
-Nolla hylätään. Summan itseisarvo on enintään 1 000 000 euroa. Sentit muodostetaan merkkijonon kokonais- ja desimaaliosista, ei parseFloat(amount) * 100 -laskennalla; Number.isSafeInteger tarkistetaan. Pelkkä etumerkki ei tunnista palautusta tai tilisiirtoa, joten kind annetaan tiedostossa.
+Nolla hylätään. Summan itseisarvo on enintään 1 000 000 euroa. Sentit muodostetaan merkkijonon kokonais- ja desimaaliosista, ei parseFloat(amount) * 100 -laskennalla; Number.isSafeInteger tarkistetaan. Pelkkä etumerkki ei tunnista palautusta tai tilisiirtoa, joten demomuodossa kind annetaan tiedostossa.
+
+### S-Pankin tilitapahtumamuoto
+
+Tunnettu otsikko on täsmälleen:
+
+```text
+Kirjauspäivä;Maksupäivä;Summa;Tapahtumalaji;Maksaja;Saajan nimi;Saajan tilinumero;Saajan BIC-tunnus;Viitenumero;Viesti;Arkistointitunnus
+```
+
+Sovitin käyttää kirjauspäivää suomalaisessa muodossa, esimerkiksi `2.6.2026` tai `02.06.2026`, ja muuntaa sen sisäiseen `YYYY-MM-DD`-muotoon. Summa luetaan suomalaisella desimaalipilkulla; etumerkkinä hyväksytään esimerkiksi `-12,50` ja `+2000,00`. Menon kuvaukseksi valitaan ensisijaisesti saajan nimi ja positiivisen tapahtuman kuvaukseksi maksaja; puuttuva nimi korvataan toisella osapuolella, viestillä tai tapahtumalajilla tässä järjestyksessä. Tilinumeroa, BIC-tunnusta, viitettä ja arkistointitunnusta ei tallenneta.
+
+Negatiivinen summa muunnetaan menoksi ja positiivinen tuloksi. Pankin rakenne ei sisällä Menomittarin `kind`-arvoa, joten sovitin ei pysty vielä erottamaan palautusta tai käyttäjän omien tilien välistä siirtoa luotettavasti. MVP ei arvaa niitä tapahtumalajin tekstistä.
 
 CSV on enintään 1 MiB ja 5 000 tapahtumaa. Kannassa saa olla enintään 10 000 tapahtumaa. Nämä ovat demon rajoja, eivät tietokannan kapasiteettiväitteitä. Koko tarkistetaan ennen tiedoston lukemista; tyhjä aineisto ja pelkkä otsikko hylätään.
 
-Käyttäjä antaa period_start- ja period_end-päivät, molemmat mukaan lukien. Alku ei saa ylittää loppua ja jokaisen tapahtuman tulee olla jakson sisällä. Jaksoa ei päätellä ostospäivistä. Käyttöohje edellyttää koko jakson tuontia; sovellus ei voi todistaa tiedoston täydellisyyttä.
+Käyttäjä antaa period_start- ja period_end-päivät, molemmat mukaan lukien. Alku ei saa ylittää loppua ja jokaisen tapahtuman kirjauspäivän tulee olla jakson sisällä. Jaksoa ei päätellä ostospäivistä. Käyttöohje edellyttää koko jakson tuontia; sovellus ei voi todistaa tiedoston täydellisyyttä.
 
 Koko aineisto validoidaan ennen tallennusta. Virhe ilmoittaa kentän ja tietuenumeron, ei koko sisältöä. Otsikko on tietue 1; tyhjät tietueet huomioidaan numeroinnissa, lainatun kentän sisäiset rivinvaihdot eivät kasvata numeroa. Tämä on myös source_row-kentän määritelmä.
 
