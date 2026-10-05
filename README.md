@@ -9,7 +9,7 @@ Menomittari on kurssityönä toteutettava selainsovellus, joka auttaa ymmärtäm
 3. Tuo toinen jakso ja katso muutokset aiempaan verrattuna.
 4. Lataa tarvittaessa varmuuskopio. Sen voi palauttaa tyhjään sovellukseen toisessa selaimessa.
 
-Ensimmäinen versio käyttää vain keksittyjä tapahtumia. Se lukee Menomittarin oman demomuodon sekä S-Pankin tilitapahtumaviennistä tunnetun CSV-kenttärakenteen, mutta ei PDF-tiliotteita. Pankkituen testiaineistot ovat täysin fiktiivisiä, eikä kurssiversiota ole vielä tarkoitettu oikeiden taloustietojen käsittelyyn.
+Ensimmäinen versio käyttää vain keksittyjä tapahtumia. Se lukee Menomittarin oman demomuodon sekä S-Pankin tilitapahtumaviennistä tunnetun CSV-kenttärakenteen, mutta ei PDF-tiliotteita. Pankkituen testiaineistot ovat täysin fiktiivisiä, eikä kurssiversiota ole vielä tarkoitettu oikeiden taloustietojen käsittelyyn. Koko rajaus on koottu yhteen paikkaan [projektisuunnitelman MVP:n rajaukset -osioon](docs/project-plan.md#mvpn-rajaukset).
 
 ## Missä tiedot säilyvät?
 

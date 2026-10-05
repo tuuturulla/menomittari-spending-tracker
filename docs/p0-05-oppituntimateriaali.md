@@ -67,7 +67,7 @@ Maksupäivää, tilinumeroa, BIC-tunnusta, viitettä ja arkistointitunnusta ei t
 
 Sama toimintamalli voidaan myöhemmin laajentaa muille pankeille. Jos niiden otsikot tai kenttien merkitykset eroavat, niille lisätään oma tunnistus ja muunnos. Kaikki sovittimet palauttavat saman `ValidatedCsvTransaction`-rakenteen, joten tallennuksen ja analyysin ei tarvitse muuttua pankin mukaan.
 
-MVP mallintaa yhdelle käyttäjälle yhden loogisen EUR-tilin. Pankin vaihtuminen ei tarkoita käyttäjän vaihtamista. Varsinainen usean tilin tuki tarvitsee myöhemmin erillisen tilitietueen ja `account_id`-viitteen tuonneille. Silloin päällekkäiset tuontijaksot estetään tilikohtaisesti, mutta saman ajanjakson tapahtumat voidaan tuoda käyttäjän eri tileiltä.
+MVP mallintaa yhdelle käyttäjälle yhden loogisen EUR-tilin. Pankin vaihtuminen ei tarkoita käyttäjän vaihtamista. Varsinainen usean tilin tuki tarvitsee myöhemmin erillisen tilitietueen ja `account_id`-viitteen tuonneille. Silloin päällekkäiset tuontijaksot estetään tilikohtaisesti, mutta saman ajanjakson tapahtumat voidaan tuoda käyttäjän eri tileiltä. Tämä ja muut sovitut rajat pidetään yhdessä paikassa [projektisuunnitelman MVP:n rajaukset -osiossa](project-plan.md#mvpn-rajaukset).
 
 ## Mikä CSV on?
 

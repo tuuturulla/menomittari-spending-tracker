@@ -8,7 +8,7 @@ Oppimistavoitteet ovat selainsovelluksen rakentaminen, paikallisen ja palvelinpu
 
 ## Kurssityöhön kuuluu
 
-- Yksi kuvitteellinen eurotili ja yksi sovittu CSV-tiedostomuoto.
+- Yksi looginen eurotili sekä Menomittarin demo-CSV:n ja tunnetun S-Pankki-CSV-rakenteen tuonti.
 - Tapahtumien tuonti, tallennettu historia ja tapahtumalista.
 - Menojen ryhmittely neljällä esimerkkikauppiaan säännöllä; muut jäävät tunnistamattomiksi.
 - Menojen yhteissumma ja ryhmäkohtaiset summat. Palautukset näytetään erikseen.
@@ -17,13 +17,25 @@ Oppimistavoitteet ovat selainsovelluksen rakentaminen, paikallisen ja palvelinpu
 - Käyttäjätilin luominen, kirjautuminen ja uloskirjautuminen.
 - Yksi selkeä sivu, joka mukautuu myös puhelimen levyiseen näkymään.
 
-Käyttö esitetään kahdella pienellä, keksityllä aineistolla yhdessä työpöytäselaimessa. Historiaa voi tallentaa useammalta jaksolta, mutta vertailu käyttää aina vain valittua ja sitä lähinnä edeltävää jaksoa. Tarkat tiedosto- ja laskentasäännöt ovat [aineistokuvauksessa](data-contract.md).
+Käyttö esitetään pienillä, keksityillä aineistoilla yhdessä työpöytäselaimessa. Historiaa voi tallentaa useammalta jaksolta, mutta vertailu käyttää aina vain valittua ja sitä lähinnä edeltävää jaksoa. Tarkat tiedosto- ja laskentasäännöt ovat [aineistokuvauksessa](data-contract.md).
 
-## Kurssityön ulkopuolelle jää
+## MVP:n rajaukset
 
-Ei oikeiden pankkitiedostojen tukea, taloustietojen pilvitallennusta, automaattista laitteiden välistä tiedonsiirtoa tai julkista käyttöönottoa. Ei muokattavia luokittelusääntöjä, kaavioita tai erillistä puhelinsovellusta.
+Tämä osio on MVP-rajausten ensisijainen lähde. Muut dokumentit voivat selittää toteutusta tarkemmin, mutta niiden ei pidä laajentaa MVP:tä ilman projektisuunnitelman tietoista päivittämistä.
 
-Myöhemmäksi jäävät pidemmän historian normaalitason laskeminen, käytösmuutokset, toistuvat maksut, hinnankorotukset, kampanjamuistutukset ja säästöehdotukset. Myös ilman verkkoyhteyttä käynnistyminen, automaattinen välilehtien päivitys ja kattava puhelin- ja selaintestaus ovat jatkokehitystä.
+| Alue | MVP:n päätös | MVP:n ulkopuolelle jää |
+| --- | --- | --- |
+| Käyttäjä ja pankkitilit | Yhdellä sovelluksen käyttäjällä on yksi looginen EUR-tili. Pankin vaihtuminen ei tarkoita käyttäjän vaihtamista. | Useat pankki- tai maksutilit, `account_id`, tilikohtainen suodatus ja tilien yhdistetty näkymä. |
+| Tuontimuodot | Menomittarin oma demo-CSV sekä S-Pankin viennistä tunnettu 11 kentän CSV-rakenne. Muoto tunnistetaan koko otsikosta; se ei todista tiedoston pankkialkuperää. Testiaineistot ovat fiktiivisiä. | Muiden pankkien sovittimet, PDF-tiliotteet, XML, Open Banking -rajapinnat ja lupaus kattavasta oikeiden pankkiaineistojen tuesta. |
+| Tuontijaksot | Käyttäjä ilmoittaa koko tiedoston ajanjakson. Tuontijaksot eivät saa olla osittainkaan päällekkäisiä yhden loogisen tilin historiassa. | Saman ajanjakson tuonti eri tileiltä ja tapahtumakohtainen duplikaattien tunnistus useiden lähteiden välillä. |
+| Tapahtuman tyyppi | Demomuoto antaa tyypin suoraan. S-Pankki-rakenteessa negatiivinen summa tulkitaan menoksi ja positiivinen tuloksi. | Palautusten ja omien tilien välisten siirtojen varma tunnistus, käyttäjän tarkistus- ja korjausnäkymä sekä automaattinen täsmäytys. |
+| Luokittelu | Neljä kiinteää fiktiivistä kauppiassääntöä; muut tapahtumat jäävät tunnistamattomiksi. | Käyttäjän omat säännöt, yhteisöllinen kauppiastietokanta ja koneoppimismalli. |
+| Paikallinen talousdata | CSV, tapahtumat, kategoriat ja analyysi käsitellään ja säilytetään käyttäjäkohtaisessa IndexedDB-kannassa nykyisessä selaimessa. Varmuuskopio viedään paikallisena salaamattomana JSON-tiedostona. | Taloustietojen palvelin- tai pilvitallennus, salattu synkronointi ja automaattinen laitteiden välinen siirto. |
+| Backend | FastAPI tallentaa vain käyttäjätilit ja palvelinpuoliset kirjautumisistunnot SQLiteen. | CSV:t, tapahtumat, summat, kuvaukset, kategoriat tai analyysit backendissä. |
+| Analyysi | Valittua jaksoa verrataan lähimpään aiempaan, yhtä pitkään ja peräkkäiseen jaksoon. Näytetään enintään kolme sääntöpohjaista havaintoa. | Normaalitason oppiminen pitkästä historiasta, käytösmuutosten tai hintojen syiden päättely, ennusteet ja henkilökohtaiset säästöehdotukset. |
+| Käyttöympäristö | Kurssiesittely yhdessä työpöytäselaimessa; näkymä mukautuu puhelimen leveyteen. | Julkinen tuotantokäyttö, erillinen mobiilisovellus, asennettava offline-sovellus, automaattinen välilehtien synkronointi ja kattava selain- tai laitetestaus. |
+
+Rajausten laajentaminen edellyttää omaa suunnittelua ja testausta. Esimerkiksi usean tilin tuki muuttaa tietomallia ja päällekkäisyyssääntöä: sama ajanjakso olisi sallittu eri tileillä mutta ei saman tilin kahdessa tuonnissa. Omien tilien väliset siirrot pitäisi samalla tunnistaa, jotta ne eivät näy kokonaisuudessa sekä menona että tulona.
 
 ## Teknologiat ja rakenne
 

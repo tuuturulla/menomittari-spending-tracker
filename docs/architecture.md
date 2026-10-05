@@ -1,6 +1,6 @@
 # Arkkitehtuuri
 
-Tekninen kuvaus toteuttajille. Tuotteen tavoite ja rajaus ovat [projektisuunnitelmassa](project-plan.md), tiedot ja laskenta [aineistosopimuksessa](data-contract.md) ja toimintojen sopimus [api.md:ssä](api.md).
+Tekninen kuvaus toteuttajille. Tuotteen tavoite ja [MVP:n rajaukset](project-plan.md#mvpn-rajaukset) ovat projektisuunnitelmassa, tiedot ja laskenta [aineistosopimuksessa](data-contract.md) ja toimintojen sopimus [api.md:ssä](api.md).
 
 ## Osat ja tiedonkulku
 
