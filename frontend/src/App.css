@@ -32,7 +32,7 @@ h1 {
 }
 
 .lead,
-.account-panel p {
+.account-summary {
   max-width: 35rem;
   margin: 1.25rem 0 2.25rem;
   color: #486158;
@@ -145,8 +145,44 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 
+.import-card {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  border: 1px solid #c5ddd2;
+  border-radius: 0.85rem;
+  background: #fff;
+}
+
+.import-card h3 {
+  margin: 0 0 0.5rem;
+  color: #173d32;
+  font-size: 1.2rem;
+}
+
+.import-card p {
+  margin: 0 0 1rem;
+  color: #486158;
+  line-height: 1.55;
+}
+
+.date-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.date-fields div {
+  display: grid;
+  gap: 0.65rem;
+}
+
 .account-panel button {
   width: 100%;
+}
+
+.secondary-button {
+  color: #31574b;
+  background: #dfeee7;
 }
 
 @media (max-width: 30rem) {
@@ -156,5 +192,9 @@ button:disabled {
 
   .intro {
     border-radius: 1rem;
+  }
+
+  .date-fields {
+    grid-template-columns: 1fr;
   }
 }
