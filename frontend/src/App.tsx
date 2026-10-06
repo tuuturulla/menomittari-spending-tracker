@@ -9,6 +9,7 @@ import {
   register,
   type PublicUser,
 } from './auth-api'
+import { TransactionHistory } from './components/TransactionHistory'
 import {
   createLocalStorage,
   type LocalStorageRepository,
@@ -23,6 +24,7 @@ function App() {
   } | null>(null)
   const [busy, setBusy] = useState(true)
   const [importBusy, setImportBusy] = useState(false)
+  const [historyRevision, setHistoryRevision] = useState(0)
   const [message, setMessage] = useState('Tarkistetaan kirjautumistila…')
   const [error, setError] = useState('')
   const currentStorage = openedStorage?.owner === user ? openedStorage.repository : null
@@ -149,6 +151,7 @@ function App() {
       }
 
       form.reset()
+      setHistoryRevision((current) => current + 1)
       setMessage(
         `Tuonti onnistui: ${result.data.transaction_count} tapahtumaa tallennettiin selaimeen.`,
       )
@@ -223,6 +226,13 @@ function App() {
                   </button>
                 </form>
               </section>
+
+              {currentStorage && (
+                <TransactionHistory
+                  storage={currentStorage}
+                  refreshKey={historyRevision}
+                />
+              )}
 
               <button
                 className="secondary-button"
