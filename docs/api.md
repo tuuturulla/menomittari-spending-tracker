@@ -9,13 +9,13 @@ Jokainen toiminto palauttaa Promise<Result<T>>: {ok: true, data: T} tai {ok: fal
 | Toiminto | Syöte | Onnistumisen data |
 | --- | --- | --- |
 | importCsv | file: File, period_start, period_end | Import |
-| listImports | Ei parametreja | {items: Import[]} |
-| listTransactions | import_id, offset=0, limit=50 | {items: Transaction[], total, offset, limit} |
+| listHistoryImports | Ei parametreja | {items: Import[]} |
+| loadTransactionView | selected_import, offset=0, limit=50 | {summary: Summary, transactions: {items: Transaction[], total, offset, limit}} |
 | getAnalysis | import_id | {summary: Summary, comparison: Comparison, insights: Insight[]} |
 | exportBackup | Ei parametreja | {blob: Blob, filename: string} |
 | restoreBackup | file: File | {import_count, transaction_count} |
 
-Import on tallennettu tuontitietue sekä transaction_count. Transaction on tallennettu tapahtumatietue ilman source_row-kenttää. Imports järjestetään period_start laskevasti, tapahtumat date ja id nousevasti. Offset on kokonaisluku vähintään 0 ja limit kokonaisluku 1–200.
+Import on tallennettu tuontitietue sekä transaction_count. Transaction on tallennettu tapahtumatietue ilman source_row-kenttää. Imports järjestetään period_start laskevasti, tapahtumat date ja id nousevasti. Offset on kokonaisluku vähintään 0 ja limit kokonaisluku 1–200. loadTransactionView laskee yhteenvedon koko valitusta aineistosta, vaikka palauttaa tapahtumista vain pyydetyn sivun.
 
 getAnalysis käyttää yhtä tallennuksesta luettua aineistokokonaisuutta. Käyttöliittymä päivittää tiedot onnistuneen tuonnin/palautuksen jälkeen. Sivun avauksessa valitaan ajallisesti uusin tuonti. Jakson vaihtuessa vanhentunut lukutulos ei saa korvata uutta valintaa.
 
