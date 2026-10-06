@@ -15,3 +15,11 @@ export const CATEGORY_CODES = [
 
 export type TransactionKind = (typeof TRANSACTION_KINDS)[number]
 export type CategoryCode = (typeof CATEGORY_CODES)[number]
+
+export const CATEGORY_NAMES: Record<CategoryCode, string> = {
+  groceries: 'Ruokakauppa',
+  dining: 'Ravintolat',
+  transport: 'Liikenne',
+  subscriptions: 'Tilaukset',
+  unknown: 'Tunnistamattomat',
+}
