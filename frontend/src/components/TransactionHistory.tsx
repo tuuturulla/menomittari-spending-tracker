@@ -56,6 +56,7 @@ function formatPeriod(period: ImportRecord): string {
   return `${formatDate(period.period_start)}–${formatDate(period.period_end)}`
 }
 
+/** Render the selected page; React escapes descriptions supplied by CSV files. */
 export function TransactionList({ page }: { page: TransactionPage }) {
   if (page.items.length === 0) {
     return <p className="empty-state">Valitulla sivulla ei ole tapahtumia.</p>
@@ -108,6 +109,7 @@ function SummaryPanel({ view }: { view: TransactionView }) {
   )
 }
 
+/** Keep period selection and page state in sync with the stored import history. */
 export function TransactionHistory({
   storage,
   refreshKey,
@@ -117,6 +119,7 @@ export function TransactionHistory({
   const [importsLoad, setImportsLoad] = useState<ImportsLoad | null>(null)
   const [viewLoad, setViewLoad] = useState<ViewLoad | null>(null)
 
+  // Reload periods when the database opens or a new import increments `refreshKey`.
   useEffect(() => {
     let active = true
 
@@ -152,6 +155,7 @@ export function TransactionHistory({
     }
   }, [storage, refreshKey])
 
+  // Ignore a saved result if it belongs to an older database or refresh cycle.
   const currentImportsLoad =
     importsLoad?.storage === storage && importsLoad.refreshKey === refreshKey
       ? importsLoad
@@ -160,6 +164,7 @@ export function TransactionHistory({
   const loadingImports = currentImportsLoad === null
   const selectedImport = imports.find((item) => item.id === selectedImportId) ?? null
 
+  // Fetch the chosen period and page; changing either makes the old result inactive.
   useEffect(() => {
     if (!selectedImport) {
       return
@@ -202,6 +207,7 @@ export function TransactionHistory({
     setOffset(0)
   }
 
+  // Only a result tagged with the current selection and offset may appear on screen.
   const currentViewLoad =
     selectedImport &&
     viewLoad?.storage === storage &&

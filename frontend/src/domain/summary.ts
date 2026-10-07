@@ -33,6 +33,7 @@ export interface SpendingSummary {
   categories: CategorySummary[]
 }
 
+/** Sum the entire period in cents; income and transfers do not increase spending. */
 export function calculateSummary(
   period: SummaryPeriod,
   transactions: readonly SummaryTransaction[],
@@ -57,6 +58,7 @@ export function calculateSummary(
     }
   }
 
+  // Include zero-value groups so the UI always has the same set of categories.
   const categories = CATEGORY_CODES.map((categoryCode) => ({
     category_code: categoryCode,
     name: CATEGORY_NAMES[categoryCode],

@@ -155,6 +155,7 @@ button:disabled {
   background: #fff;
 }
 
+/* Keep the period summary and transaction list together as one reading area. */
 .history-card {
   margin: 1.5rem 0;
   padding: 1.25rem;
@@ -316,6 +317,7 @@ button:disabled {
   background: #dfeee7;
 }
 
+/* Stack dense sections at phone width while keeping dates and amounts readable. */
 @media (max-width: 30rem) {
   .app-shell {
     padding: 1rem;

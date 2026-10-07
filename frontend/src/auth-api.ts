@@ -35,6 +35,7 @@ async function parseError(response: Response): Promise<AuthApiError> {
   return new AuthApiError(message, response.status)
 }
 
+/** Sends an account request; the browser attaches the session cookie automatically. */
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
@@ -49,6 +50,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return (await response.json()) as T
 }
 
+// Keep the token in memory; state-changing requests send it in a header.
 async function getCsrfToken(forceRefresh = false): Promise<string> {
   if (!csrfToken || forceRefresh) {
     const response = await request<{ token: string }>('/api/auth/csrf')
@@ -57,6 +59,7 @@ async function getCsrfToken(forceRefresh = false): Promise<string> {
   return csrfToken
 }
 
+/** Adds the CSRF header to POST requests and refreshes it once after a 403. */
 async function sendWithCsrf<T>(path: string, body?: object): Promise<T> {
   const send = async (forceRefresh: boolean) =>
     request<T>(path, {
@@ -91,6 +94,7 @@ export async function getCurrentUser(): Promise<PublicUser | null> {
   try {
     return await request<PublicUser>('/api/auth/me')
   } catch (error) {
+    // No session is an ordinary logged-out state; other failures remain errors.
     if (error instanceof AuthApiError && error.status === 401) {
       return null
     }

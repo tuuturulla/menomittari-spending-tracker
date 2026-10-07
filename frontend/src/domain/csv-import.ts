@@ -111,6 +111,7 @@ function validatePeriod(periodStart: string, periodEnd: string): void {
   }
 }
 
+// Build cents from the two decimal parts instead of multiplying a floating-point euro value.
 function parseAmount(value: string, row: number): number {
   const match = AMOUNT_PATTERN.exec(value)
   if (!match) {
@@ -136,6 +137,7 @@ function parseAmount(value: string, row: number): number {
   return amountCents
 }
 
+// The bank format uses a decimal comma; the domain still stores integer cents.
 function parseFinnishAmount(value: string, row: number): number {
   const match = FINNISH_AMOUNT_PATTERN.exec(value.trim())
   if (!match) {
@@ -233,6 +235,7 @@ function validateDescription(description: string, row: number): void {
   }
 }
 
+// The demo format supplies `kind`, so each row can distinguish income from refunds.
 function parseMenomittariRecord(
   record: string[],
   sourceRow: number,
@@ -265,6 +268,7 @@ function parseMenomittariRecord(
   }
 }
 
+// Map the bank's eleven columns into the same internal transaction shape as the demo.
 function parseSPankkiRecord(
   record: string[],
   sourceRow: number,
@@ -310,6 +314,7 @@ function parseSPankkiRecord(
   }
 }
 
+/** Validate the declared period, recognize the full CSV header, and return safe rows. */
 export function parseImportCsv(
   csvText: string,
   periodStart: string,
@@ -335,6 +340,7 @@ export function parseImportCsv(
     invalidCsv('CSV-tiedostossa ei ole otsikkoa.', 1)
   }
 
+  // The complete header chooses the adapter; partial matches could misread columns.
   const isMenomittariCsv = headerMatches(header, MENOMITTARI_HEADER)
   const isSPankkiCsv = headerMatches(header, S_PANKKI_HEADER)
   if (!isMenomittariCsv && !isSPankkiCsv) {
@@ -355,6 +361,7 @@ export function parseImportCsv(
     )
   }
 
+  // Preserve the CSV record number even when blank records are skipped.
   const transactions: ValidatedCsvTransaction[] = []
   dataRecords.forEach((record, dataIndex) => {
     const sourceRow = dataIndex + 2

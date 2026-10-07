@@ -45,6 +45,7 @@ export class LocalStorageRepository {
     this.database.close()
   }
 
+  /** Check the period and capacity, then commit its parent and children together. */
   async saveImportWithTransactions(
     importRecord: ImportRecord,
     transactions: TransactionRecord[],
@@ -107,6 +108,7 @@ export class LocalStorageRepository {
     }
   }
 
+  /** Read one import's transactions in stable date-and-ID order for the history view. */
   async listTransactions(importId: string): Promise<TransactionRecord[]> {
     if (!isUuid(importId)) {
       throw new MenomittariStorageError(

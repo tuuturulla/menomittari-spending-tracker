@@ -1,4 +1,4 @@
-/** Loads saved periods and builds a full-period summary with a paged event list. */
+/** Loads saved periods and builds a full-period summary with a paged transaction list. */
 import { calculateSummary, type SpendingSummary } from '../domain/summary'
 import { MenomittariStorageError } from '../storage/types'
 import type { ImportRecord, TransactionRecord } from '../storage/types'
@@ -63,6 +63,7 @@ function storageFailure(error: MenomittariStorageError): HistoryResult<never> {
   return failure('storage_error', error.message)
 }
 
+/** List available periods so the user can choose which import to inspect. */
 export async function listHistoryImports(
   storage: HistoryStorage,
 ): Promise<HistoryResult<{ items: ImportRecord[] }>> {
@@ -76,6 +77,7 @@ export async function listHistoryImports(
   }
 }
 
+/** Calculate the whole period but return only the requested page of transaction rows. */
 export async function loadTransactionView(
   storage: HistoryStorage,
   selectedImport: ImportRecord,
@@ -89,6 +91,7 @@ export async function loadTransactionView(
     limit < 1 ||
     limit > 200
   ) {
+    // Reject impossible page boundaries before touching IndexedDB.
     return failure('invalid_request', 'Tapahtumasivun rajaus ei ole kelvollinen.')
   }
 

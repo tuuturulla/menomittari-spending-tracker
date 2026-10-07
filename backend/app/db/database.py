@@ -1,3 +1,5 @@
+"""Create SQLAlchemy connections and short-lived sessions for account data."""
+
 from collections.abc import Iterator
 from sqlite3 import Connection as SQLiteConnection
 

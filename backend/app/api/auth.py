@@ -50,6 +50,7 @@ class CsrfToken(BaseModel):
 
 
 def get_database_session(request: Request) -> Iterator[Session]:
+    """Give one request a database session that closes after the route finishes."""
     yield from session_scope(request.app.state.session_factory)
 
 
@@ -57,6 +58,7 @@ DatabaseSession = Annotated[Session, Depends(get_database_session)]
 
 
 def public_user(user: User) -> PublicUser:
+    """Expose account fields without returning the stored password hash."""
     return PublicUser(
         id=user.id,
         email=user.email_normalized,
@@ -72,6 +74,7 @@ def set_cookie(
     settings: Settings,
     httponly: bool,
 ) -> None:
+    """Apply the same lifetime, path, and security settings to auth cookies."""
     response.set_cookie(
         key=key,
         value=value,
@@ -84,6 +87,7 @@ def set_cookie(
 
 
 def require_csrf(request: Request) -> None:
+    """Allow a state-changing request only from our frontend with matching CSRF tokens."""
     settings: Settings = request.app.state.settings
     header_token = request.headers.get("X-CSRF-Token")
     cookie_token = request.cookies.get(CSRF_COOKIE_NAME)
@@ -105,6 +109,7 @@ def login_key(request: Request, email: str) -> str:
 
 @router.get("/csrf", response_model=CsrfToken)
 def issue_csrf_token(request: Request, response: Response) -> CsrfToken:
+    """Give the browser a cookie and matching token for later POST requests."""
     token = create_secret_token()
     set_cookie(
         response,
@@ -123,6 +128,7 @@ def register(
     request: Request,
     database: DatabaseSession,
 ) -> PublicUser:
+    """Save a validated account with a password hash and return public fields."""
     require_csrf(request)
     user = User(
         email_normalized=normalize_email(str(credentials.email)),
@@ -148,6 +154,7 @@ def login(
     response: Response,
     database: DatabaseSession,
 ) -> PublicUser:
+    """Check credentials and create a server-side session for this browser."""
     require_csrf(request)
     email = normalize_email(str(credentials.email))
     limiter: LoginRateLimiter = request.app.state.login_rate_limiter
@@ -160,6 +167,7 @@ def login(
             headers={"Retry-After": str(retry_after)},
         )
 
+    # Use the same verification path for unknown accounts before returning an error.
     user = database.scalar(select(User).where(User.email_normalized == email))
     password_matches = verify_password(
         credentials.password,
@@ -170,12 +178,14 @@ def login(
         raise HTTPException(status_code=401, detail="Sähköposti tai salasana on väärä.")
 
     limiter.reset(limiter_key)
+    # Replace an existing session so the browser does not keep using an old token.
     existing_token = request.cookies.get(SESSION_COOKIE_NAME)
     if existing_token:
         existing = database.get(AuthSession, hash_token(existing_token))
         if existing:
             database.delete(existing)
 
+    # Store only the token hash; the secret itself goes to the HttpOnly cookie.
     raw_token = create_secret_token()
     now = utc_now()
     database.add(
@@ -199,6 +209,7 @@ def login(
 
 
 def authenticated_user(request: Request, database: Session) -> User:
+    """Resolve a session cookie to its user and reject missing or expired sessions."""
     raw_token = request.cookies.get(SESSION_COOKIE_NAME)
     if not raw_token:
         raise HTTPException(status_code=401, detail="Kirjautuminen vaaditaan.")
@@ -221,6 +232,7 @@ def me(request: Request, database: DatabaseSession, response: Response) -> Publi
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 def logout(request: Request, response: Response, database: DatabaseSession) -> None:
+    """Remove the server-side session and clear the browser's session cookie."""
     require_csrf(request)
     raw_token = request.cookies.get(SESSION_COOKIE_NAME)
     if raw_token:

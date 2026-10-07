@@ -1,3 +1,4 @@
+/** Rechecks record invariants at the IndexedDB write boundary. */
 import {
   MenomittariStorageError,
   type ImportRecord,
@@ -104,6 +105,7 @@ function validateTransactionRecord(
   }
 }
 
+/** Reject an invalid parent-child batch before any record reaches the database. */
 export function validateImportWrite(
   importRecord: ImportRecord,
   transactions: TransactionRecord[],

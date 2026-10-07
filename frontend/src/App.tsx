@@ -17,6 +17,7 @@ import {
 } from './storage/repository'
 
 function App() {
+  // React state holds what the page currently shows; the databases own persistent data.
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [user, setUser] = useState<PublicUser | null>(null)
   const [openedStorage, setOpenedStorage] = useState<{
@@ -28,8 +29,10 @@ function App() {
   const [historyRevision, setHistoryRevision] = useState(0)
   const [message, setMessage] = useState('Tarkistetaan kirjautumistila…')
   const [error, setError] = useState('')
+  // Never show a previous account's local database while a different user is active.
   const currentStorage = openedStorage?.owner === user ? openedStorage.repository : null
 
+  // On page load, ask the backend whether the browser already has a valid session.
   useEffect(() => {
     getCurrentUser()
       .then((currentUser) => {
@@ -40,6 +43,7 @@ function App() {
       .finally(() => setBusy(false))
   }, [])
 
+  // A signed-in user opens their own IndexedDB database; cleanup closes the connection.
   useEffect(() => {
     if (!user) {
       return
@@ -70,6 +74,7 @@ function App() {
 
   const submitCredentials = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    // FormData reads the named HTML inputs; login then updates `user` above.
     const form = event.currentTarget
     const formData = new FormData(form)
     const email = String(formData.get('email') ?? '')
@@ -152,6 +157,7 @@ function App() {
       }
 
       form.reset()
+      // The import changed IndexedDB, so the history component must reload its list.
       setHistoryRevision((current) => current + 1)
       setMessage(
         `Tuonti onnistui: ${result.data.transaction_count} tapahtumaa tallennettiin selaimeen.`,

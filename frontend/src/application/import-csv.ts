@@ -29,6 +29,7 @@ export interface ImportError {
   field: CsvImportField | null
 }
 
+// A tagged result lets the UI show expected validation errors without parsing exceptions.
 export type Result<T> =
   | { ok: true; data: T }
   | { ok: false; error: ImportError }
@@ -75,6 +76,7 @@ function storageFailure(error: MenomittariStorageError): Result<never> {
   return failure('storage_error', error.message)
 }
 
+/** Read, validate, assign IDs, and save one CSV as a single local import. */
 export async function importCsv(
   file: CsvFile,
   periodStart: string,
@@ -96,6 +98,7 @@ export async function importCsv(
   }
 
   try {
+    // The domain returns validated rows; this layer adds IDs that link them to one import.
     const rows = parseImportCsv(csvText, periodStart, periodEnd)
     const importId = dependencies.createId()
     const importRecord: ImportRecord = {
@@ -117,6 +120,7 @@ export async function importCsv(
       data: { ...importRecord, transaction_count: transactions.length },
     }
   } catch (error) {
+    // Convert known failures into messages the form can display without raw CSV data.
     if (error instanceof CsvImportValidationError) {
       return failure(error.code, error.message, error.row, error.field)
     }

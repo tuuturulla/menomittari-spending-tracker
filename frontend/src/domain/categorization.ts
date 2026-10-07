@@ -12,6 +12,7 @@ function normalizeMerchant(description: string): string {
   return description.trim().replace(/\s+/gu, ' ').toLocaleLowerCase('fi-FI')
 }
 
+/** Return a stored category code from the full merchant name and transaction type. */
 export function categorizeTransaction(
   description: string,
   kind: TransactionKind,

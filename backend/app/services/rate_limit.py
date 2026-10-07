@@ -1,3 +1,5 @@
+"""Track failed logins in a rolling time window for this backend process."""
+
 from collections import defaultdict, deque
 from math import ceil
 from threading import Lock
@@ -37,6 +39,7 @@ class LoginRateLimiter:
             self._attempts.pop(key, None)
 
     def _active_attempts(self, key: str) -> deque[float]:
+        """Discard failures older than the current window before counting them."""
         attempts = self._attempts[key]
         cutoff = self._clock() - self.window_seconds
         while attempts and attempts[0] <= cutoff:

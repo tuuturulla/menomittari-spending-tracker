@@ -19,6 +19,7 @@ def normalize_email(email: str) -> str:
 
 
 def hash_password(password: str) -> str:
+    """Turn a password into a slow verification hash for the user table."""
     return _password_hash.hash(password)
 
 
@@ -31,6 +32,7 @@ def create_secret_token() -> str:
 
 
 def hash_token(token: str) -> str:
+    """Create the SHA-256 lookup key stored instead of the secret session token."""
     return sha256(token.encode("utf-8")).hexdigest()
 
 

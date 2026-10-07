@@ -13,6 +13,7 @@ from app.services.rate_limit import LoginRateLimiter
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
+    """Assemble the API and shared services for one backend process."""
     runtime_settings = settings or load_settings()
     engine = create_database_engine(runtime_settings.database_url)
 

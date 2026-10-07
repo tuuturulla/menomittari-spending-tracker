@@ -1,3 +1,4 @@
+/** Keep the allowed transaction kinds and category names in one shared vocabulary. */
 export const TRANSACTION_KINDS = [
   'expense',
   'income',
@@ -13,6 +14,7 @@ export const CATEGORY_CODES = [
   'unknown',
 ] as const
 
+// `as const` above lets these types accept only listed values, not any string.
 export type TransactionKind = (typeof TRANSACTION_KINDS)[number]
 export type CategoryCode = (typeof CATEGORY_CODES)[number]
 

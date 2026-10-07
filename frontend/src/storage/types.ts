@@ -14,9 +14,11 @@ export interface ImportRecord {
 export interface TransactionRecord {
   id: string
   import_id: string
+  // The source record keeps identical-looking purchases distinct within an import.
   source_row: number
   date: string
   description: string
+  // Integer cents avoid rounding changes when totals are calculated.
   amount_cents: number
   kind: TransactionKind
   category_code: CategoryCode
