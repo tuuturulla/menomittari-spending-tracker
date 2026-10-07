@@ -1,3 +1,4 @@
+/** Defines the per-user IndexedDB name and the imports and transactions stores. */
 import Dexie, { type Table } from 'dexie'
 import type { ImportRecord, TransactionRecord } from './types'
 import { isUuid } from './validation'

@@ -1,3 +1,5 @@
+"""Handle account requests, session cookies, and CSRF protection."""
+
 from collections.abc import Iterator
 from datetime import datetime, timedelta
 from hashlib import sha256

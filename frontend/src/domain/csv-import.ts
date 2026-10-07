@@ -1,3 +1,4 @@
+/** Parses supported CSV layouts into validated and categorized transactions. */
 import Papa from 'papaparse'
 import { categorizeTransaction } from './categorization'
 import { TRANSACTION_KINDS, type TransactionKind } from './transactions'

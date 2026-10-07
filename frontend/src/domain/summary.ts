@@ -1,3 +1,4 @@
+/** Calculates expense totals, category totals, and refunds from one saved period. */
 import {
   CATEGORY_CODES,
   CATEGORY_NAMES,

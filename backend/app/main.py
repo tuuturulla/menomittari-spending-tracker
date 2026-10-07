@@ -1,3 +1,5 @@
+"""Create the account API with its database, routes, CORS, and login rate limiter."""
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI

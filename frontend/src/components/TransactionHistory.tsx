@@ -1,3 +1,4 @@
+/** Shows period selection, spending totals, and paged transactions from local storage. */
 import { useEffect, useState, type ChangeEvent } from 'react'
 import {
   listHistoryImports,

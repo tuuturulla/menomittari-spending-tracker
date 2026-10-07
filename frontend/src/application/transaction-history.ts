@@ -1,3 +1,4 @@
+/** Loads saved periods and builds a full-period summary with a paged event list. */
 import { calculateSummary, type SpendingSummary } from '../domain/summary'
 import { MenomittariStorageError } from '../storage/types'
 import type { ImportRecord, TransactionRecord } from '../storage/types'

@@ -1,3 +1,5 @@
+"""Define the backend's user and session tables; financial data stays in the browser."""
+
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 

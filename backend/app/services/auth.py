@@ -1,3 +1,5 @@
+"""Provide email, password, and session-token helpers for authentication."""
+
 from datetime import datetime, timezone
 from hashlib import sha256
 from secrets import token_urlsafe

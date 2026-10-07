@@ -1,3 +1,4 @@
+/** Connects account access, local CSV imports, and transaction history on one page. */
 import { useEffect, useState, type FormEvent } from 'react'
 import './App.css'
 import { importCsv } from './application/import-csv'

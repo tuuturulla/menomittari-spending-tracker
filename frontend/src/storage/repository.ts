@@ -1,3 +1,4 @@
+/** Reads local history and saves each import atomically after overlap and size checks. */
 import { MenomittariDatabase } from './database'
 import {
   MenomittariStorageError,

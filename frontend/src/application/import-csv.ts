@@ -1,3 +1,4 @@
+/** Validates a CSV import, creates record IDs, and saves the complete batch locally. */
 import {
   CsvImportValidationError,
   parseImportCsv,

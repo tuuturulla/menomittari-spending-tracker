@@ -1,3 +1,4 @@
+/** Maps known demo merchants to categories and leaves other names unknown. */
 import type { CategoryCode, TransactionKind } from './transactions'
 
 const MERCHANT_CATEGORIES = new Map<string, CategoryCode>([
