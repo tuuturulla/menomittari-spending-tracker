@@ -1,5 +1,6 @@
 /** Shows period selection, spending totals, and paged transactions from local storage. */
 import { useEffect, useState, type ChangeEvent } from 'react'
+import { getAnalysis, type AnalysisStorage } from '../application/analysis'
 import {
   listHistoryImports,
   loadTransactionView,
@@ -9,10 +10,13 @@ import {
   type TransactionView,
 } from '../application/transaction-history'
 import { CATEGORY_NAMES, type TransactionKind } from '../domain/transactions'
+import type { Analysis } from '../domain/analysis'
 import type { ImportRecord } from '../storage/types'
+import { AnalysisPanel } from './AnalysisPanel'
+import { formatCurrency, formatDate, formatPeriod } from './format'
 
 interface TransactionHistoryProps {
-  storage: HistoryStorage
+  storage: HistoryStorage & AnalysisStorage
   refreshKey: number
 }
 
@@ -31,29 +35,19 @@ interface ViewLoad {
   error: string
 }
 
-const euroFormatter = new Intl.NumberFormat('fi-FI', {
-  style: 'currency',
-  currency: 'EUR',
-})
+interface AnalysisLoad {
+  storage: HistoryStorage & AnalysisStorage
+  refreshKey: number
+  importId: string
+  analysis: Analysis | null
+  error: string
+}
 
 const KIND_NAMES: Record<TransactionKind, string> = {
   expense: 'Meno',
   income: 'Tulo',
   refund: 'Palautus',
   transfer: 'Tilisiirto',
-}
-
-function formatCurrency(cents: number): string {
-  return euroFormatter.format(cents / 100)
-}
-
-function formatDate(isoDate: string): string {
-  const [year, month, day] = isoDate.split('-')
-  return `${Number(day)}.${Number(month)}.${year}`
-}
-
-function formatPeriod(period: ImportRecord): string {
-  return `${formatDate(period.period_start)}–${formatDate(period.period_end)}`
 }
 
 /** Render the selected page; React escapes descriptions supplied by CSV files. */
@@ -118,6 +112,7 @@ export function TransactionHistory({
   const [offset, setOffset] = useState(0)
   const [importsLoad, setImportsLoad] = useState<ImportsLoad | null>(null)
   const [viewLoad, setViewLoad] = useState<ViewLoad | null>(null)
+  const [analysisLoad, setAnalysisLoad] = useState<AnalysisLoad | null>(null)
 
   // Reload periods when the database opens or a new import increments `refreshKey`.
   useEffect(() => {
@@ -202,6 +197,31 @@ export function TransactionHistory({
     }
   }, [offset, selectedImport, storage])
 
+  // Analysis does not depend on the visible transaction page, only on the selected period.
+  useEffect(() => {
+    if (!selectedImport) {
+      return
+    }
+
+    let active = true
+    getAnalysis(storage, selectedImport.id).then((result) => {
+      if (!active) {
+        return
+      }
+      setAnalysisLoad({
+        storage,
+        refreshKey,
+        importId: selectedImport.id,
+        analysis: result.ok ? result.data : null,
+        error: result.ok ? '' : result.error.message,
+      })
+    })
+
+    return () => {
+      active = false
+    }
+  }, [refreshKey, selectedImport, storage])
+
   const selectPeriod = (event: ChangeEvent<HTMLSelectElement>) => {
     setSelectedImportId(event.target.value)
     setOffset(0)
@@ -219,6 +239,14 @@ export function TransactionHistory({
   const loadingView = selectedImport !== null && currentViewLoad === null
   const error = currentImportsLoad?.error || currentViewLoad?.error || ''
   const page = view?.transactions
+  const currentAnalysisLoad =
+    selectedImport &&
+    analysisLoad?.storage === storage &&
+    analysisLoad.refreshKey === refreshKey &&
+    analysisLoad.importId === selectedImport.id
+      ? analysisLoad
+      : null
+  const loadingAnalysis = selectedImport !== null && currentAnalysisLoad === null
   const currentPage = page ? Math.floor(page.offset / page.limit) + 1 : 1
   const pageCount = page ? Math.max(1, Math.ceil(page.total / page.limit)) : 1
 
@@ -261,6 +289,13 @@ export function TransactionHistory({
             Valittu ajanjakso: <strong>{formatPeriod(selectedImport)}</strong>
           </p>
           <SummaryPanel view={view} />
+          {loadingAnalysis && <p className="status-message">Lasketaan vertailua…</p>}
+          {currentAnalysisLoad?.error && (
+            <p className="error-message">{currentAnalysisLoad.error}</p>
+          )}
+          {currentAnalysisLoad?.analysis && (
+            <AnalysisPanel analysis={currentAnalysisLoad.analysis} periods={imports} />
+          )}
 
           <section className="transactions-section" aria-labelledby="transactions-title">
             <div className="section-heading">
