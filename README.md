@@ -19,7 +19,7 @@ Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietoj
 
 ## Projektin tila
 
-P0-01–P0-04-vaiheet ovat valmiit. P0-05-vaiheen paikallinen CSV-tuonti ja P0-06-vaiheen tapahtumanäkymä yhteenvetoineen on toteutettu ja tarkistettavana. Ajanjaksovertailu ja havainnot lisätään P0-07:ssä.
+P0-01–P0-04-vaiheet ovat valmiit. P0-05-vaiheen paikallinen CSV-tuonti, P0-06-vaiheen tapahtumanäkymä ja P0-07-vaiheen ajanjaksovertailu havaintoineen on toteutettu ja tarkistettavana. P0-08:ssa lisätään varmuuskopio ja viimeistellään esittely.
 
 ## Kehitysympäristön käynnistäminen
 
@@ -100,3 +100,4 @@ Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `
 | [P0-04-oppituntimateriaali](docs/p0-04-oppituntimateriaali.md) | IndexedDB:n, Dexien ja atomisen paikallistallennuksen työseloste |
 | [P0-05-oppituntimateriaali](docs/p0-05-oppituntimateriaali.md) | CSV-tuonnin, validoinnin ja kauppiasluokittelun työseloste |
 | [P0-06-oppituntimateriaali](docs/p0-06-oppituntimateriaali.md) | Tapahtumasivutuksen, yhteenvetolaskennan ja responsiivisen näkymän työseloste |
+| [P0-07-oppituntimateriaali](docs/p0-07-oppituntimateriaali.md) | Ajanjaksovertailun, muutosprosenttien ja havaintojen työseloste |
