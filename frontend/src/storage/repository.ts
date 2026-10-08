@@ -2,6 +2,7 @@
 import { MenomittariDatabase } from './database'
 import {
   MenomittariStorageError,
+  type AnalysisSnapshot,
   type ImportRecord,
   type TransactionRecord,
 } from './types'
@@ -135,6 +136,26 @@ export class LocalStorageRepository {
         .toArray()
     } catch (error) {
       wrapStorageError(error, 'Tapahtumia ei voitu lukea paikallisesti.')
+    }
+  }
+
+  /** Read both stores in one snapshot so comparison never mixes two database moments. */
+  async readAnalysisSnapshot(): Promise<AnalysisSnapshot> {
+    try {
+      return await this.database.transaction(
+        'r',
+        this.database.imports,
+        this.database.transactions,
+        async () => {
+          const [imports, transactions] = await Promise.all([
+            this.database.imports.toArray(),
+            this.database.transactions.toArray(),
+          ])
+          return { imports, transactions }
+        },
+      )
+    } catch (error) {
+      wrapStorageError(error, 'Analyysin tietoja ei voitu lukea paikallisesti.')
     }
   }
 }

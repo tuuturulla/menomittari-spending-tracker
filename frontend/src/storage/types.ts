@@ -24,6 +24,11 @@ export interface TransactionRecord {
   category_code: CategoryCode
 }
 
+export interface AnalysisSnapshot {
+  imports: ImportRecord[]
+  transactions: TransactionRecord[]
+}
+
 export type StorageErrorCode =
   | 'invalid_record'
   | 'import_not_found'
