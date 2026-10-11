@@ -70,6 +70,7 @@ Valmistumisen ehdot:
 - Tiedoston valinta, kokonaisen kuukauden valinta tai oman ajanjakson syöttö sekä tuontinappi toimivat yksinkertaisessa näkymässä. Kuukausivalinta näyttää oikeat alku- ja loppupäivät ennen tuontia.
 - Muoto, päivät, summat ja kokorajat tarkistetaan. Virheellinen aineisto ei tallennu osittain.
 - Sama tai päällekkäinen jakso hylätään ja virheviesti nimeää valitun sekä yhden päällekkäisen tallennetun jakson. Tiedoston sisäiset samannäköiset ostokset säilyvät erillisinä.
+- Tuonnin tulos näkyy heti tuontipainikkeen alla erottuvassa, kohdistettavassa ilmoituksessa, ei tapahtumahistorian tai uloskirjautumisen alapuolella.
 - Kiinteät kauppiassäännöt antavat oikean ryhmän; tuntematon nimi jää tunnistamattomaksi.
 
 Tarkistus: molemmat demot, lainatut kentät, ääkköset, tyhjä tai virheellinen tiedosto, väärä summa/päivä, ylitetyt rajat ja päällekkäinen jakso. Tässä kohdassa päivitetään jäljellä olevan työn aika-arvio.

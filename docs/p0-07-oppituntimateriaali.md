@@ -24,6 +24,7 @@ Talousrivejä ei lähetetä backendille. Tämä on paikallisesti tehtävää ana
 | [analysis.ts](../frontend/src/domain/analysis.ts) | Etsii vertailujakson, laskee erot ja muodostaa havainnot puhtaasti syötteistä |
 | [periods.ts](../frontend/src/domain/periods.ts) | Muodostaa kuukauden rajat ja edelliskuukauden vastaavan välin ilman paikallista aikavyöhykettä |
 | [ImportPeriodFields.tsx](../frontend/src/components/ImportPeriodFields.tsx) | Näyttää kuukausivalinnan tai omat päivät; molemmat lähettävät samat tuonnin päivämääräkentät |
+| [CsvImportForm.tsx](../frontend/src/components/CsvImportForm.tsx) | Pitää tuontikentät ja tulosilmoituksen yhdessä sekä kohdistaa uuden ilmoituksen näkyviin |
 | [summary.ts](../frontend/src/domain/summary.ts) | Laskee kummankin jakson menot samalla P0-06-säännöllä |
 | [repository.ts](../frontend/src/storage/repository.ts) | Lukee molemmat IndexedDB:n object storet samassa lukutransaktiossa |
 | [analysis.ts](../frontend/src/application/analysis.ts) | Tarkistaa tunnisteen, hakee aineiston ja palauttaa onnistumis- tai virhetuloksen |
@@ -74,6 +75,20 @@ Kuukausi- ja päiväkentät käyttävät `onInput`-tapahtumaa, jotta niiden arvo
 [saveImportWithTransactions](../frontend/src/storage/repository.ts) estää edelleen päällekkäiset tuonnit samassa kirjoitustransaktiossa. Viesti nimeää esimerkiksi uuden välin `2026-05-01–2026-05-31` ja jo tallennetun välin `2026-05-01–2026-05-15`. Se kertoo myös, ettei MVP yhdistä tai korvaa tuonteja. Tämä ei ole pankkitapahtumien duplikaattitunnistusta: kaksi samannäköistä aitoa ostosta säilyvät erillisinä.
 
 Rajoitus jää näkyväksi: jos toukokuu tuodaan kahdessa osassa, osia ei vielä koota yhdeksi kuukausiyhteenvedoksi. Kokonaista toukokuuta ei myöskään voi tuoda niiden päälle. Tämä parannus helpottaa jaksovalintaa ja vertailua, mutta ei uudista tuontimallia.
+
+## Miksi tuonnin ilmoitus siirrettiin lomakkeeseen?
+
+Päällekkäisen tuonnin esto toimi, mutta sen virheviesti näkyi pitkän tapahtumahistorian ja uloskirjautumispainikkeen jälkeen. Tuontipainiketta painava käyttäjä ei välttämättä nähnyt ilmoitusta, joten toiminto vaikutti hiljaisesti epäonnistuvalta. Kyse oli palautteen sijainnista, ei tallennuksen tarkistusvirheestä.
+
+[App.tsx](../frontend/src/App.tsx) pitää nyt tuonnin `importError`- ja `importMessage`-tilat erillään kirjautumisen ilmoituksista. [CsvImportForm](../frontend/src/components/CsvImportForm.tsx) kokoaa aiemmat tuontikentät omaksi näkymäkomponentikseen ja näyttää tuloksen heti tuontipainikkeen alla, ennen historiaa. Virhe näkyy punertavassa laatikossa otsikolla *Tuonti estettiin*, onnistuminen vihertävässä laatikossa. Samalla säilyy varsinainen syy, esimerkiksi molemmat päällekkäiset ajanjaksot. Tuontisäännöt ja tallennettu historia eivät muutu.
+
+Koodinlukukohta on `feedbackRef.current?.focus()`: `useRef` säilyttää viitteen ilmoituksen HTML-elementtiin, `useEffect` suoritetaan ilmoituksen päivityttyä ja `focus()` kohdistaa elementin sekä tuo sen selaimen näkymään. `?.` jättää kutsun tekemättä, jos elementtiä ei vielä ole. `tabIndex={-1}` sallii ohjelmallisen kohdistuksen lisäämättä laatikkoa tavalliseen Tab-kiertoon. Virheen `role="alert"` ja onnistumisen `role="status"` auttavat myös ruudunlukijaa tunnistamaan ilmoituksen.
+
+[CsvImportForm.test.tsx](../frontend/src/components/CsvImportForm.test.tsx) tarkistaa ilmoituksen sijainnin lomakkeen HTML:ssä, roolit ja sen, ettei onnistumisviesti näy virheen rinnalla. Nämä testit eivät yksin todista vieritystä tai Reactin tapahtumankäsittelyä. Siksi lisäksi kokeiltiin varsinaista App-näkymää eristetyssä Codexin sisäisessä selaimessa portissa 5174. Testi käytti fiktiivisiä CSV:itä, muistissa toimivaa `fake-indexeddb`-kantaa ja korvattua kirjautumisrajapintaa, ei käyttäjän historiaa tai backend-pyyntöjä.
+
+Selaimessa tarkistettiin koko heinäkuun tuonti jo tallennetun 1.–15.7. jakson päälle, saman huhtikuun uudelleentuonti, virheellinen CSV-otsikko ja onnistunut erillisen jakson tuonti. Ilmoitus kohdistui ja tuli kokonaan näkyviin heti painikkeen alla. Hylätyt tuonnit eivät lisänneet historiaan jaksoja, onnistunut tuonti päivitti historian ja nollasi jaksovalinnan. Väliaikaiset koetiedostot ja testipalvelin poistettiin tarkistuksen jälkeen. Tämä rajattu tarkistus ei korvaa P0-08:n koko käyttökulun ja varmuuskopion testausta.
+
+Korjauksen tarkistus 11.10.2026: kaikki 96 frontend-testiä 17 tiedostossa läpäisivät Dockerissa. Tyyppitarkistus ja julkaisutiedostojen kokoaminen onnistuivat, lint ilmoitti 0 virhettä ja 0 varoitusta. Uusia riippuvuuksia ei lisätty eikä backendin koodia muutettu.
 
 ## Miten raha ja prosentti lasketaan?
 
@@ -174,4 +189,4 @@ Käytä uutta fiktiivistä demokäyttäjää, jos vanhat versiot on jo tuotu. P�
 
 Käytä vain fiktiivisiä demoja. P0-08:ssa tehdään varmuuskopio ja kirjataan koko sovelluksen käyttötesti oikeassa selaimessa, myös 390 pikselin näkymässä. P0-07 ei lisää kaavioita, kuukausien pituuden normalisointia, tuontien yhdistelyä eikä palvelinpuolista analyysiä. Tuotetavoitteeseen nähden jäljellä olevat erot on kuvattu [MVP-arviossa](mvp-arvio.md).
 
-P0-07 luovutetaan tarkistettavaksi; käyttäjä hyväksyy ja yhdistää tehtävähaaran. Visuaalisen ilmeen suunnittelua jatketaan tämän osuuden jälkeen. Vertailun pylväät, tiedon hierarkia ja mahdollinen maskotti kannattaa toteuttaa erillisenä rajattuna ulkoasutyönä, jotta P0-08 pysyy varmuuskopioinnin ja käyttökulun todentamisen kokonaisuutena. Tässä vaiheessa ei muutettu ulkoasua.
+P0-07 luovutetaan tarkistettavaksi; käyttäjä hyväksyy ja yhdistää tehtävähaaran. Visuaalisen ilmeen suunnittelua jatketaan tämän osuuden jälkeen. Vertailun pylväät, tiedon hierarkia ja mahdollinen maskotti kannattaa toteuttaa erillisenä rajattuna ulkoasutyönä, jotta P0-08 pysyy varmuuskopioinnin ja käyttökulun todentamisen kokonaisuutena. Tuontipalautteen näkyvyys korjattiin tässä vaiheessa, mutta kokonaisilmettä ei uudistettu.

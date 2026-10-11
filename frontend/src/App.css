@@ -359,6 +359,41 @@ button:disabled {
   line-height: 1.55;
 }
 
+/* Import results stay next to the action instead of disappearing below the history. */
+.import-feedback {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  border: 1px solid;
+  border-radius: 0.65rem;
+  scroll-margin-block: 1rem;
+}
+
+.import-error {
+  color: #842323;
+  border-color: #d49a9a;
+  background: #fff1f1;
+}
+
+.import-success {
+  color: #21634f;
+  border-color: #adc8bc;
+  background: #edf7f2;
+}
+
+.import-feedback p {
+  margin: 0;
+  color: inherit;
+}
+
+.import-feedback strong + p {
+  margin-top: 0.35rem;
+}
+
+.import-feedback:focus {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
 .date-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;

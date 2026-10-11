@@ -11,7 +11,8 @@ import {
   type PublicUser,
 } from './auth-api'
 import { TransactionHistory } from './components/TransactionHistory'
-import { ImportPeriodFields, type ImportPeriodSelection } from './components/ImportPeriodFields'
+import { CsvImportForm } from './components/CsvImportForm'
+import { type ImportPeriodSelection } from './components/ImportPeriodFields'
 import {
   createLocalStorage,
   type LocalStorageRepository,
@@ -35,6 +36,9 @@ function App() {
   const [historyRevision, setHistoryRevision] = useState(0)
   const [message, setMessage] = useState('Tarkistetaan kirjautumistila…')
   const [error, setError] = useState('')
+  // Import feedback belongs to its form, not to the account controls below the history.
+  const [importMessage, setImportMessage] = useState('')
+  const [importError, setImportError] = useState('')
   // Never show a previous account's local database while a different user is active.
   const currentStorage = openedStorage?.owner === user ? openedStorage.repository : null
 
@@ -118,6 +122,8 @@ function App() {
     try {
       await logout()
       setUser(null)
+      setImportMessage('')
+      setImportError('')
       setMessage('Olet kirjautunut ulos.')
     } catch (caughtError) {
       setError(
@@ -132,9 +138,11 @@ function App() {
 
   const submitImport = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    setImportError('')
+    setImportMessage('')
     const storage = currentStorage
     if (!storage) {
-      setError('Paikallinen tallennus ei ole vielä valmis.')
+      setImportError('Paikallinen tallennus ei ole vielä valmis.')
       return
     }
 
@@ -142,13 +150,11 @@ function App() {
     const formData = new FormData(form)
     const file = formData.get('csv_file')
     if (!(file instanceof File) || file.size === 0) {
-      setError('Valitse tuotava CSV-tiedosto.')
+      setImportError('Valitse tuotava CSV-tiedosto.')
       return
     }
 
     setImportBusy(true)
-    setError('')
-    setMessage('')
     try {
       const result = await importCsv(
         file,
@@ -158,7 +164,7 @@ function App() {
       )
       if (!result.ok) {
         const rowPrefix = result.error.row ? `Tietue ${result.error.row}: ` : ''
-        setError(`${rowPrefix}${result.error.message}`)
+        setImportError(`${rowPrefix}${result.error.message}`)
         return
       }
 
@@ -166,7 +172,7 @@ function App() {
       setImportPeriod(EMPTY_IMPORT_PERIOD)
       // The import changed IndexedDB, so the history component must reload its list.
       setHistoryRevision((current) => current + 1)
-      setMessage(
+      setImportMessage(
         `Tuonti onnistui: ${result.data.transaction_count} tapahtumaa tallennettiin selaimeen.`,
       )
     } finally {
@@ -194,36 +200,15 @@ function App() {
                 vain tähän selaimeen.
               </p>
 
-              <section className="import-card" aria-labelledby="import-title">
-                <h3 id="import-title">Tuo tapahtumat</h3>
-                <p id="import-help">
-                  Valitse Menomittarin demo-CSV tai tuettu S-Pankin
-                  tilitapahtuma-CSV ja ilmoita koko tiedoston kattama ajanjakso.
-                  Tiedosto käsitellään vain tässä selaimessa. Käytä kurssiversiossa
-                  vain fiktiivisiä tapahtumia.
-                </p>
-                <form onSubmit={submitImport} aria-describedby="import-help">
-                  <label htmlFor="csv-file">CSV-tiedosto</label>
-                  <input
-                    id="csv-file"
-                    name="csv_file"
-                    type="file"
-                    accept=".csv,text/csv"
-                    required
-                    disabled={importBusy}
-                  />
-
-                  <ImportPeriodFields
-                    selection={importPeriod}
-                    onChange={setImportPeriod}
-                    disabled={importBusy}
-                  />
-
-                  <button type="submit" disabled={!currentStorage || importBusy}>
-                    {importBusy ? 'Tuodaan…' : 'Tuo tapahtumat'}
-                  </button>
-                </form>
-              </section>
+              <CsvImportForm
+                busy={importBusy}
+                storageReady={Boolean(currentStorage)}
+                selection={importPeriod}
+                onSelectionChange={setImportPeriod}
+                onSubmit={submitImport}
+                message={importMessage}
+                error={importError}
+              />
 
               {currentStorage && (
                 <TransactionHistory
