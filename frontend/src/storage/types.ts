@@ -35,6 +35,7 @@ export type StorageErrorCode =
   | 'overlapping_period'
   | 'limit_exceeded'
   | 'storage_error'
+  | 'restore_requires_empty_database'
 
 export class MenomittariStorageError extends Error {
   readonly code: StorageErrorCode

@@ -1,4 +1,4 @@
-/** Reads local history and saves each import atomically after overlap and size checks. */
+/** Reads local history and writes CSV imports or empty-history restores atomically. */
 import { MenomittariDatabase } from './database'
 import {
   MenomittariStorageError,
@@ -6,7 +6,7 @@ import {
   type ImportRecord,
   type TransactionRecord,
 } from './types'
-import { isUuid, validateImportWrite } from './validation'
+import { isUuid, validateImportWrite, validateHistoryWrite } from './validation'
 
 const MAX_DATABASE_TRANSACTIONS = 10_000
 const MIN_STORED_DATE = '0000-01-01'
@@ -158,6 +158,30 @@ export class LocalStorageRepository {
       )
     } catch (error) {
       wrapStorageError(error, 'Analyysin tietoja ei voitu lukea paikallisesti.')
+    }
+  }
+
+  /** Restore original records only if both stores are empty at the moment of writing. */
+  async restoreEmptyHistory(snapshot: AnalysisSnapshot): Promise<void> {
+    validateHistoryWrite(snapshot)
+    try {
+      await this.database.transaction(
+        'rw', this.database.imports, this.database.transactions,
+        async () => {
+          // This check must share the write transaction: another tab may have imported meanwhile.
+          if (await this.database.imports.count() || await this.database.transactions.count()) {
+            throw new MenomittariStorageError(
+              'restore_requires_empty_database',
+              'Varmuuskopio voidaan palauttaa vain tyhjään historiaan. Nykyisiä tietoja ei korvata.',
+            )
+          }
+          // Any failure aborts both inserts, leaving the destination completely empty.
+          await this.database.imports.bulkAdd(snapshot.imports)
+          await this.database.transactions.bulkAdd(snapshot.transactions)
+        },
+      )
+    } catch (error) {
+      wrapStorageError(error, 'Varmuuskopion palautus epäonnistui. Historiaa ei muutettu.')
     }
   }
 }

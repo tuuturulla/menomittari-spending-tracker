@@ -3,13 +3,13 @@ import {
   MenomittariStorageError,
   type ImportRecord,
   type TransactionRecord,
+  type AnalysisSnapshot,
 } from './types'
 import { CATEGORY_CODES, TRANSACTION_KINDS } from '../domain/transactions'
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
-const UTC_TIMESTAMP_PATTERN = /Z$/
 const MAX_IMPORT_TRANSACTIONS = 5_000
 const MAX_AMOUNT_CENTS = 100_000_000
 
@@ -29,8 +29,13 @@ function isCalendarDate(value: string): boolean {
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value
 }
 
-function isUtcTimestamp(value: string): boolean {
-  return UTC_TIMESTAMP_PATTERN.test(value) && Number.isFinite(Date.parse(value))
+export function isUtcTimestamp(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(value)) {
+    return false
+  }
+  const parsed = new Date(value)
+  // Date parsing can normalize impossible dates; do not accept that as valid backup data.
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 19) === value.slice(0, 19)
 }
 
 function validateImportRecord(record: ImportRecord): void {
@@ -58,7 +63,7 @@ function validateTransactionRecord(
   if (record.import_id !== parent.id) {
     invalid('Tapahtuma viittaa väärään tuontiin.')
   }
-  if (!Number.isInteger(record.source_row) || record.source_row < 2) {
+  if (!Number.isSafeInteger(record.source_row) || record.source_row < 2) {
     invalid('Tapahtuman lähderivin pitää olla kokonaisluku vähintään 2.')
   }
   if (
@@ -102,6 +107,48 @@ function validateTransactionRecord(
     record.category_code !== 'unknown'
   ) {
     invalid('Tulo ja tilisiirto tallennetaan unknown-kategorialla.')
+  }
+}
+
+/** Validate a whole history, including links and uniqueness across separate imports. */
+export function validateHistoryWrite(snapshot: AnalysisSnapshot): void {
+  if (snapshot.transactions.length > 10_000 || snapshot.imports.length > 10_000) {
+    invalid('Historian 10 000 tapahtuman raja ylittyy.')
+  }
+  const imports = new Map<string, ImportRecord>()
+  const importIds = new Set<string>()
+  const transactionIds = new Set<string>()
+  const grouped = new Map<string, TransactionRecord[]>()
+  for (const record of snapshot.imports) {
+    validateImportRecord(record)
+    const identity = record.id.toLowerCase()
+    if (importIds.has(identity)) {
+      invalid('Tuontitunniste ei saa toistua historiassa.')
+    }
+    importIds.add(identity)
+    imports.set(record.id, record)
+    grouped.set(record.id, [])
+  }
+  for (const record of snapshot.transactions) {
+    if (!imports.has(record.import_id)) {
+      invalid('Tapahtumalta puuttuu sitä vastaava tuonti.')
+    }
+    const identity = record.id.toLowerCase()
+    if (transactionIds.has(identity)) {
+      invalid('Tapahtumatunniste ei saa toistua historiassa.')
+    }
+    transactionIds.add(identity)
+    grouped.get(record.import_id)!.push(record)
+  }
+  for (const record of snapshot.imports) {
+    validateImportWrite(record, grouped.get(record.id)!)
+  }
+  // Sorting a copy preserves the backup's arrays while detecting every intersecting pair.
+  const sorted = [...snapshot.imports].sort((a, b) => a.period_start.localeCompare(b.period_start))
+  for (let index = 1; index < sorted.length; index++) {
+    if (sorted[index - 1].period_end >= sorted[index].period_start) {
+      invalid('Historian tuontijaksot eivät saa mennä päällekkäin.')
+    }
   }
 }
 
