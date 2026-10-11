@@ -58,7 +58,7 @@ muutos = 14 500 − 9 000 = +5 500 senttiä = +55,00 €
 prosentti = 100 × 5 500 / 9 000 = +61,11 %
 ```
 
-Prosentti pyöristetään kahteen desimaaliin. Kun aiemmat menot ovat nolla, jakaminen nollalla ei ole mahdollista: `delta_percent` on `null`, ja näkymä sanoo *Ei laskettavissa*. Esimerkiksi nousua `0 € → 15 €` ei kuvata äärettömänä prosenttina. Negatiivinen muutos tarkoittaa pienempää menosummaa, ei automaattisesti todellista säästöä.
+Prosentti pyöristetään kahteen desimaaliin. Kun aiemmat menot ovat nolla, jakaminen nollalla ei ole mahdollista: `delta_percent` on `null`. Näkymä kertoo silloin `0 € → 0 €` -tapauksessa *ei muutosta* ja `0 € → 15 €` -tapauksessa euromääräisen muutoksen sekä *uusi meno*, mutta ei esitä keksittyä kasvuprosenttia. Negatiivinen muutos tarkoittaa pienempää menosummaa, ei automaattisesti todellista säästöä.
 
 Kummankin jakson `expense`-rivit lasketaan [calculateSummary](../frontend/src/domain/summary.ts)-funktiolla. Palautukset pysyvät erillään, eivätkä tulot tai tilisiirrot kasvata menoja. Kaikki viisi menoryhmää ovat vertailussa mukana, myös nollasummaisina ja `unknown`. Vertailurivit järjestetään kategoriakoodin mukaan.
 

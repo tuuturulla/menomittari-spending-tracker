@@ -30,7 +30,7 @@ describe('analysis panel', () => {
     expect(html).not.toContain('Menojen muutos')
   })
 
-  it('shows previous and current amounts, a signed change, and an undefined percentage', () => {
+  it('calls a zero-to-positive change new spending without an undefined percentage', () => {
     const analysis = analyzePeriods(may, [may, april], [expense('may', 1_500)])
     const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} periods={[may, april]} />)
 
@@ -38,7 +38,20 @@ describe('analysis panel', () => {
     expect(html).toContain('1.5.2026–30.5.2026')
     expect(html).toContain('15,00')
     expect(html).toContain('+15,00')
-    expect(html).toContain('Ei laskettavissa')
+    expect(html).toContain('uusi meno')
+    expect(html).not.toContain('Ei laskettavissa')
     expect(html).toContain('Kokonaismenot kasvoivat.')
+  })
+
+  it('calls an unchanged zero category no change and keeps defined percentages', () => {
+    const analysis = analyzePeriods(may, [may, april], [
+      expense('april', 1_000),
+      expense('may', 1_500),
+    ])
+    const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} periods={[may, april]} />)
+
+    expect(html).toContain('ei muutosta')
+    expect(html).toContain('+50,00 %')
+    expect(html).not.toContain('Ei laskettavissa')
   })
 })

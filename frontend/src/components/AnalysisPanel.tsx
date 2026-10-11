@@ -15,6 +15,18 @@ const BLOCKED_MESSAGES: Record<Exclude<ComparisonStatus, 'comparable'>, string> 
 }
 
 function ChangeLine({ values }: { values: ChangeValues }) {
+  // A zero baseline has no percentage; describe the visible change instead.
+  if (values.previous_cents === 0) {
+    return (
+      <span>
+        Aiemmin {formatCurrency(0)} → nyt {formatCurrency(values.current_cents)} ·{' '}
+        {values.current_cents === 0
+          ? 'ei muutosta'
+          : `muutos ${formatSignedCurrency(values.delta_cents)} (uusi meno)`}
+      </span>
+    )
+  }
+
   return (
     <span>
       Aiemmin {formatCurrency(values.previous_cents)} → nyt{' '}
