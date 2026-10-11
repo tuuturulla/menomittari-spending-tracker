@@ -29,7 +29,7 @@ function transaction(
 describe('period comparison and insights', () => {
   it('matches both demo periods and emits the three agreed insights in order', () => {
     const april = period('april', '2026-04-01', '2026-04-30')
-    const may = period('may', '2026-05-01', '2026-05-30')
+    const may = period('may', '2026-05-01', '2026-05-31')
     const rows = [
       ...parseImportCsv(aprilCsv, april.period_start, april.period_end)
         .map((row) => ({ ...row, import_id: april.id })),

@@ -1,8 +1,10 @@
 date;description;amount;kind
 2026-05-03;Demo Market;-45.00;expense
 2026-05-03;Demo Market;-45.00;expense
-2026-05-08;Demo Cafe;-40.00;expense
+2026-05-01;Demo Cafe;-20.00;expense
 2026-05-12;Demo Stream;-15.00;expense
 2026-05-15;Demo Salary;+2000.00;income
 2026-05-18;Demo Transfer;-100.00;transfer
 2026-05-22;Demo Market;+5.00;refund
+2026-05-31;Demo Cafe;-15.00;expense
+2026-05-30;Demo Kioski;-5.00;expense

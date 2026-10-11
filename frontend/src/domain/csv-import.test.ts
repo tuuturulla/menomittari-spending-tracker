@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest'
 import aprilCsv from '../../tests/fixtures/demo-2026-04.csv?raw'
 import mayCsv from '../../tests/fixtures/demo-2026-05.csv?raw'
 import sPankkiCsv from '../../tests/fixtures/s-pankki-demo-2026-06.csv?raw'
+import sPankkiHalfCsv from '../../tests/fixtures/s-pankki-demo-2026-07-half.csv?raw'
 import { CsvImportValidationError, parseImportCsv } from './csv-import'
+import { calculateSummary } from './summary'
 
 function validationError(action: () => unknown): CsvImportValidationError {
   try {
@@ -17,10 +19,10 @@ function validationError(action: () => unknown): CsvImportValidationError {
 describe('CSV import domain', () => {
   it('parses both fictional demo periods with the expected categories and totals', () => {
     const april = parseImportCsv(aprilCsv, '2026-04-01', '2026-04-30')
-    const may = parseImportCsv(mayCsv, '2026-05-01', '2026-05-30')
+    const may = parseImportCsv(mayCsv, '2026-05-01', '2026-05-31')
 
-    expect(april).toHaveLength(7)
-    expect(may).toHaveLength(7)
+    expect(april).toHaveLength(9)
+    expect(may).toHaveLength(9)
     expect(
       april.filter((row) => row.kind === 'expense').reduce(
         (sum, row) => sum + row.amount_cents,
@@ -69,7 +71,8 @@ describe('CSV import domain', () => {
   it('recognizes the S-Pankki field layout and normalizes fictional transactions', () => {
     const rows = parseImportCsv(sPankkiCsv, '2026-06-01', '2026-06-30')
 
-    expect(rows).toMatchObject([
+    expect(rows).toHaveLength(9)
+    expect(rows.slice(0, 3)).toMatchObject([
       {
         source_row: 2,
         date: '2026-06-02',
@@ -95,6 +98,46 @@ describe('CSV import domain', () => {
         category_code: 'unknown',
       },
     ])
+  })
+
+  // Keep every public demo small, but cover real import and comparison boundaries.
+  it.each([
+    { name: 'April', csv: aprilCsv, start: '2026-04-01', end: '2026-04-30',
+      expenses: 9_000, refunds: 500, firstHalf: 7_500, firstDay: 1_000, lastDay: 500 },
+    { name: 'May', csv: mayCsv, start: '2026-05-01', end: '2026-05-31',
+      expenses: 14_500, refunds: 500, firstHalf: 12_500, firstDay: 2_000, lastDay: 1_500 },
+    { name: 'June', csv: sPankkiCsv, start: '2026-06-01', end: '2026-06-30',
+      expenses: 12_500, refunds: 0, firstHalf: 9_500, firstDay: 750, lastDay: 500 },
+    { name: 'July half-month', csv: sPankkiHalfCsv, start: '2026-07-01', end: '2026-07-15',
+      expenses: 9_000, refunds: 0, firstHalf: 9_000, firstDay: 500, lastDay: 1_000 },
+  ])('keeps the $name fixture balanced and hand-checkable', (demo) => {
+    const rows = parseImportCsv(demo.csv, demo.start, demo.end)
+    const summary = calculateSummary(
+      { id: demo.name, period_start: demo.start, period_end: demo.end }, rows,
+    )
+    const expensesOn = (matches: (date: string) => boolean) => -rows
+      .filter((row) => row.kind === 'expense' && matches(row.date))
+      .reduce((sum, row) => sum + row.amount_cents, 0)
+
+    expect(rows).toHaveLength(9)
+    expect(summary).toMatchObject({ expense_cents: demo.expenses, refund_cents: demo.refunds })
+    expect(summary.categories.find((item) => item.category_code === 'unknown')?.expense_cents)
+      .toBe(500)
+    expect(rows.filter((row) => row.kind === 'income').map((row) => row.amount_cents))
+      .toEqual([200_000])
+    expect(expensesOn((date) => date.slice(8) <= '15')).toBe(demo.firstHalf)
+    expect(expensesOn((date) => date === demo.start)).toBe(demo.firstDay)
+    expect(expensesOn((date) => date === demo.end)).toBe(demo.lastDay)
+
+    // Two same-day, same-amount purchases are valid rows, not accidental duplicates.
+    const marketPurchases = rows.filter((row) =>
+      row.description === 'Demo Market' && row.kind === 'expense',
+    )
+    const matchingPurchases = marketPurchases.filter((row) =>
+      row.date === marketPurchases[0].date && row.amount_cents === marketPurchases[0].amount_cents,
+    )
+    expect(matchingPurchases).toHaveLength(2)
+    expect(new Set(rows.map((row) => row.source_row)).size).toBe(9)
   })
 
   it('does not guess an S-Pankki layout when the complete header does not match', () => {

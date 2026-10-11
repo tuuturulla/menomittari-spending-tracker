@@ -15,8 +15,8 @@ describe('spending summary', () => {
       parseImportCsv(aprilCsv, '2026-04-01', '2026-04-30'),
     )
     const may = calculateSummary(
-      period('may', '2026-05-01', '2026-05-30'),
-      parseImportCsv(mayCsv, '2026-05-01', '2026-05-30'),
+      period('may', '2026-05-01', '2026-05-31'),
+      parseImportCsv(mayCsv, '2026-05-01', '2026-05-31'),
     )
 
     expect(april).toMatchObject({ expense_cents: 9_000, refund_cents: 500 })
@@ -24,9 +24,9 @@ describe('spending summary', () => {
     expect(april.categories).toEqual([
       { category_code: 'groceries', name: 'Ruokakauppa', expense_cents: 6_000 },
       { category_code: 'dining', name: 'Ravintolat', expense_cents: 2_000 },
-      { category_code: 'transport', name: 'Liikenne', expense_cents: 1_000 },
+      { category_code: 'transport', name: 'Liikenne', expense_cents: 500 },
+      { category_code: 'unknown', name: 'Tunnistamattomat', expense_cents: 500 },
       { category_code: 'subscriptions', name: 'Tilaukset', expense_cents: 0 },
-      { category_code: 'unknown', name: 'Tunnistamattomat', expense_cents: 0 },
     ])
   })
 

@@ -37,7 +37,7 @@ describe('transaction history integration', () => {
     const mayImport = await importCsv(
       new Blob([mayCsv]),
       '2026-05-01',
-      '2026-05-30',
+      '2026-05-31',
       storage,
       dependencies,
     )

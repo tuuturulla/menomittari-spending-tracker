@@ -14,13 +14,13 @@ afterEach(async () => {
 })
 
 describe('CSV import with local storage', () => {
-  it('stores the demo as one import and seven separate transactions', async () => {
+  it('stores the demo as one import and nine separate transactions', async () => {
     const storage = createLocalStorage(USER_ID)
     await storage.open()
     const ids = [
       IMPORT_ID,
       ...Array.from(
-        { length: 7 },
+        { length: 9 },
         (_, index) =>
           `20000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
       ),
@@ -38,9 +38,9 @@ describe('CSV import with local storage', () => {
         },
       )
 
-      expect(result).toMatchObject({ ok: true, data: { transaction_count: 7 } })
+      expect(result).toMatchObject({ ok: true, data: { transaction_count: 9 } })
       await expect(storage.listImports()).resolves.toHaveLength(1)
-      await expect(storage.listTransactions(IMPORT_ID)).resolves.toHaveLength(7)
+      await expect(storage.listTransactions(IMPORT_ID)).resolves.toHaveLength(9)
     } finally {
       storage.close()
     }

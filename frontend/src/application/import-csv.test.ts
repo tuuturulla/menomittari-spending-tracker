@@ -5,7 +5,7 @@ import { importCsv, type CsvFile, type ImportStorage } from './import-csv'
 
 const IMPORT_ID = '10000000-0000-4000-8000-000000000001'
 const TRANSACTION_IDS = Array.from(
-  { length: 7 },
+  { length: 9 },
   (_, index) => `20000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
 )
 
@@ -35,11 +35,11 @@ describe('CSV import application service', () => {
         period_start: '2026-04-01',
         period_end: '2026-04-30',
         created_at: '2026-10-05T08:00:00.000Z',
-        transaction_count: 7,
+        transaction_count: 9,
       },
     })
     expect(saveImportWithTransactions).toHaveBeenCalledOnce()
-    expect(saveImportWithTransactions.mock.calls[0][1]).toHaveLength(7)
+    expect(saveImportWithTransactions.mock.calls[0][1]).toHaveLength(9)
     expect(saveImportWithTransactions.mock.calls[0][1][0]).toMatchObject({
       id: TRANSACTION_IDS[0],
       import_id: IMPORT_ID,

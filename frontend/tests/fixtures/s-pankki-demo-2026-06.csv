@@ -2,3 +2,9 @@ Kirjauspäivä;Maksupäivä;Summa;Tapahtumalaji;Maksaja;Saajan nimi;Saajan tilin
 2.6.2026;1.6.2026;-30,00;Korttiosto;;Demo Market;DEMO-TILI;DEMO-BIC;;;DEMO-ARKISTO-001
 05.06.2026;05.06.2026;-12,50;Korttiosto;;;;;;Demo Cafe;DEMO-ARKISTO-002
 15.6.2026;15.6.2026;+2000,00;Tilisiirto;Demo Employer;;;;;Demo salary;DEMO-ARKISTO-003
+2.6.2026;1.6.2026;-30,00;Korttiosto;;Demo Market;DEMO-TILI;DEMO-BIC;;;DEMO-ARKISTO-004
+1.6.2026;1.6.2026;-7,50;Korttiosto;;Demo Cafe;DEMO-TILI;DEMO-BIC;;;DEMO-ARKISTO-005
+15.6.2026;15.6.2026;-15,00;Korttiosto;;Demo Stream;DEMO-TILI;DEMO-BIC;;;DEMO-ARKISTO-006
+16.6.2026;16.6.2026;-5,00;Korttiosto;;Demo Bus;DEMO-TILI;DEMO-BIC;;;DEMO-ARKISTO-007
+30.6.2026;30.6.2026;-5,00;Korttiosto;;Demo Kioski;DEMO-TILI;DEMO-BIC;;;DEMO-ARKISTO-008
+20.6.2026;20.6.2026;-20,00;Korttiosto;;Demo Market;DEMO-TILI;DEMO-BIC;;;DEMO-ARKISTO-009
