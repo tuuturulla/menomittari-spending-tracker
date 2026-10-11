@@ -142,13 +142,13 @@ Erillistä kaaviokirjastoa tai vaakasuunnassa vieritettävää taulukkoa ei tarv
 
 1. Käynnistä Docker-palvelut ja kirjaudu fiktiivisellä testikäyttäjällä.
 2. Tuo [huhtikuun demo](../frontend/tests/fixtures/demo-2026-04.csv) ajalle `2026-04-01–2026-04-30`.
-3. Tarkista menot `90,00 €`, palautukset `5,00 €` ja seitsemän tapahtumaa.
-4. Tuo [toukokuun demo](../frontend/tests/fixtures/demo-2026-05.csv) ajalle `2026-05-01–2026-05-30`.
+3. Tarkista menot `90,00 €`, palautukset `5,00 €` ja yhdeksän tapahtumaa.
+4. Tuo [toukokuun demo](../frontend/tests/fixtures/demo-2026-05.csv) ajalle `2026-05-01–2026-05-31`.
 5. Uusimman jakson pitäisi valikoitua ja näyttää menot `145,00 €` sekä palautukset `5,00 €`.
 6. Vaihda valikosta huhtikuuhun ja takaisin toukokuuhun. Yhteenvedon ja tapahtumien pitää vaihtua yhdessä.
 7. Kavenna selaimen kehittäjätyökaluissa viewport 390 pikseliin ja varmista, ettei sisältö leikkaannu sivusuunnassa.
 
-Älä käytä käyttötestissä oikeaa pankkiaineistoa. Projektin testit ja esittely perustuvat fiktiivisiin CSV-tiedostoihin.
+Älä käytä käyttötestissä oikeaa pankkiaineistoa. Projektin testit ja esittely perustuvat fiktiivisiin CSV-tiedostoihin. Demot tasapainotettiin P0-07:ssa; [nykyiset odotusarvot](data-contract.md#demojen-odotusarvot) sisältävät myös pankkimuodon ja osajakson. Käytä koko päivitetyn polun kokeiluun uutta fiktiivistä demokäyttäjää, jos aiemmat jaksot on jo tuotu.
 
 ## Mitä P0-06:ssa ei tehty?
 

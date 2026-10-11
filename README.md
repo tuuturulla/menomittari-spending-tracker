@@ -14,6 +14,8 @@ Vertailuvälin pitää sisältyä kokonaan yhteen tallennettuun tuontiin. Pääl
 
 Ensimmäinen versio käyttää vain keksittyjä tapahtumia. Se lukee Menomittarin oman demomuodon sekä S-Pankin tilitapahtumaviennistä tunnetun CSV-kenttärakenteen, mutta ei PDF-tiliotteita. Pankkituen testiaineistot ovat täysin fiktiivisiä, eikä kurssiversiota ole vielä tarkoitettu oikeiden taloustietojen käsittelyyn. Koko rajaus on koottu yhteen paikkaan [projektisuunnitelman MVP:n rajaukset -osioon](docs/project-plan.md#mvpn-rajaukset).
 
+Pieni esittelypolku: tuo uudelle fiktiiviselle demokäyttäjälle huhtikuu, toukokuu ja kesäkuu 2026 kokonaisina kuukausina, sitten heinäkuun 1.–15. päivän demo omana ajanjaksona. Jokaisessa tiedostossa on yhdeksän tapahtumaa. [Tiedostot, tarkistussummat ja osajakson vertailu](docs/data-contract.md#demojen-odotusarvot) on koottu aineistokuvaukseen. Aiemmin tuodut demot eivät päivity tiedostojen muuttuessa; päällekkäistä historiaa ei korvata.
+
 ## Missä tiedot säilyvät?
 
 Tiedostot käsitellään ja taloushistoria tallennetaan omassa selaimessa. Tätä kutsutaan local-first-toteutukseksi. Tapahtumia ei lähetetä palvelimelle. Backend tallentaa erikseen vain käyttäjätilin ja kirjautumisistunnon tiedot.

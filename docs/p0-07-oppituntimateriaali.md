@@ -41,7 +41,7 @@ Sama nimi `analysis.ts` kahdessa kansiossa tarkoittaa eri vastuuta: `domain` osa
 
 Usean kuukauden yli ulottuva oma jakso käyttää [findBaseline](../frontend/src/domain/analysis.ts)-funktiota: suurin loppupäivä ennen valitun jakson alkua. Silloin estosyyt ovat järjestyksessä `no_baseline`, `different_duration` ja `gap`. Tuontijärjestys ei vaikuta kumpaankaan vertailutapaan. Päiväluku sisältää molemmat rajapäivät: `loppu − alku + 1`. UTC-kalenteripäivät estävät kesäajan kellonsiirron vaikutuksen päivien laskentaan.
 
-Alkuperäiset demojaksot `1.4.–30.4.` ja `1.5.–30.5.` toimivat edelleen: toukokuun osajakso käyttää huhtikuun päiviä 1–30. Uudessa kuukausivalinnassa toukokuun loppu on 31.5. eikä 30.5. Vanhoja tallennettuja jaksoja ei muuteta.
+Alkuperäiset jo tallennetut demojaksot `1.4.–30.4.` ja `1.5.–30.5.` toimivat edelleen: toukokuun osajakso käyttää huhtikuun päiviä 1–30. Nykyinen toukokuun CSV sisältää kuitenkin myös 31.5. tapahtuman, joten uusi demo tuodaan koko kuukaudelle. Vanhoja tallennettuja jaksoja ei muuteta.
 
 Jos vertailu estyy, `comparison.totals` on `null`, kategoriavertailu ja havainnot ovat tyhjiä. Valitun jakson `summary` lasketaan ennen estotarkistuksia, joten yhteenveto säilyy näkyvissä.
 
@@ -108,6 +108,34 @@ Fiktiivisillä demoilla näkyy kokonaismuutos `+55,00 € / +61,11 %`, Ruokakaup
 
 Käyttöliittymä tekee analyysin vain valitun jakson vaihtuessa tai onnistuneen tuonnin jälkeen, ei tapahtumalistan sivua vaihdettaessa. Reactin effect-cleanup ja tuloksen tunnisteet estävät vanhan, myöhässä valmistuneen haun näyttämisen uuden valinnan kohdalla.
 
+## Demoaineistojen tasapainotus: mitä muutettiin ja miksi?
+
+Alkuperäisissä huhti–toukokuun demoissa kaikki menot osuivat kuukauden alkupuolelle ja pankkimuodon demossa oli vain kolme tapahtumaa. Näillä tuonnin saattoi näyttää, mutta puolikkaan kuun vertailu ei havainnollistanut loppukuun menojen poissulkemista.
+
+Nyt kaikissa neljässä CSV:ssä on yhdeksän tapahtumaa. Huhti–toukokuun kokonaissummat säilyivät 90 ja 145 eurossa: ravintolamenoja jaettiin eri päiville ja pieni osa menoista siirrettiin tunnistamattomaan ryhmään. Saman päivän kaksi identtistä ruokakauppaostosta säilytettiin tarkoituksella. Tulot, tilisiirrot ja palautukset osoittavat demomuodossa, mitä ei lasketa menoihin. Pankkimuodossa on menoja ja tuloja sekä desimaalipilkun ja puuttuvan saajanimen tapauksia.
+
+Kesäkuun pankkidemoon lisättiin alku- ja loppukuun menoja. Uusi pankkimuotoinen osajakso on **1.–15.7.2026**, ei toinen kesäkuun tuonti: näin kaikki neljä tiedostoa voi tuoda samalle demokäyttäjälle ilman päällekkäisyyttä. Rajapäivien menot osoittavat, että molemmat rajat kuuluvat mukaan.
+
+Tärkeä käsin tarkistettava ketju:
+
+```text
+kesäkuun koko tuonti: 125 €
+  päivät 1–15:        95 €
+  päivät 16–30:       30 €
+heinäkuun päivät 1–15: 90 €
+
+vertailu: 90 − 95 = −5 € eli −5,26 %
+ei:       90 − 125 = −35 €
+```
+
+Tarkat tiedostot, rivimäärät, ryhmäsummat ja odotetut havainnot ovat yhdessä paikassa: [demojen odotusarvot](data-contract.md#demojen-odotusarvot). Lyhyet CSV:t ovat käsin luettavia esimerkkejä, eivät realistinen vuoden taloushistoria tai todiste säännöllisten kulujen tunnistamisesta.
+
+[csv-import.test.ts](../frontend/src/domain/csv-import.test.ts) käyttää `it.each`-taulukkoa: sama tarkistus ajetaan erikseen jokaiselle demolle. Näin yksi testi voi tarkistaa jokaisen tiedoston määrän, menosumman, rajapäivät, tunnistamattoman menon ja erilliset samannäköiset ostokset. Odotusarvot ovat tarkoituksella käsin laskettuja lukuja, eivät saman laskentafunktion tuottamia odotuksia.
+
+[analysis.integration.test.ts](../frontend/src/application/analysis.integration.test.ts) tuo kaikki neljä tiedostoa oikean tuontipalvelun kautta eristettyyn `fake-indexeddb`-kantaan. Se sulkee ja avaa yhteyden, tarkistaa kesäkuun ja heinäkuun vertailut sekä vertaa tallennettua historiaa ennen ja jälkeen analyysin. Lopuksi se yrittää tuoda koko heinäkuun aiemman osajakson päälle: virheen pitää nimetä jaksot ja historian pysyä samana. Testi ei käsittele käyttäjän selaimen tietokantaa.
+
+Sovelluksen tuotantokoodia, käyttöliittymää, pankkisovitinta tai tietokantamallia ei tarvinnut muuttaa. Tässä täydennettiin aineistoja ja testien kattavuutta, ei lisätty uutta ominaisuutta.
+
 ## Mitä testattiin?
 
 - [periods.test.ts](../frontend/src/domain/periods.test.ts) tarkistaa kuukauden loppupäivät, karkausvuoden, vuodenvaihteen, tyhjän valinnan ja olemattomat osajakson päivät.
@@ -119,7 +147,7 @@ Käyttöliittymä tekee analyysin vain valitun jakson vaihtuessa tai onnistuneen
 
 Selaintarkistus tehtiin erillisessä Codexin sisäisen selaimen komponenttiesikatselussa portissa 5174, vain fiktiivisillä riveillä ja ilman kirjautumista tai tietokantakirjoituksia. Kuukausivalinta täytti toukokuun loppupäiväksi 31.5. ja karkausvuoden helmikuun loppupäiväksi 29.2. Kuukausi → oma jakso → kuukausi säilytti valinnan, ja lomake lähetti näkyvät päivät. Osajaksovertailu näytti 1.–15.4. vastaan 1.–15.5. sekä +5 euroa / +50 %. Uusi lomake mahtui 390 pikselin leveyteen ilman vaakavieritystä. Väliaikainen esikatselu poistettiin tarkistuksen jälkeen. Tämä ei korvaa P0-08:n koko sovelluksen käyttötestiä.
 
-Tarkennuksen lopullinen tarkistus 11.10.2026: frontendin kaikki 87 testiä läpäisivät Dockerissa. Tyyppitarkistus ja julkaisutiedostojen kokoaminen onnistuivat; lint-tarkistus ilmoitti 0 virhettä ja 0 varoitusta. Backendin koodia tai tietokantamallia ei muutettu, eikä tästä tarkennuksesta kirjata uutta backendin testitulosta.
+Demoaineistojen tasapainotuksen lopullinen tarkistus 11.10.2026: frontendin kaikki 92 testiä 16 testitiedostossa läpäisivät Dockerissa. Tyyppitarkistus ja julkaisutiedostojen kokoaminen onnistuivat; lint-tarkistus ilmoitti 0 virhettä ja 0 varoitusta. Backendin koodia tai tietokantamallia ei muutettu, eikä tästä tarkennuksesta kirjata uutta backendin testitulosta. Koko sovelluksen oikean selaimen käyttötesti kuuluu edelleen P0-08:aan.
 
 Tarkistuskomennot projektikansiossa:
 
@@ -132,9 +160,16 @@ docker compose run --rm frontend pnpm build
 
 ## Kokeile itse
 
+Käytä uutta fiktiivistä demokäyttäjää, jos vanhat versiot on jo tuotu. Päällekkäinen tuonti estyy eikä vanhaa historiaa korvata; sen poistamista ei tarvita.
+
 1. Tuo [huhtikuun demo](../frontend/tests/fixtures/demo-2026-04.csv) kuukausivalinnalla huhtikuulle 2026. Päivät ovat `2026-04-01–2026-04-30`. Yhteenveto näyttää 90 euroa; vertailussa lukee, ettei aiempaa jaksoa ole.
-2. Tuo [toukokuun demo](../frontend/tests/fixtures/demo-2026-05.csv) kuukausivalinnalla toukokuulle 2026. Päivät ovat `2026-05-01–2026-05-31`. Tarkista 145 euroa, vertailu huhtikuuhun ja kolme havaintoa. Käytä demossa jo tallennettua toukokuun jaksoa, jos sellainen on: uusi päällekkäinen tuonti estyy eikä vanhaa korvata.
-3. Vaihda valintaa huhti- ja toukokuun välillä. Sivutus ei muuta vertailua, koska se vaikuttaa vain näkyviin tapahtumariveihin.
-4. Lue [change](../frontend/src/domain/analysis.ts)-funktion neljä palautettua kenttää ja etsi niitä vastaavat tekstit [AnalysisPanelista](../frontend/src/components/AnalysisPanel.tsx). Kysy itseltäsi: mistä aiempi summa tulee, mistä nykyinen, missä sentti muuttuu euroksi?
+2. Tuo [toukokuun demo](../frontend/tests/fixtures/demo-2026-05.csv) kuukausivalinnalla toukokuulle 2026. Päivät ovat `2026-05-01–2026-05-31`. Tarkista 145 euroa, vertailu huhtikuuhun ja kolme havaintoa.
+3. Tuo [kesäkuun pankkidemo](../frontend/tests/fixtures/s-pankki-demo-2026-06.csv) kokonaiselle kesäkuulle. Menot ovat 125 euroa; vertailu käyttää koko toukokuun 145 euroa.
+4. Tuo [heinäkuun osajakso](../frontend/tests/fixtures/s-pankki-demo-2026-07-half.csv) **omana ajanjaksona** `2026-07-01–2026-07-15`. Tarkista 90 euroa, vertailun aiempi summa 95 euroa ja päivät 1.–15.6. Muutos on −5 euroa / −5,26 %.
+5. Vaihda valikosta kesäkuuhun: sen koko tuonnin yhteenveto on yhä 125 euroa. Neljässä tuonnissa on yhteensä 36 tapahtumaa.
+6. Kokeile heinäkuun osajakson tiedostoa uudelleen koko heinäkuulle. Tuonti estyy ja viesti nimeää valitun sekä jo tallennetun jakson. Historia ei muutu. Tämä ei tarkoita, että osajakson tiedoston ilmoittaminen kokonaiseksi kuukaudeksi olisi oikein.
+7. Lue [change](../frontend/src/domain/analysis.ts)-funktion neljä palautettua kenttää ja etsi niitä vastaavat tekstit [AnalysisPanelista](../frontend/src/components/AnalysisPanel.tsx). Kysy itseltäsi: mistä aiempi summa tulee, mistä nykyinen, missä sentti muuttuu euroksi?
 
 Käytä vain fiktiivisiä demoja. P0-08:ssa tehdään varmuuskopio ja kirjataan koko sovelluksen käyttötesti oikeassa selaimessa, myös 390 pikselin näkymässä. P0-07 ei lisää kaavioita, kuukausien pituuden normalisointia, tuontien yhdistelyä eikä palvelinpuolista analyysiä. Tuotetavoitteeseen nähden jäljellä olevat erot on kuvattu [MVP-arviossa](mvp-arvio.md).
+
+P0-07 luovutetaan tarkistettavaksi; käyttäjä hyväksyy ja yhdistää tehtävähaaran. Visuaalisen ilmeen suunnittelua jatketaan tämän osuuden jälkeen. Vertailun pylväät, tiedon hierarkia ja mahdollinen maskotti kannattaa toteuttaa erillisenä rajattuna ulkoasutyönä, jotta P0-08 pysyy varmuuskopioinnin ja käyttökulun todentamisen kokonaisuutena. Tässä vaiheessa ei muutettu ulkoasua.

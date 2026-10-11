@@ -240,12 +240,14 @@ Käyttöliittymä voi näyttää turvallisen suomenkielisen viestin ja tietuenum
 1. Käynnistä sovellus ja kirjaudu sisään.
 2. Valitse [huhtikuun demotiedosto](../frontend/tests/fixtures/demo-2026-04.csv).
 3. Anna ajanjaksoksi `2026-04-01–2026-04-30`.
-4. Paina **Tuo tapahtumat**. Sovelluksen pitäisi ilmoittaa seitsemästä tallennetusta tapahtumasta.
+4. Paina **Tuo tapahtumat**. Sovelluksen pitäisi ilmoittaa yhdeksästä tallennetusta tapahtumasta.
 5. Avaa selaimen kehittäjätyökaluista `Application → IndexedDB → menomittari-<UUID>`.
-6. `imports`-object storessa pitäisi olla yksi tuonti ja `transactions`-object storessa seitsemän tapahtumaa.
+6. `imports`-object storessa pitäisi olla yksi tuonti ja `transactions`-object storessa yhdeksän tapahtumaa.
 7. Yritä samaa tuontia uudelleen. Sovelluksen pitää hylätä päällekkäinen jakso eikä tapahtumamäärä saa kasvaa.
-8. Valitse [toukokuun demotiedosto](../frontend/tests/fixtures/demo-2026-05.csv) ja ajanjakso `2026-05-01–2026-05-30`. Sen pitää tallentua uutena jaksona.
-9. Valitse samalla käyttäjällä [fiktiivinen S-Pankki-tiedosto](../frontend/tests/fixtures/s-pankki-demo-2026-06.csv) ja anna ajanjaksoksi `2026-06-01–2026-06-30`. Kolmen tapahtuman pitäisi tallentua uutena, aiempiin jaksoihin kuulumattomana tuontina.
+8. Valitse [toukokuun demotiedosto](../frontend/tests/fixtures/demo-2026-05.csv) ja ajanjakso `2026-05-01–2026-05-31`. Sen pitää tallentua uutena jaksona.
+9. Valitse samalla käyttäjällä [fiktiivinen S-Pankki-tiedosto](../frontend/tests/fixtures/s-pankki-demo-2026-06.csv) ja anna ajanjaksoksi `2026-06-01–2026-06-30`. Yhdeksän tapahtuman pitäisi tallentua uutena, aiempiin jaksoihin kuulumattomana tuontina.
+
+P0-07:ssa demot tasapainotettiin ja lisättiin heinäkuun osajakso. Nykyiset määrät ja koko esittelypolku ovat [demojen odotusarvoissa](data-contract.md#demojen-odotusarvot). Aiemmin tallennetut aineistot eivät muutu; käytä koko päivitetyn polun kokeiluun uutta fiktiivistä demokäyttäjää.
 
 P0-06 lisää tallennettujen jaksojen ja tapahtumien varsinaisen näkymän. P0-05 näyttää vasta tuonnin onnistumisen tai virheen.
 

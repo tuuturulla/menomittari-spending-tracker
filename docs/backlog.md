@@ -66,7 +66,7 @@ Tarkistus: erillisen testitietokannan tallennus, luku, virheellisen viitteen hyl
 
 Valmistumisen ehdot:
 
-- Mukana on kaksi Menomittarin demoaineistoa ja yksi täysin fiktiivinen S-Pankin kenttärakennetta vastaava CSV-aineisto [aineistokuvauksen](data-contract.md) säännöillä.
+- Mukana on kaksi Menomittarin demoaineistoa ja kaksi täysin fiktiivistä S-Pankin kenttärakennetta vastaavaa CSV-aineistoa, kokonainen ja puolikas kuukausi, [aineistokuvauksen](data-contract.md) säännöillä.
 - Tiedoston valinta, kokonaisen kuukauden valinta tai oman ajanjakson syöttö sekä tuontinappi toimivat yksinkertaisessa näkymässä. Kuukausivalinta näyttää oikeat alku- ja loppupäivät ennen tuontia.
 - Muoto, päivät, summat ja kokorajat tarkistetaan. Virheellinen aineisto ei tallennu osittain.
 - Sama tai päällekkäinen jakso hylätään ja virheviesti nimeää valitun sekä yhden päällekkäisen tallennetun jakson. Tiedoston sisäiset samannäköiset ostokset säilyvät erillisinä.
@@ -93,8 +93,9 @@ Valmistumisen ehdot:
 - Vertailuväli vaatii yhden sen kokonaan kattavan tallennetun tuonnin. Laskenta käyttää vain vertailuvälin tapahtumia ja näkymä näyttää todelliset laskentavälit.
 - Puuttuva kattavuus tai edelliskuukaudesta puuttuva osajakson päivämäärä estää vertailun ja syy näytetään. Usean kuukauden yli ulottuvat omat jaksot käyttävät edelleen lähintä aiempaa, yhtä pitkää ja peräkkäistä tuontia.
 - Enintään kolme havaintoa noudattaa aineistokuvauksen laskentasääntöjä ja näyttää vertailujaksot.
+- Neljä pientä demo-CSV:tä kattavat rajapäivät, samannäköiset erilliset ostokset, plusmerkkisen tulon, tunnistamattoman menon ja osajakson ulkopuolelle jäävät menot. Ne voidaan tuoda peräkkäin samalle demokäyttäjälle ilman päällekkäisyyttä.
 
-Tarkistus: +55 euroa / +61,11 %, Ruokakauppa +30 euroa / +50 % ja uusi Tilaukset-meno 15 euroa. Lisäksi yhden tuonnin tila, kokonaiset eri pituiset kuukaudet, osajakson rajapäiväsuodatus, puuttuva kattavuus, helmikuu ja karkausvuosi, vuodenvaihde, usean kuukauden jaksojen pituus/aukko, aiempi nollasumma, muuttumaton kulutus, tasatilanne ja tuonti väärässä aikajärjestyksessä.
+Tarkistus: +55 euroa / +61,11 %, Ruokakauppa +30 euroa / +50 % ja uusi Tilaukset-meno 15 euroa. Neljän demon tuontiketju tuottaa 36 tapahtumaa; heinäkuun 1.–15. päivän 90 euroa vertautuu kesäkuun samojen päivien 95 euroon, ei koko kesäkuun 125 euroon. Lisäksi yhden tuonnin tila, kokonaiset eri pituiset kuukaudet, osajakson rajapäiväsuodatus, puuttuva kattavuus, helmikuu ja karkausvuosi, vuodenvaihde, usean kuukauden jaksojen pituus/aukko, aiempi nollasumma, muuttumaton kulutus, tasatilanne, tuonti väärässä aikajärjestyksessä sekä historian säilyminen uudelleenavauksessa ja päällekkäisen tuonnin hylkäyksessä.
 
 ## P0-08: Varmuuskopio ja esittelyn viimeistely
 
