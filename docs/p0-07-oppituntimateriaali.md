@@ -2,7 +2,7 @@
 
 ## Tavoite ja lopputulos
 
-P0-07 vertaa valittua kulujaksoa sitä ajallisesti lähimpään aiempaan tuontiin. Käyttäjä näkee kokonaismenojen ja menoryhmien muutokset sekä enintään kolme sääntöihin perustuvaa havaintoa. Jos jaksot eivät ole yhtä pitkiä ja peräkkäisiä, sovellus kertoo syyn. Valitun jakson P0-06-yhteenveto näkyy silloinkin.
+P0-07 vertaa yhden kuukauden sisäistä kulujaksoa edelliskuukauden vastaavaan väliin. Käyttäjä näkee kokonaismenojen ja menoryhmien muutokset sekä enintään kolme sääntöihin perustuvaa havaintoa. Kokonaiset kuukaudet voivat olla eri pituisia. Jos vertailuväliä ei voi muodostaa tai sen kattavaa tuontia ei ole, sovellus kertoo syyn. Valitun jakson P0-06-yhteenveto näkyy silloinkin. Usean kuukauden yli ulottuville omille jaksoille säilyy alkuperäinen yhtä pitkien, peräkkäisten tuontien sääntö.
 
 ```text
 IndexedDB: imports + transactions
@@ -22,6 +22,8 @@ Talousrivejä ei lähetetä backendille. Tämä on paikallisesti tehtävää ana
 | --- | --- |
 | [data-contract.md](data-contract.md#laskenta-ja-vertailu) | Määrittää vertailun ja havaintojen säännöt ennen koodia |
 | [analysis.ts](../frontend/src/domain/analysis.ts) | Etsii vertailujakson, laskee erot ja muodostaa havainnot puhtaasti syötteistä |
+| [periods.ts](../frontend/src/domain/periods.ts) | Muodostaa kuukauden rajat ja edelliskuukauden vastaavan välin ilman paikallista aikavyöhykettä |
+| [ImportPeriodFields.tsx](../frontend/src/components/ImportPeriodFields.tsx) | Näyttää kuukausivalinnan tai omat päivät; molemmat lähettävät samat tuonnin päivämääräkentät |
 | [summary.ts](../frontend/src/domain/summary.ts) | Laskee kummankin jakson menot samalla P0-06-säännöllä |
 | [repository.ts](../frontend/src/storage/repository.ts) | Lukee molemmat IndexedDB:n object storet samassa lukutransaktiossa |
 | [analysis.ts](../frontend/src/application/analysis.ts) | Tarkistaa tunnisteen, hakee aineiston ja palauttaa onnistumis- tai virhetuloksen |
@@ -33,19 +35,45 @@ Sama nimi `analysis.ts` kahdessa kansiossa tarkoittaa eri vastuuta: `domain` osa
 
 ## Miten vertailujakso valitaan?
 
-[findBaseline](../frontend/src/domain/analysis.ts) etsii kaikista tuonneista sellaisen, jonka loppupäivä on ennen valitun jakson alkupäivää. Näistä valitaan **suurin loppupäivä** eli ajallisesti lähin aiempi jakso. Tiedostojen tuontijärjestys ei vaikuta.
+[previousMonthPeriod](../frontend/src/domain/periods.ts) muodostaa yhden kuukauden sisäiselle jaksolle edelliskuukauden vertailuvälin. `1.–15.5.` muuttuu väliksi `1.–15.4.`. Kokonainen kesäkuu muuttuu kokonaiseksi toukokuuksi, vaikka päivien lukumäärä eroaa. Karkausvuosi ja tammikuun siirtyminen edellisvuoden joulukuuhun huomioidaan. Osajaksoa ei lyhennetä automaattisesti: `1.–30.3.` ei muutu helmikuun 28 päiväksi, vaan antaa `unavailable_dates`-syyn.
 
-Esimerkiksi jos tammikuun, helmikuun ja maaliskuun tiedostot tuotiin järjestyksessä maaliskuu → tammikuu → helmikuu, maaliskuuta verrataan silti helmikuuhun. Vertailu ei valitse viimeksi tuotua tiedostoa.
+[analyzePeriods](../frontend/src/domain/analysis.ts) etsii yhden aiemman tuonnin, jonka ilmoitettu väli kattaa koko tarvittavan vertailuvälin. Jos aiempaa tuontia ei ole, syy on `no_baseline`. Jos tuonteja on mutta kattavaa ei löydy, syy on `incomplete_baseline`. Laskenta ei yhdistä erillisiä tuonteja, hyppää vanhempaan kuukauteen tai oleta puuttuvia päiviä nollamenoiksi. Käyttäjän ilmoittama kattavuus ei silti todista pankkiaineiston täydellisyyttä.
 
-Sen jälkeen tarkistetaan tässä järjestyksessä:
+Usean kuukauden yli ulottuva oma jakso käyttää [findBaseline](../frontend/src/domain/analysis.ts)-funktiota: suurin loppupäivä ennen valitun jakson alkua. Silloin estosyyt ovat järjestyksessä `no_baseline`, `different_duration` ja `gap`. Tuontijärjestys ei vaikuta kumpaankaan vertailutapaan. Päiväluku sisältää molemmat rajapäivät: `loppu − alku + 1`. UTC-kalenteripäivät estävät kesäajan kellonsiirron vaikutuksen päivien laskentaan.
 
-1. `no_baseline`: aiempaa jaksoa ei löytynyt.
-2. `different_duration`: jaksoissa on eri määrä kalenteripäiviä.
-3. `gap`: aiempi päättyy liian aikaisin, joten jaksojen väliin jää päiviä.
-
-Päiväluku sisältää sekä alkamis- että päättymispäivän: `loppu − alku + 1`. Päivät muunnetaan UTC-kalenteripäiviksi, jotta kesäajan kellonsiirto ei tekisi yhtä päivää 23- tai 25-tuntiseksi laskennassa. Demojen huhtikuu `1.4.–30.4.` ja toukokuu `1.5.–30.5.` ovat molemmat 30 päivän pituisia ja peräkkäisiä. Kokonaista kalenterikuukautta ei tässä vaadita.
+Alkuperäiset demojaksot `1.4.–30.4.` ja `1.5.–30.5.` toimivat edelleen: toukokuun osajakso käyttää huhtikuun päiviä 1–30. Uudessa kuukausivalinnassa toukokuun loppu on 31.5. eikä 30.5. Vanhoja tallennettuja jaksoja ei muuteta.
 
 Jos vertailu estyy, `comparison.totals` on `null`, kategoriavertailu ja havainnot ovat tyhjiä. Valitun jakson `summary` lasketaan ennen estotarkistuksia, joten yhteenveto säilyy näkyvissä.
+
+## Miksi tuontijakso ja laskentaväli erotettiin?
+
+Alkuperäinen yhtä pitkien ja peräkkäisten jaksojen vaatimus aiheutti käytännön kitkaa: toukokuun 31 päivää ei voinut verrata kesäkuun 30 päivään. Kuukausivalinta ehkäisee väärän loppupäivän syöttämistä, mutta osajaksovertailu tarvitsee lisäksi tapahtumien päiväsuodatuksen.
+
+Esimerkiksi huhtikuun tuonti sisältää 10 euron ostoksen 5.4. ja 90 euron ostoksen 20.4. Toukokuun valittu jakso on 1.–15.5., jolloin menot ovat 15 euroa. Vertailun aiempi summa on **10 euroa**, ei koko huhtikuun 100 euroa. Muutos on +5 euroa / +50 %. Huhtikuun tuonti ja molemmat sen tapahtumat pysyvät tietokannassa ennallaan.
+
+Oleellinen koodinlukukohta [analysis.ts:ssä](../frontend/src/domain/analysis.ts) on:
+
+```typescript
+transactions.filter((transaction) =>
+  transaction.import_id === baseline.id &&
+  transaction.date >= baselinePeriod.period_start &&
+  transaction.date <= baselinePeriod.period_end,
+)
+```
+
+`filter` säilyttää vain ne rivit, joiden ehto on tosi. `&&` tarkoittaa Pythonin `and`-operaattoria: rivin pitää kuulua oikeaan tuontiin **ja** sen päivämäärän pitää olla molempien rajojen sisällä. ISO-päiviä voi vertailla merkkijonoina, koska ne on validoitu muotoon `YYYY-MM-DD`. `calculateSummary` laskee suodatetut rivit samoilla menosäännöillä kuin ennen.
+
+`baseline_import_id` tunnistaa lähdetuonnin. Uusi `baseline_period` kertoo laskentaan käytetyt päivät, ei uutta tallennettua tuontia. [AnalysisPanel](../frontend/src/components/AnalysisPanel.tsx) näyttää tämän laskentavälin. Tämän vuoksi tietokannan skeema, CSV-rakenne ja backend eivät muuttuneet.
+
+## Mitä kuukausivalinta ja päällekkäisyysviesti tekevät?
+
+[ImportPeriodFields](../frontend/src/components/ImportPeriodFields.tsx) näyttää oletuksena kokonaisen kuukauden valinnan. [calendarMonthPeriod](../frontend/src/domain/periods.ts) täyttää todellisen ensimmäisen ja viimeisen päivän. Päivät näkyvät vain luettavina, mutta käyttäjä voi vaihtaa omaan ajanjaksoon ja muokata niitä. Kummassakin tilassa [App](../frontend/src/App.tsx) lukee `FormData`-oliosta samat `period_start`- ja `period_end`-kentät. Onnistunut tuonti nollaa myös Reactissa säilytetyn jaksovalinnan.
+
+Kuukausi- ja päiväkentät käyttävät `onInput`-tapahtumaa, jotta niiden arvo päivittyy Reactin tilaan myös selaimen oman päivämääräkentän syötössä. Tämä tarkistettiin oikeassa selaimessa; pelkkä valmiin HTML:n testaus ei todista tapahtumankäsittelyn toimivuutta.
+
+[saveImportWithTransactions](../frontend/src/storage/repository.ts) estää edelleen päällekkäiset tuonnit samassa kirjoitustransaktiossa. Viesti nimeää esimerkiksi uuden välin `2026-05-01–2026-05-31` ja jo tallennetun välin `2026-05-01–2026-05-15`. Se kertoo myös, ettei MVP yhdistä tai korvaa tuonteja. Tämä ei ole pankkitapahtumien duplikaattitunnistusta: kaksi samannäköistä aitoa ostosta säilyvät erillisinä.
+
+Rajoitus jää näkyväksi: jos toukokuu tuodaan kahdessa osassa, osia ei vielä koota yhdeksi kuukausiyhteenvedoksi. Kokonaista toukokuuta ei myöskään voi tuoda niiden päälle. Tämä parannus helpottaa jaksovalintaa ja vertailua, mutta ei uudista tuontimallia.
 
 ## Miten raha ja prosentti lasketaan?
 
@@ -82,10 +110,16 @@ Käyttöliittymä tekee analyysin vain valitun jakson vaihtuessa tai onnistuneen
 
 ## Mitä testattiin?
 
-- [analysis.test.ts](../frontend/src/domain/analysis.test.ts) tarkistaa demoarvot sekä yhden jakson, väärän tuontijärjestyksen, eri pituudet, välin, nollasta alkavan prosentin, muuttumattomuuden ja tasatilanteen.
+- [periods.test.ts](../frontend/src/domain/periods.test.ts) tarkistaa kuukauden loppupäivät, karkausvuoden, vuodenvaihteen, tyhjän valinnan ja olemattomat osajakson päivät.
+- [analysis.test.ts](../frontend/src/domain/analysis.test.ts) tarkistaa demoarvot, osajakson molemmat rajapäivät ja ulkopuolisten tapahtumien poissulkemisen, kokonaiset kuukaudet, puuttuvan kattavuuden, väärän tuontijärjestyksen sekä aiemmat prosentti- ja havaintosäännöt.
 - [analysis.test.ts](../frontend/src/application/analysis.test.ts) tarkistaa virheellisen tai puuttuvan tuontitunnisteen ja tallennusvirheen.
-- [analysis.integration.test.ts](../frontend/src/application/analysis.integration.test.ts) tuo kaksi fiktiivistä CSV:tä `fake-indexeddb`-kantaan ja tarkistaa tuloksen koko tallennuspolun läpi.
+- [analysis.integration.test.ts](../frontend/src/application/analysis.integration.test.ts) tuo fiktiivisiä CSV:itä `fake-indexeddb`-kantaan ja tarkistaa vertailun sekä sen, ettei osajakson laskenta muuta koko lähdetuonnin tapahtumia tai päivämääriä.
 - [AnalysisPanel.test.tsx](../frontend/src/components/AnalysisPanel.test.tsx) tarkistaa estosyyn sekä jaksojen, summien, etumerkin ja määrittelemättömän prosentin esityksen.
+- [ImportPeriodFields.test.tsx](../frontend/src/components/ImportPeriodFields.test.tsx) tarkistaa kuukausi- ja omien päivien kentät sekä rajauksista kertovat tekstit. [repository.test.ts](../frontend/src/storage/repository.test.ts) tarkistaa myös päällekkäisyysviestin nimeämät jaksot ja aiempien tietojen säilymisen.
+
+Selaintarkistus tehtiin erillisessä Codexin sisäisen selaimen komponenttiesikatselussa portissa 5174, vain fiktiivisillä riveillä ja ilman kirjautumista tai tietokantakirjoituksia. Kuukausivalinta täytti toukokuun loppupäiväksi 31.5. ja karkausvuoden helmikuun loppupäiväksi 29.2. Kuukausi → oma jakso → kuukausi säilytti valinnan, ja lomake lähetti näkyvät päivät. Osajaksovertailu näytti 1.–15.4. vastaan 1.–15.5. sekä +5 euroa / +50 %. Uusi lomake mahtui 390 pikselin leveyteen ilman vaakavieritystä. Väliaikainen esikatselu poistettiin tarkistuksen jälkeen. Tämä ei korvaa P0-08:n koko sovelluksen käyttötestiä.
+
+Tarkennuksen lopullinen tarkistus 11.10.2026: frontendin kaikki 87 testiä läpäisivät Dockerissa. Tyyppitarkistus ja julkaisutiedostojen kokoaminen onnistuivat; lint-tarkistus ilmoitti 0 virhettä ja 0 varoitusta. Backendin koodia tai tietokantamallia ei muutettu, eikä tästä tarkennuksesta kirjata uutta backendin testitulosta.
 
 Tarkistuskomennot projektikansiossa:
 
@@ -98,9 +132,9 @@ docker compose run --rm frontend pnpm build
 
 ## Kokeile itse
 
-1. Tuo [huhtikuun demo](../frontend/tests/fixtures/demo-2026-04.csv) jaksolle `2026-04-01–2026-04-30`. Yhteenveto näyttää 90 euroa; vertailussa lukee, ettei aiempaa jaksoa ole.
-2. Tuo [toukokuun demo](../frontend/tests/fixtures/demo-2026-05.csv) jaksolle `2026-05-01–2026-05-30`. Tarkista 145 euroa, vertailu huhtikuuhun ja kolme havaintoa.
+1. Tuo [huhtikuun demo](../frontend/tests/fixtures/demo-2026-04.csv) kuukausivalinnalla huhtikuulle 2026. Päivät ovat `2026-04-01–2026-04-30`. Yhteenveto näyttää 90 euroa; vertailussa lukee, ettei aiempaa jaksoa ole.
+2. Tuo [toukokuun demo](../frontend/tests/fixtures/demo-2026-05.csv) kuukausivalinnalla toukokuulle 2026. Päivät ovat `2026-05-01–2026-05-31`. Tarkista 145 euroa, vertailu huhtikuuhun ja kolme havaintoa. Käytä demossa jo tallennettua toukokuun jaksoa, jos sellainen on: uusi päällekkäinen tuonti estyy eikä vanhaa korvata.
 3. Vaihda valintaa huhti- ja toukokuun välillä. Sivutus ei muuta vertailua, koska se vaikuttaa vain näkyviin tapahtumariveihin.
 4. Lue [change](../frontend/src/domain/analysis.ts)-funktion neljä palautettua kenttää ja etsi niitä vastaavat tekstit [AnalysisPanelista](../frontend/src/components/AnalysisPanel.tsx). Kysy itseltäsi: mistä aiempi summa tulee, mistä nykyinen, missä sentti muuttuu euroksi?
 
-Käytä vain fiktiivisiä demoja. P0-08:ssa tehdään varmuuskopio ja kirjataan koko sovelluksen käyttötesti oikeassa selaimessa, myös 390 pikselin näkymässä. P0-07 ei lisää kaavioita, kuukausien pituuden normalisointia eikä palvelinpuolista analyysiä.
+Käytä vain fiktiivisiä demoja. P0-08:ssa tehdään varmuuskopio ja kirjataan koko sovelluksen käyttötesti oikeassa selaimessa, myös 390 pikselin näkymässä. P0-07 ei lisää kaavioita, kuukausien pituuden normalisointia, tuontien yhdistelyä eikä palvelinpuolista analyysiä. Tuotetavoitteeseen nähden jäljellä olevat erot on kuvattu [MVP-arviossa](mvp-arvio.md).

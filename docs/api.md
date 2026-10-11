@@ -22,12 +22,12 @@ getAnalysis käyttää yhtä tallennuksesta luettua aineistokokonaisuutta. Käyt
 ## Analyysin tietomuodot
 
 - Summary: import_id, period_start, period_end, expense_cents, refund_cents, categories. Kategoriarivi: category_code, name, expense_cents. Kaikki viisi mukana; järjestys summa laskevasti, sitten koodi nousevasti.
-- Comparison: status, current_import_id, baseline_import_id, totals, categories. Status on comparable tai aineistosopimuksen estävä syy.
+- Comparison: status, mode, current_import_id, baseline_import_id, current_period, baseline_period, totals, categories. Mode on previous_month yhden kuukauden sisäiselle jaksolle ja consecutive_periods usean kuukauden yli ulottuvalle jaksolle. Period sisältää period_start- ja period_end-päivät. baseline_period kertoo todellisen tai tarvittavan vertailuvälin, joka voi olla lähdetuontia lyhyempi. Se on null, jos päivämääriä ei voi muodostaa tai usean kuukauden jaksolta puuttuu aiempi tuonti. Status on comparable tai aineistosopimuksen estävä syy.
 - Totals: previous_cents, current_cents, delta_cents, delta_percent. Vertailun kategoriarivi sisältää samat arvot sekä category_code ja name; järjestys koodi nousevasti.
-- Estyneessä vertailussa totals=null ja categories=[]. baseline_import_id on null vain, kun aiempaa tuontia ei ole.
+- Estyneessä vertailussa totals=null ja categories=[]. baseline_import_id on null, kun kelvollista lähdetuontia ei löytynyt tai vastaavia päivämääriä ei ole. Muutoin se nimeää lähdetuonnin, ei uutta tietokantaan tallennettua vertailujaksoa.
 - Insight: code, current_import_id, baseline_import_id, category_code (null kokonaismuutokselle), previous_cents, current_cents, delta_cents, delta_percent, message. Järjestys on aineistosopimuksen sääntöjärjestys.
 
-Tyhjässä kannassa listImports palauttaa tyhjän listan eikä UI pyydä analyysiä. Yhdellä tuonnilla yhteenveto toimii, vertailu antaa no_baseline ja havainnot ovat tyhjä lista. Summat ovat kokonaisia senttejä ja tunnisteet UUID-merkkijonoja.
+Tyhjässä kannassa listHistoryImports palauttaa tyhjän listan eikä UI pyydä analyysiä. Yhdellä tuonnilla yhteenveto toimii; vertailu antaa yleensä no_baseline, tai unavailable_dates, jos vastaavaa päivämääräväliä ei voi muodostaa. Havainnot ovat tyhjä lista. Summat ovat kokonaisia senttejä ja tunnisteet UUID-merkkijonoja.
 
 ## Virheiden koodit
 
@@ -39,7 +39,7 @@ Tyhjässä kannassa listImports palauttaa tyhjän listan eikä UI pyydä analyys
 | invalid_csv | Merkistö, rakenne tai tapahtumakenttä virheellinen; myös tyhjä aineisto |
 | invalid_period | Virheellinen jakso tai sen ulkopuolinen tapahtuma |
 | limit_exceeded | Tapahtumien määrä ylittää sopimuksen rajan |
-| overlapping_period | Jakso on jo tuotu kokonaan tai osittain |
+| overlapping_period | Jakso on jo tuotu kokonaan tai osittain; viesti nimeää valitun ja yhden päällekkäisen tallennetun jakson |
 | invalid_backup | Varmuuskopion tiedot tai rakenne virheellisiä |
 | unsupported_backup_version | Siirtomuodon versio ei ole tuettu |
 | restore_requires_empty_database | Kohteessa on jo historiaa |

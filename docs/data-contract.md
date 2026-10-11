@@ -35,11 +35,11 @@ Negatiivinen summa muunnetaan menoksi ja positiivinen tuloksi. Pankin rakenne ei
 
 CSV on enintään 1 MiB ja 5 000 tapahtumaa. Kannassa saa olla enintään 10 000 tapahtumaa. Nämä ovat demon rajoja, eivät tietokannan kapasiteettiväitteitä. Koko tarkistetaan ennen tiedoston lukemista; tyhjä aineisto ja pelkkä otsikko hylätään.
 
-Käyttäjä antaa period_start- ja period_end-päivät, molemmat mukaan lukien. Alku ei saa ylittää loppua ja jokaisen tapahtuman kirjauspäivän tulee olla jakson sisällä. Jaksoa ei päätellä ostospäivistä. Käyttöohje edellyttää koko jakson tuontia; sovellus ei voi todistaa tiedoston täydellisyyttä.
+Käyttäjä valitsee kokonaisen kalenterikuukauden, jonka oikeat alku- ja loppupäivät täytetään automaattisesti, tai antaa omat period_start- ja period_end-päivät, molemmat mukaan lukien. Alku ei saa ylittää loppua ja jokaisen tapahtuman kirjauspäivän tulee olla jakson sisällä. Jaksoa ei päätellä ostospäivistä. Käyttöohje edellyttää koko ilmoitetun jakson tuontia; sovellus ei voi todistaa tiedoston täydellisyyttä.
 
 Koko aineisto validoidaan ennen tallennusta. Virhe ilmoittaa kentän ja tietuenumeron, ei koko sisältöä. Otsikko on tietue 1; tyhjät tietueet huomioidaan numeroinnissa, lainatun kentän sisäiset rivinvaihdot eivät kasvata numeroa. Tämä on myös source_row-kentän määritelmä.
 
-Tuontijaksot eivät saa olla miltään osin päällekkäisiä. Saman tiedoston uudelleentuonti hylätään tällä säännöllä. Tuonnin sisäiset identtiset rivit säilyvät erillisinä ostoksina. Ei osittaista yhdistelyä tai aiemman tuonnin korvaamista.
+Tuontijaksot eivät saa olla miltään osin päällekkäisiä. Saman tiedoston uudelleentuonti hylätään tällä säännöllä. Virheviesti nimeää sekä valitun jakson että yhden siihen osuvan tallennetun jakson ja kertoo, ettei MVP yhdistä tai korvaa tuonteja. Tuonnin sisäiset identtiset rivit säilyvät erillisinä ostoksina. Ei tapahtumakohtaista duplikaattien tunnistusta, osittaista yhdistelyä tai aiemman tuonnin korvaamista.
 
 ## Luokittelu
 
@@ -57,9 +57,13 @@ Vertailu poistaa reunavälit, tiivistää sisäiset välilyönnit ja ohittaa kir
 
 Menot ovat expense-rivien summan vastaluku. Ryhmittely sisältää myös unknown-menot. Refund-rivien positiivinen summa näytetään erikseen, eikä sitä vähennetä menoista. Income ja transfer eivät kuulu menoihin tai havaintoihin. Rahat lasketaan sentteinä ja esitetään euroina.
 
-Vertailujakso on ajallisesti lähin aiempi tuonti: suurin period_end ennen valitun period_startia. Tuontijärjestys ei vaikuta. Päivälaskenta käyttää kalenteripäiviä, ei paikallisen aikavyöhykkeen kesäaikavaihteluita.
+Yhden kalenterikuukauden sisäinen valittu jakso vertautuu edelliskuukauden vastaavaan väliin. Esimerkiksi 1.–15.5. vertautuu 1.–15.4. ja 5.–15.5. vertautuu 5.–15.4. Jos valittu jakso kattaa koko kuukauden, vertailuväli kattaa koko edelliskuukauden: kesäkuun 30 päivää voi verrata toukokuun 31 päivään. Summia ei normalisoida päivien määrällä. Osajakson alku- ja loppupäivän on löydyttävä edelliskuukaudesta sellaisinaan: 1.–30.3. ei lyhene automaattisesti helmikuun 28 päiväksi. Kokonainen maaliskuu sen sijaan vertautuu koko helmikuuhun, myös karkausvuonna. Tammikuun vertailu käyttää edellisvuoden joulukuuta.
 
-Vertailu edellyttää yhtä pitkiä, peräkkäisiä jaksoja. Estävä syy tarkistetaan järjestyksessä no_baseline, different_duration, gap. Yhteenveto toimii myös vertailun estyessä. Eri pituisten kuukausien normalisointia ei tehdä.
+Kuukausivertailu vaatii yhden aiemman tuonnin, jonka ilmoitettu alku on viimeistään vertailuvälin alku ja loppu aikaisintaan vertailuvälin loppu. Tuonnin on päätyttävä ennen valittua jaksoa. Tapahtumat poimitaan tästä tuonnista kirjauspäivän perusteella vain vertailuväliltä, molemmat rajapäivät mukaan lukien. Tyhjä tapahtumaväli on nollameno vain, jos ilmoitettu kattavuus sisältää sen. Puuttuvaa kattavuutta ei korvata nollilla, vanhemmalla kuukaudella tai useita tuonteja yhdistelemällä. Tuontijärjestys ei vaikuta.
+
+Kuukausivertailun estosyyt: unavailable_dates, jos vastaavia osajakson päivämääriä ei ole; muutoin no_baseline, jos aiempaa tuontia ei ole, tai incomplete_baseline, jos aiempia tuonteja on mutta yksikään ei kata koko vertailuväliä. Yhteenveto toimii myös vertailun estyessä.
+
+Usean kuukauden yli ulottuva oma jakso säilyttää alkuperäisen säännön: vertailutuonti on ajallisesti lähin aiempi tuonti eli suurin period_end ennen valitun period_startia. Jaksojen pitää olla yhtä pitkiä ja suoraan peräkkäisiä. Estosyyt tarkistetaan järjestyksessä no_baseline, different_duration, gap. Päivälaskenta käyttää UTC-kalenteripäiviä, ei paikallisen aikavyöhykkeen kesäaikavaihteluita.
 
 Muutos = nykyinen - aiempi. Prosentti = 100 × muutos / aiempi, pyöristettynä kahteen desimaaliin. Kun aiempi on nolla, prosentti on null.
 
@@ -71,7 +75,7 @@ Vertailun estyessä lista on tyhjä. Muulloin kustakin säännöstä näytetää
 2. largest_category_increase: suurin positiivinen kategoriakasvu, kun aiempi meno on yli nolla.
 3. new_category_spend: aiemmin nolla, nyt positiivinen; valitaan suurin nykyinen summa.
 
-Tasatilanteessa valitaan aakkosissa pienin kategoriakoodi. Unknown on sallittu ja nimetään tunnistamattomiksi menoiksi. Havainnot näyttävät jaksot, summat, muutoksen ja prosentit silloin kun ne ovat määriteltyjä. Ne eivät väitä ostosten syytä, hinnankorotusta tai todellista säästöä; vuosiennusteita ei tehdä.
+Tasatilanteessa valitaan aakkosissa pienin kategoriakoodi. Unknown on sallittu ja nimetään tunnistamattomiksi menoiksi. Havainnot käyttävät samaa rajattua aineistoa kuin vertailu. Näkymä näyttää todelliset laskentavälit, summat, muutoksen ja prosentit silloin kun ne ovat määriteltyjä, ei koko lähdetuonnin päivämääriä osajakson vertailuvälinä. Ne eivät väitä ostosten syytä, hinnankorotusta tai todellista säästöä; vuosiennusteita ei tehdä. Näkymä muistuttaa, että maksujen ajoitus voi vaikuttaa eroon ja kattavuus perustuu käyttäjän ilmoitukseen.
 
 ## Varmuuskopio
 
@@ -85,7 +89,7 @@ Tyhjän historian kopio on sallittu. Palautus säilyttää tunnisteet ja luokitu
 
 ## Demojen odotusarvot
 
-P0-05 tuottaa jaksot 2026-04-01–2026-04-30 ja 2026-05-01–2026-05-30, kumpikin 30 päivää.
+Alkuperäinen demopolku käyttää jaksoja 2026-04-01–2026-04-30 ja 2026-05-01–2026-05-30. Kuukausivalinnalla toukokuun voi ilmoittaa myös kokonaisena 2026-05-01–2026-05-31; esimerkkiaineiston summat eivät muutu, koska 31. päivällä ei ole tapahtumariviä. Kokonaisia kuukausia suositellaan uudessa esittelyssä. Jo tallennettuja jaksoja ei muuteta automaattisesti.
 
 | Tapahtumat euroina | Huhtikuu | Toukokuu |
 | --- | ---: | ---: |

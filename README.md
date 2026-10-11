@@ -6,10 +6,11 @@ Nykyinen MVP on yksinkertainen sääntöpohjainen prototyyppi. Se ei vielä tote
 
 ## Näin sovellusta käytetään
 
-1. Tuo sovellukseen esimerkkitiedosto ja anna sen ajanjakso.
+1. Tuo sovellukseen esimerkkitiedosto. Valitse kokonainen kuukausi tai ilmoita tiedoston oma ajanjakso.
 2. Tarkastele tapahtumia ja menoja ryhmittäin.
-3. Tuo toinen jakso ja katso muutokset aiempaan verrattuna.
-4. Lataa tarvittaessa varmuuskopio. Sen voi palauttaa tyhjään sovellukseen toisessa selaimessa.
+3. Tuo toinen jakso ja katso muutokset. Kuukauden sisäinen jakso vertautuu edelliskuukauden vastaavaan väliin, esimerkiksi 1.–15.5. vastaan 1.–15.4. Kokonaiset kuukaudet vertautuvat kokonaisiin kuukausiin niiden pituuseroista huolimatta.
+
+Vertailuvälin pitää sisältyä kokonaan yhteen tallennettuun tuontiin. Päällekkäiset tuonnit estetään ja virheviesti kertoo kyseiset jaksot. Osajaksoja ei yhdistetä kokonaiseksi kuukaudeksi eikä aiempaa tuontia korvata. Varmuuskopion lataaminen ja palautus lisätään vasta P0-08:ssa; toiminto ei ole vielä käytettävissä.
 
 Ensimmäinen versio käyttää vain keksittyjä tapahtumia. Se lukee Menomittarin oman demomuodon sekä S-Pankin tilitapahtumaviennistä tunnetun CSV-kenttärakenteen, mutta ei PDF-tiliotteita. Pankkituen testiaineistot ovat täysin fiktiivisiä, eikä kurssiversiota ole vielä tarkoitettu oikeiden taloustietojen käsittelyyn. Koko rajaus on koottu yhteen paikkaan [projektisuunnitelman MVP:n rajaukset -osioon](docs/project-plan.md#mvpn-rajaukset).
 
@@ -17,7 +18,7 @@ Ensimmäinen versio käyttää vain keksittyjä tapahtumia. Se lukee Menomittari
 
 Tiedostot käsitellään ja taloushistoria tallennetaan omassa selaimessa. Tätä kutsutaan local-first-toteutukseksi. Tapahtumia ei lähetetä palvelimelle. Backend tallentaa erikseen vain käyttäjätilin ja kirjautumisistunnon tiedot.
 
-Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietojen poistaminen voi poistaa historian, joten varmuuskopio kannattaa ladata. Kurssiversion varmuuskopio ei ole salattu.
+Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietojen poistaminen voi poistaa historian. Varmuuskopiointi on suunniteltu P0-08:aan, ja tuleva kurssiversion varmuuskopio on salaamaton. Käytä tähän asti vain uudelleen tuotavissa olevia fiktiivisiä aineistoja.
 
 ## Projektin tila
 
@@ -93,6 +94,7 @@ Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `
 | --- | --- |
 | [Projektisuunnitelma](docs/project-plan.md) | Tavoite, kurssityön rajaus, aikataulu ja teknologiat |
 | [Työlista](docs/backlog.md) | Toteutusjärjestys ja valmistumisen ehdot |
+| [MVP-arvio](docs/mvp-arvio.md) | Toteutuksen suhde tuotetavoitteeseen, puutteet ja viimeistelyn prioriteetit |
 | [Arkkitehtuuri](docs/architecture.md) | Tekninen rakenne ja tallennus |
 | [Aineisto ja laskenta](docs/data-contract.md) | Tiedostomuoto, laskentasäännöt ja testien odotusarvot |
 | [Sovelluksen rajapinnat](docs/api.md) | Frontendin sisäiset toiminnot ja käyttäjätilien HTTP-rajapinta |

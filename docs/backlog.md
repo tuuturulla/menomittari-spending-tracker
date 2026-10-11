@@ -67,9 +67,9 @@ Tarkistus: erillisen testitietokannan tallennus, luku, virheellisen viitteen hyl
 Valmistumisen ehdot:
 
 - Mukana on kaksi Menomittarin demoaineistoa ja yksi täysin fiktiivinen S-Pankin kenttärakennetta vastaava CSV-aineisto [aineistokuvauksen](data-contract.md) säännöillä.
-- Tiedoston valinta, ajanjakson syöttö ja tuontinappi toimivat yksinkertaisessa näkymässä.
+- Tiedoston valinta, kokonaisen kuukauden valinta tai oman ajanjakson syöttö sekä tuontinappi toimivat yksinkertaisessa näkymässä. Kuukausivalinta näyttää oikeat alku- ja loppupäivät ennen tuontia.
 - Muoto, päivät, summat ja kokorajat tarkistetaan. Virheellinen aineisto ei tallennu osittain.
-- Sama tai päällekkäinen jakso hylätään. Tiedoston sisäiset samannäköiset ostokset säilyvät erillisinä.
+- Sama tai päällekkäinen jakso hylätään ja virheviesti nimeää valitun sekä yhden päällekkäisen tallennetun jakson. Tiedoston sisäiset samannäköiset ostokset säilyvät erillisinä.
 - Kiinteät kauppiassäännöt antavat oikean ryhmän; tuntematon nimi jää tunnistamattomaksi.
 
 Tarkistus: molemmat demot, lainatut kentät, ääkköset, tyhjä tai virheellinen tiedosto, väärä summa/päivä, ylitetyt rajat ja päällekkäinen jakso. Tässä kohdassa päivitetään jäljellä olevan työn aika-arvio.
@@ -89,11 +89,12 @@ Tarkistus: demojen 90 ja 145 euron menot sekä kummankin 5 euron palautukset. Li
 
 Valmistumisen ehdot:
 
-- Valittua jaksoa verrataan ajallisesti lähimpään aiempaan jaksoon.
-- Vertailu tehdään vain peräkkäisistä, yhtä pitkistä jaksoista. Muulloin syy näytetään.
+- Yhden kuukauden sisäistä valittua jaksoa verrataan edelliskuukauden samoihin päivämääriin, kokonaisia kuukausia kokonaisiin kuukausiin niiden pituuseroista huolimatta.
+- Vertailuväli vaatii yhden sen kokonaan kattavan tallennetun tuonnin. Laskenta käyttää vain vertailuvälin tapahtumia ja näkymä näyttää todelliset laskentavälit.
+- Puuttuva kattavuus tai edelliskuukaudesta puuttuva osajakson päivämäärä estää vertailun ja syy näytetään. Usean kuukauden yli ulottuvat omat jaksot käyttävät edelleen lähintä aiempaa, yhtä pitkää ja peräkkäistä tuontia.
 - Enintään kolme havaintoa noudattaa aineistokuvauksen laskentasääntöjä ja näyttää vertailujaksot.
 
-Tarkistus: +55 euroa / +61,11 %, Ruokakauppa +30 euroa / +50 % ja uusi Tilaukset-meno 15 euroa. Lisäksi yksi jakso, eri pituudet, väliin jäävä aukko, aiempi nollasumma, muuttumaton kulutus, tasatilanne ja tuonti väärässä aikajärjestyksessä.
+Tarkistus: +55 euroa / +61,11 %, Ruokakauppa +30 euroa / +50 % ja uusi Tilaukset-meno 15 euroa. Lisäksi yhden tuonnin tila, kokonaiset eri pituiset kuukaudet, osajakson rajapäiväsuodatus, puuttuva kattavuus, helmikuu ja karkausvuosi, vuodenvaihde, usean kuukauden jaksojen pituus/aukko, aiempi nollasumma, muuttumaton kulutus, tasatilanne ja tuonti väärässä aikajärjestyksessä.
 
 ## P0-08: Varmuuskopio ja esittelyn viimeistely
 

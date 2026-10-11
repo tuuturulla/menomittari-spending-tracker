@@ -14,12 +14,12 @@ Oppimistavoitteet ovat selainsovelluksen rakentaminen, paikallisen ja palvelinpu
 - Tapahtumien tuonti, tallennettu historia ja tapahtumalista.
 - Menojen ryhmittely neljällä esimerkkikauppiaan säännöllä; muut jäävät tunnistamattomiksi.
 - Menojen yhteissumma ja ryhmäkohtaiset summat. Palautukset näytetään erikseen.
-- Kahden peräkkäisen, yhtä pitkän ajanjakson vertailu ja enintään kolme muutoksesta kertovaa havaintoa.
+- Kuukausivalinta tai oma tuontijakso. Kuukauden sisäistä jaksoa verrataan edelliskuukauden vastaavaan väliin; kokonaisia kuukausia voidaan verrata eri pituuksista huolimatta. Enintään kolme muutoksesta kertovaa havaintoa.
 - Varmuuskopion lataaminen ja palauttaminen tyhjään sovellukseen.
 - Käyttäjätilin luominen, kirjautuminen ja uloskirjautuminen.
 - Yksi selkeä sivu, joka mukautuu myös puhelimen levyiseen näkymään.
 
-Käyttö esitetään pienillä, keksityillä aineistoilla yhdessä työpöytäselaimessa. Historiaa voi tallentaa useammalta jaksolta, mutta vertailu käyttää aina vain valittua ja sitä lähinnä edeltävää jaksoa. Tarkat tiedosto- ja laskentasäännöt ovat [aineistokuvauksessa](data-contract.md).
+Käyttö esitetään pienillä, keksityillä aineistoilla yhdessä työpöytäselaimessa. Historiaa voi tallentaa useammalta jaksolta. Vertailuvälin on sisällyttävä kokonaan yhteen aiempaan tuontiin; laskenta poimii siitä vain vertailuvälin tapahtumat. Usean kuukauden yli ulottuva oma jakso käyttää edelleen lähintä aiempaa, yhtä pitkää ja peräkkäistä tuontia. Tarkat tiedosto- ja laskentasäännöt ovat [aineistokuvauksessa](data-contract.md).
 
 ## MVP:n rajaukset
 
@@ -29,13 +29,13 @@ Tämä osio on MVP-rajausten ensisijainen lähde. Muut dokumentit voivat selitt�
 | --- | --- | --- |
 | Käyttäjä ja pankkitilit | Yhdellä sovelluksen käyttäjällä on yksi looginen EUR-tili. Pankin vaihtuminen ei tarkoita käyttäjän vaihtamista. | Useat pankki- tai maksutilit, `account_id`, tilikohtainen suodatus ja tilien yhdistetty näkymä. |
 | Tuontimuodot | Menomittarin oma demo-CSV sekä S-Pankin viennistä tunnettu 11 kentän CSV-rakenne. Muoto tunnistetaan koko otsikosta; se ei todista tiedoston pankkialkuperää. Testiaineistot ovat fiktiivisiä. | Muiden pankkien sovittimet, PDF-tiliotteet, XML, Open Banking -rajapinnat ja lupaus kattavasta oikeiden pankkiaineistojen tuesta. |
-| Tuontijaksot | Käyttäjä ilmoittaa koko tiedoston ajanjakson. Tuontijaksot eivät saa olla osittainkaan päällekkäisiä yhden loogisen tilin historiassa. | Saman ajanjakson tuonti eri tileiltä ja tapahtumakohtainen duplikaattien tunnistus useiden lähteiden välillä. |
+| Tuontijaksot | Käyttäjä valitsee kokonaisen kalenterikuukauden tai ilmoittaa oman jakson. Valinnan pitää vastata tiedoston koko kattavuutta, jota sovellus ei voi todistaa. Päällekkäinen tuonti estetään ja viesti nimeää valitun sekä jo tallennetun jakson. | Osajaksojen yhdistäminen kokonaiseksi kuukaudeksi, tuonnin korjaus tai korvaaminen, saman ajanjakson tuonti eri tileiltä ja tapahtumakohtainen duplikaattien tunnistus useiden lähteiden välillä. |
 | Tapahtuman tyyppi | Demomuoto antaa tyypin suoraan. S-Pankki-rakenteessa negatiivinen summa tulkitaan menoksi ja positiivinen tuloksi. | Palautusten ja omien tilien välisten siirtojen varma tunnistus, käyttäjän tarkistus- ja korjausnäkymä sekä automaattinen täsmäytys. |
 | Luokittelu | Neljä kiinteää fiktiivistä kauppiassääntöä; muut tapahtumat jäävät tunnistamattomiksi. | Käyttäjän omat säännöt, yhteisöllinen kauppiastietokanta ja koneoppimismalli. |
 | Säännölliset kulut | Maksujen toistuvuutta ei tunnisteta. Tilaukset-ryhmä kertoo vain kauppiassäännön osumasta, ei todetusta tilauksesta tai säännöllisestä kulusta. | Toistuvien maksujen, tilausten ja säännöllisten arjen kulujen tunnistaminen sekä niiden kertyneen kustannuksen esittely. |
 | Paikallinen talousdata | CSV, tapahtumat, kategoriat ja analyysi käsitellään ja säilytetään käyttäjäkohtaisessa IndexedDB-kannassa nykyisessä selaimessa. Varmuuskopio viedään paikallisena salaamattomana JSON-tiedostona. | Taloustietojen palvelin- tai pilvitallennus, salattu synkronointi ja automaattinen laitteiden välinen siirto. |
 | Backend | FastAPI tallentaa vain käyttäjätilit ja palvelinpuoliset kirjautumisistunnot SQLiteen. | CSV:t, tapahtumat, summat, kuvaukset, kategoriat tai analyysit backendissä. |
-| Analyysi | Valittua jaksoa verrataan lähimpään aiempaan, yhtä pitkään ja peräkkäiseen jaksoon. Näytetään enintään kolme sääntöpohjaista havaintoa. | Koko historian tai vuoden rahankäytön yleiskuva, normaalitason oppiminen pitkästä historiasta, käytösmuutosten tai hintojen syiden päättely, ennusteet ja henkilökohtaiset säästöehdotukset. |
+| Analyysi | Yhden kuukauden sisäinen jakso vertautuu edelliskuukauden samoihin päivämääriin; kokonainen kuukausi koko edelliskuukauteen ilman normalisointia. Vertailu vaatii yhden koko vertailuvälin kattavan tuonnin. Puuttuvat päivät tai edelliskuukaudesta puuttuva osajakson päivämäärä estävät vertailun. Usean kuukauden yli ulottuvat omat jaksot käyttävät aiempaa peräkkäisten, yhtä pitkien tuontien sääntöä. Näytetään enintään kolme sääntöpohjaista havaintoa. | Edellisiin N päivään vertailu valinnaisena tilana, useiden tuontien kokoaminen vertailuväliksi, koko historian tai vuoden rahankäytön yleiskuva, normaalitason oppiminen pitkästä historiasta, käytösmuutosten tai hintojen syiden päättely, ennusteet ja henkilökohtaiset säästöehdotukset. |
 | Visuaalinen ilme | Tavoitteena on luettava ja responsiivinen kurssiesittely, jossa jaksot, summat ja muutokset erottuvat. Menoryhmien vertailun esitystapa on alustava. | Viimeistelty käyttäjäsovelluksen visuaalinen ilme ja yhdellä vilkaisulla hahmotettava yleisnäkymä; niiden suunnittelu on vielä avoin. |
 | Käyttöympäristö | Kurssiesittely yhdessä työpöytäselaimessa; näkymä mukautuu puhelimen leveyteen. | Julkinen tuotantokäyttö, erillinen mobiilisovellus, asennettava offline-sovellus, automaattinen välilehtien synkronointi ja kattava selain- tai laitetestaus. |
 
@@ -69,3 +69,5 @@ Työ on esittelyvalmis, kun käyttäjä voi rekisteröityä ja kirjautua, kaksi 
 Sama paikallinen tietokanta voi säilyä myöhemmässä tuotteessa. SQLAlchemy ja Alembic mahdollistavat käyttäjä- ja istuntotietokannan siirtämisen myöhemmin PostgreSQL:ään. Selkeät osarajat ja versionoitu varmuuskopio helpottavat kehittämistä, mutta eivät tee taloustietojen synkronoinnista automaattista.
 
 Mahdollinen kaupallinen julkaisu tarvitsee erillisen turvallisuus- ja käytettävyysarvioinnin. Paikallinen käsittely vähentää palvelimelle päätyvää tietoa, mutta ei yksin takaa tietoturvaa. Maksullinen salattu synkronointi on mahdollinen jatkosuunta. 
+
+Nykyisen toteutuksen suhde tuotetavoitteeseen ja esittelyn kannalta tärkeät puutteet on koottu [MVP-arvioon](mvp-arvio.md). Arvio ei lisää toteutustehtäviä ilman erillistä päätöstä.
