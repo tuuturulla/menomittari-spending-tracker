@@ -71,7 +71,9 @@ export class LocalStorageRepository {
           if (overlappingImport) {
             throw new MenomittariStorageError(
               'overlapping_period',
-              'Ajanjakso on jo tuotu kokonaan tai osittain.',
+              `Valitsemasi ajanjakso ${importRecord.period_start}–${importRecord.period_end} ` +
+              `menee päällekkäin jo tallennetun jakson ${overlappingImport.period_start}–${overlappingImport.period_end} kanssa. ` +
+              'MVP ei yhdistä päällekkäisiä tuonteja eikä korvaa aiempaa tuontia.',
             )
           }
 

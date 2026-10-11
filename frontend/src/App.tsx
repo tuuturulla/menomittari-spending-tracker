@@ -11,10 +11,15 @@ import {
   type PublicUser,
 } from './auth-api'
 import { TransactionHistory } from './components/TransactionHistory'
+import { ImportPeriodFields, type ImportPeriodSelection } from './components/ImportPeriodFields'
 import {
   createLocalStorage,
   type LocalStorageRepository,
 } from './storage/repository'
+
+const EMPTY_IMPORT_PERIOD: ImportPeriodSelection = {
+  mode: 'month', month: '', start: '', end: '',
+}
 
 function App() {
   // React state holds what the page currently shows; the databases own persistent data.
@@ -26,6 +31,7 @@ function App() {
   } | null>(null)
   const [busy, setBusy] = useState(true)
   const [importBusy, setImportBusy] = useState(false)
+  const [importPeriod, setImportPeriod] = useState(EMPTY_IMPORT_PERIOD)
   const [historyRevision, setHistoryRevision] = useState(0)
   const [message, setMessage] = useState('Tarkistetaan kirjautumistila…')
   const [error, setError] = useState('')
@@ -157,6 +163,7 @@ function App() {
       }
 
       form.reset()
+      setImportPeriod(EMPTY_IMPORT_PERIOD)
       // The import changed IndexedDB, so the history component must reload its list.
       setHistoryRevision((current) => current + 1)
       setMessage(
@@ -183,7 +190,7 @@ function App() {
               <p className="eyebrow">Kirjautunut käyttäjä</p>
               <h2 id="auth-title">{user.email}</h2>
               <p className="account-summary">
-                Istunto on backendissä, mutta tulevat taloustiedot tallennetaan
+                Istunto on backendissä, mutta taloustiedot tallennetaan
                 vain tähän selaimeen.
               </p>
 
@@ -192,7 +199,8 @@ function App() {
                 <p id="import-help">
                   Valitse Menomittarin demo-CSV tai tuettu S-Pankin
                   tilitapahtuma-CSV ja ilmoita koko tiedoston kattama ajanjakso.
-                  Tiedosto käsitellään vain tässä selaimessa.
+                  Tiedosto käsitellään vain tässä selaimessa. Käytä kurssiversiossa
+                  vain fiktiivisiä tapahtumia.
                 </p>
                 <form onSubmit={submitImport} aria-describedby="import-help">
                   <label htmlFor="csv-file">CSV-tiedosto</label>
@@ -205,28 +213,11 @@ function App() {
                     disabled={importBusy}
                   />
 
-                  <div className="date-fields">
-                    <div>
-                      <label htmlFor="period-start">Ajanjakson alku</label>
-                      <input
-                        id="period-start"
-                        name="period_start"
-                        type="date"
-                        required
-                        disabled={importBusy}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="period-end">Ajanjakson loppu</label>
-                      <input
-                        id="period-end"
-                        name="period_end"
-                        type="date"
-                        required
-                        disabled={importBusy}
-                      />
-                    </div>
-                  </div>
+                  <ImportPeriodFields
+                    selection={importPeriod}
+                    onChange={setImportPeriod}
+                    disabled={importBusy}
+                  />
 
                   <button type="submit" disabled={!currentStorage || importBusy}>
                     {importBusy ? 'Tuodaan…' : 'Tuo tapahtumat'}

@@ -167,7 +167,12 @@ describe('local storage repository', () => {
           date: '2026-01-06',
         }),
       ]),
-    ).rejects.toMatchObject({ code: 'overlapping_period' })
+    ).rejects.toMatchObject({
+      code: 'overlapping_period',
+      message: expect.stringContaining(
+        '2026-01-02–2026-01-10 menee päällekkäin jo tallennetun jakson 2026-01-01–2026-01-20',
+      ),
+    })
     await expect(storage.listImports()).resolves.toEqual([oldImport])
   })
 })
