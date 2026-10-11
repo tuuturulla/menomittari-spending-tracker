@@ -2,7 +2,9 @@
 
 ## Tavoite
 
-Menomittari auttaa vastaamaan kysymykseen: mihin rahat menevät ja mikä omassa kulutuksessa muuttui? Kurssityön ensimmäinen toimiva versio osoittaa ketjun **tunnista menot → vertaa historiaan → näytä perusteltu huomio**. Havainto kertoo lasketun muutoksen, ei päätä käyttäjän puolesta, mikä ostos oli tarpeeton.
+Menomittarin pidemmän aikavälin tavoite on auttaa vastaamaan kysymykseen: mihin rahat menevät ja mikä omassa kulutuksessa muuttui? Keskeinen tavoite on tunnistaa säännöllisiä arjen kuluja ja tilauksia sekä tehdä niiden kertynyt kustannus näkyväksi esimerkiksi vuoden ajalta. Sovellus ei päätä käyttäjän puolesta, mikä ostos oli tarpeeton.
+
+Kurssityön MVP on tästä rajattu, yksinkertainen sääntöpohjainen prototyyppi: se osoittaa ketjun **ryhmittele menot → vertaa kahta ajanjaksoa → näytä laskettuun muutokseen perustuva huomio**. Se ei vielä tunnista säännöllisiä kuluja eikä tarjoa vuoden rahankäytön yleiskuvaa. Nämä keskeiset tuotetavoitteet jäävät siis vielä osoittamatta, vaikka tuonnin, tallennuksen ja vertailulaskennan toimivuus voidaan näyttää.
 
 Oppimistavoitteet ovat selainsovelluksen rakentaminen, paikallisen ja palvelinpuolisen tiedon tallentaminen, HTTP-rajapinnan toteuttaminen sekä laskennan ja eri sovelluskerrosten testaaminen.
 
@@ -30,9 +32,11 @@ Tämä osio on MVP-rajausten ensisijainen lähde. Muut dokumentit voivat selitt�
 | Tuontijaksot | Käyttäjä ilmoittaa koko tiedoston ajanjakson. Tuontijaksot eivät saa olla osittainkaan päällekkäisiä yhden loogisen tilin historiassa. | Saman ajanjakson tuonti eri tileiltä ja tapahtumakohtainen duplikaattien tunnistus useiden lähteiden välillä. |
 | Tapahtuman tyyppi | Demomuoto antaa tyypin suoraan. S-Pankki-rakenteessa negatiivinen summa tulkitaan menoksi ja positiivinen tuloksi. | Palautusten ja omien tilien välisten siirtojen varma tunnistus, käyttäjän tarkistus- ja korjausnäkymä sekä automaattinen täsmäytys. |
 | Luokittelu | Neljä kiinteää fiktiivistä kauppiassääntöä; muut tapahtumat jäävät tunnistamattomiksi. | Käyttäjän omat säännöt, yhteisöllinen kauppiastietokanta ja koneoppimismalli. |
+| Säännölliset kulut | Maksujen toistuvuutta ei tunnisteta. Tilaukset-ryhmä kertoo vain kauppiassäännön osumasta, ei todetusta tilauksesta tai säännöllisestä kulusta. | Toistuvien maksujen, tilausten ja säännöllisten arjen kulujen tunnistaminen sekä niiden kertyneen kustannuksen esittely. |
 | Paikallinen talousdata | CSV, tapahtumat, kategoriat ja analyysi käsitellään ja säilytetään käyttäjäkohtaisessa IndexedDB-kannassa nykyisessä selaimessa. Varmuuskopio viedään paikallisena salaamattomana JSON-tiedostona. | Taloustietojen palvelin- tai pilvitallennus, salattu synkronointi ja automaattinen laitteiden välinen siirto. |
 | Backend | FastAPI tallentaa vain käyttäjätilit ja palvelinpuoliset kirjautumisistunnot SQLiteen. | CSV:t, tapahtumat, summat, kuvaukset, kategoriat tai analyysit backendissä. |
-| Analyysi | Valittua jaksoa verrataan lähimpään aiempaan, yhtä pitkään ja peräkkäiseen jaksoon. Näytetään enintään kolme sääntöpohjaista havaintoa. | Normaalitason oppiminen pitkästä historiasta, käytösmuutosten tai hintojen syiden päättely, ennusteet ja henkilökohtaiset säästöehdotukset. |
+| Analyysi | Valittua jaksoa verrataan lähimpään aiempaan, yhtä pitkään ja peräkkäiseen jaksoon. Näytetään enintään kolme sääntöpohjaista havaintoa. | Koko historian tai vuoden rahankäytön yleiskuva, normaalitason oppiminen pitkästä historiasta, käytösmuutosten tai hintojen syiden päättely, ennusteet ja henkilökohtaiset säästöehdotukset. |
+| Visuaalinen ilme | Tavoitteena on luettava ja responsiivinen kurssiesittely, jossa jaksot, summat ja muutokset erottuvat. Menoryhmien vertailun esitystapa on alustava. | Viimeistelty käyttäjäsovelluksen visuaalinen ilme ja yhdellä vilkaisulla hahmotettava yleisnäkymä; niiden suunnittelu on vielä avoin. |
 | Käyttöympäristö | Kurssiesittely yhdessä työpöytäselaimessa; näkymä mukautuu puhelimen leveyteen. | Julkinen tuotantokäyttö, erillinen mobiilisovellus, asennettava offline-sovellus, automaattinen välilehtien synkronointi ja kattava selain- tai laitetestaus. |
 
 Rajausten laajentaminen edellyttää omaa suunnittelua ja testausta. Esimerkiksi usean tilin tuki muuttaa tietomallia ja päällekkäisyyssääntöä: sama ajanjakso olisi sallittu eri tileillä mutta ei saman tilin kahdessa tuonnissa. Omien tilien väliset siirrot pitäisi samalla tunnistaa, jotta ne eivät näy kokonaisuudessa sekä menona että tulona.

@@ -2,6 +2,8 @@
 
 Menomittari on kurssityönä toteutettava selainsovellus, joka auttaa ymmärtämään omaa rahankäyttöä. Se ryhmittelee menot, vertaa kahta ajanjaksoa ja näyttää, mikä kulutuksessa muuttui.
 
+Nykyinen MVP on yksinkertainen sääntöpohjainen prototyyppi. Se ei vielä toteuta Menomittarin keskeistä tavoitetta tunnistaa säännöllisiä arjen kuluja ja tilauksia, eikä näytä vuoden rahankäytön yleiskuvaa. Tilaukset-ryhmään luokittelu ei tarkoita, että maksun toistuvuus olisi tunnistettu. Käyttöliittymän visuaalinen ilme on alustava ja palvelee kurssiesittelyä.
+
 ## Näin sovellusta käytetään
 
 1. Tuo sovellukseen esimerkkitiedosto ja anna sen ajanjakso.
