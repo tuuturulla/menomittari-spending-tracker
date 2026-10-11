@@ -10,10 +10,10 @@ Tämä lista kuvaa [projektisuunnitelman](project-plan.md) toteutuksen. Kaikki k
 | P0-02 | Backendin perusta | P0-01 | 3 h | Valmis |
 | P0-03 | Käyttäjätilit ja istunnot | P0-02 | 4–5 h | Valmis |
 | P0-04 | Paikallinen tallennus | P0-03 | 3 h | Valmis |
-| P0-05 | Tiedoston tuonti ja luokittelu | P0-04 | 3–4 h | Tarkistettavana |
-| P0-06 | Tapahtumat ja yhteenveto | P0-05 | 3–4 h | Tarkistettavana |
-| P0-07 | Vertailu ja havainnot | P0-06 | 2–3 h | Tarkistettavana |
-| P0-08 | Varmuuskopio ja esittelyn viimeistely | P0-07 | 3–4 h | Ei aloitettu |
+| P0-05 | Tiedoston tuonti ja luokittelu | P0-04 | 3–4 h | Valmis |
+| P0-06 | Tapahtumat ja yhteenveto | P0-05 | 3–4 h | Valmis |
+| P0-07 | Vertailu ja havainnot | P0-06 | 2–3 h | Valmis |
+| P0-08 | Varmuuskopio ja esittelyn viimeistely | P0-07 | 3–4 h | Tarkistettavana |
 
 Alkuperäinen toteutusarvio on 23–28 tuntia, lisäksi 2–4 tuntia yhteiseen läpikäyntiin ja korjauksiin. Ensimmäisen toimivan tiedostotuonnin jälkeen jäljellä olevien P0-06–P0-08-vaiheiden toteutusarvio on 8–11 tuntia, lisäksi 2–4 tuntia yhteiseen läpikäyntiin ja korjauksiin. Tilat: Ei aloitettu, Työn alla, Estynyt, Tarkistettavana, Valmis.
 
@@ -119,3 +119,5 @@ Kirjattava käyttötesti oikeassa työpöytäselaimessa:
 8. Tarkista selaimen verkkopyynnöistä, ettei tuonti, analyysi tai varmuuskopio lähetä tapahtumatietoja verkkoon.
 
 Kirjaa selaimen nimi ja versio sekä tulokset. Automaattinen selaintestaus ja muiden selainten testikierrokset eivät ole kurssiversion valmistumisehtoja.
+
+Tarkistettu toteutus ja käyttötestin tulokset: [P0-08-käyttötesti](p0-08-kayttotesti.md). Palautus erilliseen selainalkuperään onnistui, mutta kohdan 5 erillisen selainprofiilin tarkistus on vielä tekemättä. Tehtävää ei merkitä valmiiksi ennen tätä tarkistusta ja käyttäjän hyväksyntää.

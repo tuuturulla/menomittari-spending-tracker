@@ -10,7 +10,7 @@ Nykyinen MVP on yksinkertainen sääntöpohjainen prototyyppi. Se ei vielä tote
 2. Tarkastele tapahtumia ja menoja ryhmittäin.
 3. Tuo toinen jakso ja katso muutokset. Kuukauden sisäinen jakso vertautuu edelliskuukauden vastaavaan väliin, esimerkiksi 1.–15.5. vastaan 1.–15.4. Kokonaiset kuukaudet vertautuvat kokonaisiin kuukausiin niiden pituuseroista huolimatta.
 
-Vertailuvälin pitää sisältyä kokonaan yhteen tallennettuun tuontiin. Päällekkäiset tuonnit estetään ja virheviesti kertoo kyseiset jaksot. Osajaksoja ei yhdistetä kokonaiseksi kuukaudeksi eikä aiempaa tuontia korvata. Varmuuskopion lataaminen ja palautus lisätään vasta P0-08:ssa; toiminto ei ole vielä käytettävissä.
+Vertailuvälin pitää sisältyä kokonaan yhteen tallennettuun tuontiin. Päällekkäiset tuonnit estetään ja virheviesti kertoo kyseiset jaksot. Osajaksoja ei yhdistetä kokonaiseksi kuukaudeksi eikä aiempaa tuontia korvata.
 
 Ensimmäinen versio käyttää vain keksittyjä tapahtumia. Se lukee Menomittarin oman demomuodon sekä S-Pankin tilitapahtumaviennistä tunnetun CSV-kenttärakenteen, mutta ei PDF-tiliotteita. Pankkituen testiaineistot ovat täysin fiktiivisiä, eikä kurssiversiota ole vielä tarkoitettu oikeiden taloustietojen käsittelyyn. Koko rajaus on koottu yhteen paikkaan [projektisuunnitelman MVP:n rajaukset -osioon](docs/project-plan.md#mvpn-rajaukset).
 
@@ -20,11 +20,21 @@ Pieni esittelypolku: tuo uudelle fiktiiviselle demokäyttäjälle huhtikuu, touk
 
 Tiedostot käsitellään ja taloushistoria tallennetaan omassa selaimessa. Tätä kutsutaan local-first-toteutukseksi. Tapahtumia ei lähetetä palvelimelle. Backend tallentaa erikseen vain käyttäjätilin ja kirjautumisistunnon tiedot.
 
-Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietojen poistaminen voi poistaa historian. Varmuuskopiointi on suunniteltu P0-08:aan, ja tuleva kurssiversion varmuuskopio on salaamaton. Käytä tähän asti vain uudelleen tuotavissa olevia fiktiivisiä aineistoja.
+Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietojen poistaminen tai laitteen rikkoutuminen voi hävittää historian. Lataa varmuuskopio säännöllisesti ja säilytä kopio myös laitteen ulkopuolella turvallisesti. Käytä kurssiversiossa vain fiktiivisiä aineistoja.
+
+## Varmuuskopio ja lyhyt palautusdemo
+
+1. Rekisteröidy ja kirjaudu fiktiiviselle demotilille. Tuo yllä kuvattu neljän CSV:n ketju: historiaan tulee 4 tuontijaksoa ja 33 tapahtumaa.
+2. Valitse **Lataa varmuuskopio**. Varmista selaimen latauksista, että `YYYY-MM-DD.menomittari-backup.json` tallentui. Nimen päivämäärä on UTC-ajassa.
+3. Avaa sama sovellusosoite erillisessä tyhjässä selainprofiilissa ja kirjaudu samalle tilille. Tilin kirjautuminen ei siirrä taloushistoriaa; sen pitää olla tässä profiilissa tyhjä. Älä poista alkuperäisen profiilin tietoja.
+4. Valitse ladattu JSON kohdasta **Palautettava varmuuskopio** ja paina **Palauta varmuuskopio**. Tarkista 4 jaksoa, 33 tapahtumaa ja samat yhteenvedot. Heinäkuun menot ovat 57,50 € ja vertailussa kesäkuun 1.–15. päivän 95,00 €.
+5. Päivitä sivu ja tarkista säilyminen. Uusi palautus tähän jo täytettyyn historiaan estetään eikä se korvaa tietoja.
+
+JSON-kopio on salaamaton: tiedoston saaja voi lukea tapahtumat. Kopio sisältää tuontijaksot ja tapahtumat alkuperäisine tunnisteineen ja luokituksineen, ei käyttäjätiliä, salasanaa, istuntoa, alkuperäisiä CSV-tiedostoja tai valmiita analyysejä. Palautus tarkistaa koko tiedoston ennen kirjoitusta ja onnistuu kokonaan tai ei lainkaan. Enintään 16 MiB; vain siirtomuodon versio 1 ja EUR. Varmuuskopio ei ole automaattinen pilvitallennus tai synkronointi.
 
 ## Projektin tila
 
-P0-01–P0-04-vaiheet ovat valmiit. P0-05-vaiheen paikallinen CSV-tuonti, P0-06-vaiheen tapahtumanäkymä ja P0-07-vaiheen ajanjaksovertailu havaintoineen on toteutettu ja tarkistettavana. P0-08:ssa lisätään varmuuskopio ja viimeistellään esittely.
+P0-01–P0-07-vaiheet ovat valmiit. P0-08:n varmuuskopio ja palautus on toteutettu ja tarkistettavana. Automaattiset tarkistukset sekä palautus erilliseen selainalkuperään onnistuivat; erillisen selainprofiilin palautusdemo on vielä tehtävä. Tarkka tilanne on [käyttötestiraportissa](docs/p0-08-kayttotesti.md). Laajempi ulkoasuviimeistely on erillinen työosuus.
 
 ## Kehitysympäristön käynnistäminen
 
@@ -107,3 +117,5 @@ Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `
 | [P0-05-oppituntimateriaali](docs/p0-05-oppituntimateriaali.md) | CSV-tuonnin, validoinnin ja kauppiasluokittelun työseloste |
 | [P0-06-oppituntimateriaali](docs/p0-06-oppituntimateriaali.md) | Tapahtumasivutuksen, yhteenvetolaskennan ja responsiivisen näkymän työseloste |
 | [P0-07-oppituntimateriaali](docs/p0-07-oppituntimateriaali.md) | Ajanjaksovertailun, muutosprosenttien ja havaintojen työseloste |
+| [P0-08-oppituntimateriaali](docs/p0-08-oppituntimateriaali.md) | Varmuuskopion, tiedoston tarkistusten ja atomisen palautuksen työseloste |
+| [P0-08-käyttötesti](docs/p0-08-kayttotesti.md) | Todennetut tulokset ja jäljellä oleva selainprofiilin palautusdemo |

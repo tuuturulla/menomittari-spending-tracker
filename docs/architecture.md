@@ -5,8 +5,8 @@ Tekninen kuvaus toteuttajille. Tuotteen tavoite ja [MVP:n rajaukset](project-pla
 ## Osat ja tiedonkulku
 
 ```text
-frontend/src/App.tsx       Käyttäjätilit ja CSV-tuonnin yhdistävä React-näkymä
-frontend/src/components/  Jaksovalinta, tapahtumanäkymä ja vertailun esitys
+frontend/src/App.tsx       Käyttäjätilit ja paikalliset toiminnot yhdistävä React-näkymä
+frontend/src/components/  Tuonti, varmuuskopio, tapahtumanäkymä ja vertailun esitys
 frontend/src/application/  tuonti, analyysin kokoaminen ja varmuuskopiot
 frontend/src/domain/       kenttävalidointi, luokittelu ja laskenta
 frontend/src/storage/      Dexie, tietomalli ja tietokantakyselyt
@@ -24,6 +24,8 @@ App -> HTTP /api/auth -> FastAPI -> SQLAlchemy -> SQLite
 Application käyttää muutamaa tallennusfunktiota, jotka palauttavat tavallisia TypeScript-tietoja. Dexie-oliot eivät leviä muihin osiin. Domain saa aineiston parametreina eikä käytä tietokantaa, Reactia tai selain-API:a. UI muotoilee luvut, mutta ei laske toista versiota yhteenvedosta.
 
 CSV luetaan Papa Parsella merkkijonoiksi, tarkistetaan ja luokitellaan ennen tallennusta. Yksi tallennusoperaatio tarkistaa päällekkäisyyden ja lisää koko aineiston. Analyysi lasketaan yhteisestä lukutransaktiosta saadusta aineistosta. Taloustietoja ei lähetetä palvelimelle eikä niille tehdä toista pysyvää analyysikantaa.
+
+Varmuuskopion vienti käyttää samaa yhteistä lukutransaktiota. `application/backup-format.ts` tarkistaa JSON-rakenteen ja käyttää storagen yhteisiä tietue-ehtoja. `restoreEmptyHistory` tarkistaa molempien taulujen tyhjyyden kirjoitustransaktion sisällä ja lisää alkuperäiset tietueet; se ei tyhjennä, yhdistä tai korvaa historiaa. `BackupPanel` käynnistää paikallisen Blob-latauksen tai palautuksen ja näyttää tuloksen painikkeiden vieressä. Palautus ei muuta skeemaa eikä backendia.
 
 Tuontijakso ja analyysin vertailuväli ovat eri asioita: edelliskuukauden tuonnista voidaan laskea vain vastaavat päivät. Vertailuväli ja vertailutapa kuuluvat laskennan tulokseen, eivät IndexedDB:n skeemaan. Kuukausivalinta ja tämä päiväsuodatus eivät muuta tallennettuja tuonteja tai tapahtumatunnisteita.
 

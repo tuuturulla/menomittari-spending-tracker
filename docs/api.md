@@ -12,8 +12,8 @@ Jokainen toiminto palauttaa Promise<Result<T>>: {ok: true, data: T} tai {ok: fal
 | listHistoryImports | Ei parametreja | {items: Import[]} |
 | loadTransactionView | selected_import, offset=0, limit=50 | {summary: Summary, transactions: {items: Transaction[], total, offset, limit}} |
 | getAnalysis | import_id | {summary: Summary, comparison: Comparison, insights: Insight[]} |
-| exportBackup | Ei parametreja | {blob: Blob, filename: string} |
-| restoreBackup | file: File | {import_count, transaction_count} |
+| exportBackup | storage; testissä valinnainen now-kello | {blob: Blob, filename: string} |
+| restoreBackup | file: File, storage | {import_count, transaction_count} |
 
 Import on tallennettu tuontitietue sekä transaction_count. Transaction on tallennettu tapahtumatietue ilman source_row-kenttää. Imports järjestetään period_start laskevasti, tapahtumat date ja id nousevasti. Offset on kokonaisluku vähintään 0 ja limit kokonaisluku 1–200. loadTransactionView laskee yhteenvedon koko valitusta aineistosta, vaikka palauttaa tapahtumista vain pyydetyn sivun.
 
@@ -48,7 +48,7 @@ Tyhjässä kannassa listHistoryImports palauttaa tyhjän listan eikä UI pyydä 
 
 CSV-tuonnin tarkistusjärjestys: tiedostokoko, parametrit ja jakso, tapahtumien validointi, päällekkäisyys ja kannan kokonaismääräraja. Viimeiset kaksi tarkistetaan tallennuksen yhteydessä. Virhe ei sisällä raakaa tapahtumaa tai pinotulostetta. Erottuvat storage_error-viestit voivat neuvoa esimerkiksi sulkemaan toisen välilehden; kantaa ei poisteta.
 
-Varmuuskopion oletusnimi on YYYY-MM-DD.menomittari-backup.json. Virheellinen tai ei-tyhjään kantaan tehty palautus ei muuta tallennettuja tietoja.
+Varmuuskopion oletusnimi on YYYY-MM-DD.menomittari-backup.json; päivämäärä on UTC-ajassa. `BackupStorage` rajaa riippuvuuden yhteisen aineiston lukemiseen ja tyhjän historian palautukseen. Toiminnot eivät tee HTTP-pyyntöjä. Virheellinen tai ei-tyhjään kantaan tehty palautus ei muuta tallennettuja tietoja.
 
 ## Backendin HTTP-rajapinta
 
