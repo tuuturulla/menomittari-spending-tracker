@@ -1,4 +1,4 @@
-/** Connects account access, local CSV imports, and transaction history on one page. */
+/** Connects account access, local CSV imports, backups, and transaction history on one page. */
 import { useEffect, useState, type FormEvent } from 'react'
 import './App.css'
 import { importCsv } from './application/import-csv'
@@ -12,6 +12,7 @@ import {
 } from './auth-api'
 import { TransactionHistory } from './components/TransactionHistory'
 import { CsvImportForm } from './components/CsvImportForm'
+import { BackupPanel } from './components/BackupPanel'
 import { type ImportPeriodSelection } from './components/ImportPeriodFields'
 import {
   createLocalStorage,
@@ -32,6 +33,7 @@ function App() {
   } | null>(null)
   const [busy, setBusy] = useState(true)
   const [importBusy, setImportBusy] = useState(false)
+  const [backupBusy, setBackupBusy] = useState(false)
   const [importPeriod, setImportPeriod] = useState(EMPTY_IMPORT_PERIOD)
   const [historyRevision, setHistoryRevision] = useState(0)
   const [message, setMessage] = useState('Tarkistetaan kirjautumistila…')
@@ -202,12 +204,21 @@ function App() {
 
               <CsvImportForm
                 busy={importBusy}
+                disabled={busy || backupBusy}
                 storageReady={Boolean(currentStorage)}
                 selection={importPeriod}
                 onSelectionChange={setImportPeriod}
                 onSubmit={submitImport}
                 message={importMessage}
                 error={importError}
+              />
+
+              <BackupPanel
+                key={user.id}
+                storage={currentStorage}
+                disabled={busy || importBusy}
+                onBusyChange={setBackupBusy}
+                onRestored={() => setHistoryRevision((current) => current + 1)}
               />
 
               {currentStorage && (
@@ -221,7 +232,7 @@ function App() {
                 className="secondary-button"
                 type="button"
                 onClick={signOut}
-                disabled={busy || importBusy}
+                disabled={busy || importBusy || backupBusy}
               >
                 Kirjaudu ulos
               </button>

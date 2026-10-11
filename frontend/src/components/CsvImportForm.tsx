@@ -4,6 +4,7 @@ import { ImportPeriodFields, type ImportPeriodSelection } from './ImportPeriodFi
 
 interface CsvImportFormProps {
   busy: boolean
+  disabled?: boolean
   storageReady: boolean
   selection: ImportPeriodSelection
   onSelectionChange: (selection: ImportPeriodSelection) => void
@@ -13,7 +14,7 @@ interface CsvImportFormProps {
 }
 
 export function CsvImportForm({
-  busy, storageReady, selection, onSelectionChange, onSubmit, message, error,
+  busy, disabled = false, storageReady, selection, onSelectionChange, onSubmit, message, error,
 }: CsvImportFormProps) {
   const feedbackRef = useRef<HTMLDivElement>(null)
 
@@ -41,14 +42,14 @@ export function CsvImportForm({
           type="file"
           accept=".csv,text/csv"
           required
-          disabled={busy}
+          disabled={busy || disabled}
         />
         <ImportPeriodFields
           selection={selection}
           onChange={onSelectionChange}
-          disabled={busy}
+          disabled={busy || disabled}
         />
-        <button type="submit" disabled={!storageReady || busy}>
+        <button type="submit" disabled={!storageReady || busy || disabled}>
           {busy ? 'Tuodaan…' : 'Tuo tapahtumat'}
         </button>
 
