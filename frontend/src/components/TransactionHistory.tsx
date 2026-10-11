@@ -294,7 +294,7 @@ export function TransactionHistory({
             <p className="error-message">{currentAnalysisLoad.error}</p>
           )}
           {currentAnalysisLoad?.analysis && (
-            <AnalysisPanel analysis={currentAnalysisLoad.analysis} periods={imports} />
+            <AnalysisPanel analysis={currentAnalysisLoad.analysis} />
           )}
 
           <section className="transactions-section" aria-labelledby="transactions-title">

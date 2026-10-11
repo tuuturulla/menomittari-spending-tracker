@@ -57,4 +57,33 @@ describe('analysis with IndexedDB', () => {
       ])
     }
   })
+
+  it('filters a saved full month to the matching days of a partial-month import', async () => {
+    await storage.open()
+    const april = await importCsv(
+      new Blob(['date;description;amount;kind\n2026-04-05;Demo Market;-10.00;expense\n2026-04-20;Demo Market;-90.00;expense']),
+      '2026-04-01', '2026-04-30', storage, dependencies,
+    )
+    const may = await importCsv(
+      new Blob(['date;description;amount;kind\n2026-05-05;Demo Market;-15.00;expense']),
+      '2026-05-01', '2026-05-15', storage, dependencies,
+    )
+    expect(april.ok && may.ok).toBe(true)
+    if (!april.ok || !may.ok) return
+
+    await expect(getAnalysis(storage, may.data.id)).resolves.toMatchObject({
+      ok: true,
+      data: {
+        comparison: {
+          status: 'comparable', baseline_import_id: april.data.id,
+          baseline_period: { period_start: '2026-04-01', period_end: '2026-04-15' },
+          totals: { previous_cents: 1_000, current_cents: 1_500, delta_percent: 50 },
+        },
+      },
+    })
+    // Analysis is a read: it must not shorten or otherwise rewrite the stored import.
+    await expect(storage.listTransactions(april.data.id)).resolves.toHaveLength(2)
+    expect((await storage.listImports()).find((item) => item.id === april.data.id)?.period_end)
+      .toBe('2026-04-30')
+  })
 })

@@ -1,4 +1,4 @@
-/** Compare consecutive spending periods and form a small set of factual insights. */
+/** Compare a previous-month window, or consecutive cross-month periods, using local records. */
 import {
   calculateSummary,
   type SpendingSummary,
@@ -6,9 +6,11 @@ import {
   type SummaryTransaction,
 } from './summary'
 import { CATEGORY_CODES, CATEGORY_NAMES, type CategoryCode } from './transactions'
+import { isSingleMonthPeriod, previousMonthPeriod, type DatePeriod } from './periods'
 
 export interface AnalysisTransaction extends SummaryTransaction {
   import_id: string
+  date: string
 }
 
 export interface ChangeValues {
@@ -28,11 +30,16 @@ export type ComparisonStatus =
   | 'no_baseline'
   | 'different_duration'
   | 'gap'
+  | 'incomplete_baseline'
+  | 'unavailable_dates'
 
 export interface Comparison {
   status: ComparisonStatus
   current_import_id: string
   baseline_import_id: string | null
+  mode: 'previous_month' | 'consecutive_periods'
+  current_period: DatePeriod
+  baseline_period: DatePeriod | null
   totals: ChangeValues | null
   categories: CategoryChange[]
 }
@@ -84,13 +91,19 @@ function change(previousCents: number, currentCents: number): ChangeValues {
 
 function blockedComparison(
   status: Exclude<ComparisonStatus, 'comparable'>,
-  currentId: string,
+  current: SummaryPeriod,
   baselineId: string | null,
+  baselinePeriod: DatePeriod | null,
 ): Comparison {
   return {
     status,
-    current_import_id: currentId,
+    current_import_id: current.id,
     baseline_import_id: baselineId,
+    mode: isSingleMonthPeriod(current) ? 'previous_month' : 'consecutive_periods',
+    current_period: { period_start: current.period_start, period_end: current.period_end },
+    baseline_period: baselinePeriod ? {
+      period_start: baselinePeriod.period_start, period_end: baselinePeriod.period_end,
+    } : null,
     totals: null,
     categories: [],
   }
@@ -142,34 +155,62 @@ export function analyzePeriods(
     current,
     transactions.filter((transaction) => transaction.import_id === current.id),
   )
-  const baseline = findBaseline(current, periods)
+  const monthly = isSingleMonthPeriod(current)
+  const requestedPeriod = monthly ? previousMonthPeriod(current) : null
+  // Coverage comes from the declared import range, never from the first/last purchase.
+  const baseline = monthly && requestedPeriod
+    ? periods.find((period) =>
+      period.id !== current.id &&
+      period.period_start <= requestedPeriod.period_start &&
+      period.period_end >= requestedPeriod.period_end &&
+      period.period_end < current.period_start,
+    ) ?? null
+    : findBaseline(current, periods)
+  if (monthly && !requestedPeriod) {
+    return {
+      summary: currentSummary,
+      comparison: blockedComparison('unavailable_dates', current, null, null),
+      insights: [],
+    }
+  }
   if (!baseline) {
     return {
       summary: currentSummary,
-      comparison: blockedComparison('no_baseline', current.id, null),
+      comparison: blockedComparison(
+        findBaseline(current, periods) ? 'incomplete_baseline' : 'no_baseline',
+        current, null, requestedPeriod,
+      ),
       insights: [],
     }
   }
 
-  // The contract checks unequal lengths before checking for a gap.
-  if (periodDays(current) !== periodDays(baseline)) {
+  // Cross-month custom periods keep the original consecutive, equal-duration rule.
+  if (!monthly && periodDays(current) !== periodDays(baseline)) {
     return {
       summary: currentSummary,
-      comparison: blockedComparison('different_duration', current.id, baseline.id),
+      comparison: blockedComparison('different_duration', current, baseline.id, baseline),
       insights: [],
     }
   }
-  if (utcDay(current.period_start) - utcDay(baseline.period_end) !== 1) {
+  if (!monthly && utcDay(current.period_start) - utcDay(baseline.period_end) !== 1) {
     return {
       summary: currentSummary,
-      comparison: blockedComparison('gap', current.id, baseline.id),
+      comparison: blockedComparison('gap', current, baseline.id, baseline),
       insights: [],
     }
   }
 
+  const baselinePeriod = requestedPeriod ?? {
+    period_start: baseline.period_start, period_end: baseline.period_end,
+  }
   const baselineSummary = calculateSummary(
-    baseline,
-    transactions.filter((transaction) => transaction.import_id === baseline.id),
+    { id: baseline.id, ...baselinePeriod },
+    // A full-month import may supply only the matching days of a partial-month comparison.
+    transactions.filter((transaction) =>
+      transaction.import_id === baseline.id &&
+      transaction.date >= baselinePeriod.period_start &&
+      transaction.date <= baselinePeriod.period_end,
+    ),
   )
   const previousByCategory = new Map(
     baselineSummary.categories.map((category) => [category.category_code, category.expense_cents]),
@@ -187,6 +228,9 @@ export function analyzePeriods(
     status: 'comparable',
     current_import_id: current.id,
     baseline_import_id: baseline.id,
+    mode: monthly ? 'previous_month' : 'consecutive_periods',
+    current_period: { period_start: current.period_start, period_end: current.period_end },
+    baseline_period: baselinePeriod,
     totals,
     categories,
   }

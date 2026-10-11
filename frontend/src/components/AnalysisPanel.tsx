@@ -1,17 +1,17 @@
 /** Show the selected period's comparison and factual insights without recalculating them. */
 import type { Analysis, ChangeValues, ComparisonStatus } from '../domain/analysis'
-import type { ImportRecord } from '../storage/types'
 import { formatCurrency, formatPercent, formatPeriod, formatSignedCurrency } from './format'
 
 interface AnalysisPanelProps {
   analysis: Analysis
-  periods: readonly ImportRecord[]
 }
 
 const BLOCKED_MESSAGES: Record<Exclude<ComparisonStatus, 'comparable'>, string> = {
-  no_baseline: 'Aiempaa jaksoa ei ole. Tuo toinen peräkkäinen jakso vertailua varten.',
+  no_baseline: 'Aiempaa jaksoa ei ole. Tuo vertailuvälin kattava aineisto vertailua varten.',
   different_duration: 'Jaksojen pituudet eroavat, joten niitä ei verrata.',
   gap: 'Jaksojen väliin jää päiviä, joten niitä ei verrata.',
+  incomplete_baseline: 'Edelliskuukauden vertailuväli ei sisälly kokonaan yhteen tallennettuun tuontijaksoon. Puuttuvia päiviä ei tulkita nollamenoiksi.',
+  unavailable_dates: 'Vastaavia päivämääriä ei ole edelliskuukaudessa. Osajaksoa ei lyhennetä automaattisesti.',
 }
 
 function ChangeLine({ values }: { values: ChangeValues }) {
@@ -36,18 +36,26 @@ function ChangeLine({ values }: { values: ChangeValues }) {
   )
 }
 
-export function AnalysisPanel({ analysis, periods }: AnalysisPanelProps) {
+export function AnalysisPanel({ analysis }: AnalysisPanelProps) {
   const { comparison, insights } = analysis
-  const baseline = periods.find((period) => period.id === comparison.baseline_import_id)
 
   return (
     <section className="analysis-section" aria-labelledby="comparison-title">
-      <h4 id="comparison-title">Vertailu aiempaan jaksoon</h4>
-      {baseline && (
+      <h4 id="comparison-title">
+        {comparison.mode === 'previous_month'
+          ? 'Vertailu edelliskuukauden vastaavaan ajanjaksoon'
+          : 'Vertailu aiempaan jaksoon'}
+      </h4>
+      {comparison.baseline_period && (
         <p className="comparison-periods">
-          Aiempi {formatPeriod(baseline)} → valittu {formatPeriod(analysis.summary)}
+          {comparison.status === 'comparable' ? 'Aiempi' : 'Tarvittava vertailuväli'}{' '}
+          {formatPeriod(comparison.baseline_period)} → valittu {formatPeriod(comparison.current_period)}
         </p>
       )}
+      <p className="field-hint">
+        Vertailu perustuu ilmoitettujen jaksojen aineistoon. Maksujen ajoitus voi vaikuttaa muutokseen;
+        pienempi menosumma ei yksin tarkoita säästöä.
+      </p>
 
       {comparison.status !== 'comparable' ? (
         <p className="empty-state">{BLOCKED_MESSAGES[comparison.status]}</p>

@@ -12,7 +12,7 @@ function failure(code: HistoryErrorCode, message: string): HistoryResult<never> 
   return { ok: false, error: { code, message, row: null, field: null } }
 }
 
-/** Find the requested import and compare it with its nearest earlier period. */
+/** Find the requested import; the domain chooses and filters the comparison window. */
 export async function getAnalysis(
   storage: AnalysisStorage,
   selectedImportId: string,

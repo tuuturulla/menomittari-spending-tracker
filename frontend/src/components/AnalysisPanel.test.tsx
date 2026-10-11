@@ -18,13 +18,16 @@ const may: ImportRecord = {
 }
 
 function expense(importId: string, cents: number): AnalysisTransaction {
-  return { import_id: importId, amount_cents: -cents, kind: 'expense', category_code: 'groceries' }
+  return {
+    import_id: importId, date: importId === 'april' ? '2026-04-03' : '2026-05-03',
+    amount_cents: -cents, kind: 'expense', category_code: 'groceries',
+  }
 }
 
 describe('analysis panel', () => {
   it('shows both periods and a readable blocked reason with one import', () => {
     const analysis = analyzePeriods(april, [april], [expense('april', 9_000)])
-    const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} periods={[april]} />)
+    const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} />)
 
     expect(html).toContain('Aiempaa jaksoa ei ole')
     expect(html).not.toContain('Menojen muutos')
@@ -32,7 +35,7 @@ describe('analysis panel', () => {
 
   it('calls a zero-to-positive change new spending without an undefined percentage', () => {
     const analysis = analyzePeriods(may, [may, april], [expense('may', 1_500)])
-    const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} periods={[may, april]} />)
+    const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} />)
 
     expect(html).toContain('1.4.2026–30.4.2026')
     expect(html).toContain('1.5.2026–30.5.2026')
@@ -48,10 +51,34 @@ describe('analysis panel', () => {
       expense('april', 1_000),
       expense('may', 1_500),
     ])
-    const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} periods={[may, april]} />)
+    const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} />)
 
     expect(html).toContain('ei muutosta')
     expect(html).toContain('+50,00 %')
     expect(html).not.toContain('Ei laskettavissa')
+  })
+
+  it('shows the actual filtered baseline dates rather than the whole source import', () => {
+    const partialMay = { ...may, period_end: '2026-05-15' }
+    const analysis = analyzePeriods(partialMay, [april, partialMay], [expense('april', 1_000)])
+    const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} />)
+
+    expect(html).toContain('Vertailu edelliskuukauden vastaavaan ajanjaksoon')
+    expect(html).toContain('1.4.2026–15.4.2026')
+    expect(html).toContain('1.5.2026–15.5.2026')
+    expect(html).not.toContain('30.4.2026')
+    expect(html).toContain('Maksujen ajoitus voi vaikuttaa muutokseen')
+  })
+
+  it('names the requested interval and explains incomplete coverage', () => {
+    const partialApril = { ...april, period_start: '2026-04-02' }
+    const partialMay = { ...may, period_end: '2026-05-15' }
+    const analysis = analyzePeriods(partialMay, [partialMay, partialApril], [])
+    const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} />)
+
+    expect(html).toContain('Tarvittava vertailuväli')
+    expect(html).toContain('1.4.2026–15.4.2026')
+    expect(html).toContain('Puuttuvia päiviä ei tulkita nollamenoiksi')
+    expect(html).not.toContain('Menojen muutos')
   })
 })
