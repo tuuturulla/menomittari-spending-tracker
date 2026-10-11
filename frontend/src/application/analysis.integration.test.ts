@@ -63,17 +63,17 @@ describe('analysis with IndexedDB', () => {
   it('imports all four public demos and compares only matching June days for July', async () => {
     await storage.open()
     const demos = [
-      { csv: aprilCsv, start: '2026-04-01', end: '2026-04-30' },
-      { csv: mayCsv, start: '2026-05-01', end: '2026-05-31' },
-      { csv: juneCsv, start: '2026-06-01', end: '2026-06-30' },
-      { csv: julyHalfCsv, start: '2026-07-01', end: '2026-07-15' },
+      { csv: aprilCsv, start: '2026-04-01', end: '2026-04-30', count: 9 },
+      { csv: mayCsv, start: '2026-05-01', end: '2026-05-31', count: 9 },
+      { csv: juneCsv, start: '2026-06-01', end: '2026-06-30', count: 9 },
+      { csv: julyHalfCsv, start: '2026-07-01', end: '2026-07-15', count: 6 },
     ]
     const imports = []
     for (const demo of demos) {
       const result = await importCsv(
         new Blob([demo.csv]), demo.start, demo.end, storage, dependencies,
       )
-      expect(result).toMatchObject({ ok: true, data: { transaction_count: 9 } })
+      expect(result).toMatchObject({ ok: true, data: { transaction_count: demo.count } })
       if (!result.ok) return
       imports.push(result.data)
     }
@@ -101,28 +101,29 @@ describe('analysis with IndexedDB', () => {
     expect(julyAnalysis).toMatchObject({
       ok: true,
       data: {
-        summary: { expense_cents: 9_000, refund_cents: 0 },
+        summary: { expense_cents: 5_750, refund_cents: 0 },
         comparison: {
           status: 'comparable', baseline_import_id: june.id, mode: 'previous_month',
           current_period: { period_start: '2026-07-01', period_end: '2026-07-15' },
           baseline_period: { period_start: '2026-06-01', period_end: '2026-06-15' },
-          totals: { previous_cents: 9_500, current_cents: 9_000, delta_cents: -500, delta_percent: -5.26 },
+          totals: { previous_cents: 9_500, current_cents: 5_750, delta_cents: -3_750, delta_percent: -39.47 },
           categories: expect.arrayContaining([
-            expect.objectContaining({ category_code: 'groceries', previous_cents: 6_000, current_cents: 5_000 }),
-            expect.objectContaining({ category_code: 'dining', previous_cents: 2_000, current_cents: 1_500 }),
-            expect.objectContaining({ category_code: 'transport', previous_cents: 0, current_cents: 500 }),
+            expect.objectContaining({ category_code: 'groceries', previous_cents: 6_000, current_cents: 3_000 }),
+            expect.objectContaining({ category_code: 'dining', previous_cents: 2_000, current_cents: 750 }),
+            expect.objectContaining({ category_code: 'subscriptions', previous_cents: 1_500, current_cents: 1_500 }),
+            expect.objectContaining({ category_code: 'transport', previous_cents: 0, current_cents: 0 }),
             expect.objectContaining({ category_code: 'unknown', previous_cents: 0, current_cents: 500 }),
           ]),
         },
         insights: [
-          expect.objectContaining({ code: 'total_change', delta_cents: -500 }),
-          expect.objectContaining({ code: 'new_category_spend', category_code: 'transport' }),
+          expect.objectContaining({ code: 'total_change', delta_cents: -3_750 }),
+          expect.objectContaining({ code: 'new_category_spend', category_code: 'unknown' }),
         ],
       },
     })
     expect(await storage.readAnalysisSnapshot()).toEqual(before)
     expect(before.imports).toHaveLength(4)
-    expect(before.transactions).toHaveLength(36)
+    expect(before.transactions).toHaveLength(33)
 
     // A rejected second import names the conflicting period and changes nothing.
     const repeated = await importCsv(

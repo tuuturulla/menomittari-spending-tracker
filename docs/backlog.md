@@ -95,7 +95,7 @@ Valmistumisen ehdot:
 - Enintään kolme havaintoa noudattaa aineistokuvauksen laskentasääntöjä ja näyttää vertailujaksot.
 - Neljä pientä demo-CSV:tä kattavat rajapäivät, samannäköiset erilliset ostokset, plusmerkkisen tulon, tunnistamattoman menon ja osajakson ulkopuolelle jäävät menot. Ne voidaan tuoda peräkkäin samalle demokäyttäjälle ilman päällekkäisyyttä.
 
-Tarkistus: +55 euroa / +61,11 %, Ruokakauppa +30 euroa / +50 % ja uusi Tilaukset-meno 15 euroa. Neljän demon tuontiketju tuottaa 36 tapahtumaa; heinäkuun 1.–15. päivän 90 euroa vertautuu kesäkuun samojen päivien 95 euroon, ei koko kesäkuun 125 euroon. Lisäksi yhden tuonnin tila, kokonaiset eri pituiset kuukaudet, osajakson rajapäiväsuodatus, puuttuva kattavuus, helmikuu ja karkausvuosi, vuodenvaihde, usean kuukauden jaksojen pituus/aukko, aiempi nollasumma, muuttumaton kulutus, tasatilanne, tuonti väärässä aikajärjestyksessä sekä historian säilyminen uudelleenavauksessa ja päällekkäisen tuonnin hylkäyksessä.
+Tarkistus: +55 euroa / +61,11 %, Ruokakauppa +30 euroa / +50 % ja uusi Tilaukset-meno 15 euroa. Neljän demon tuontiketju tuottaa 33 tapahtumaa; heinäkuun 1.–15. päivän 57,50 euroa vertautuu kesäkuun samojen päivien 95 euroon, ei koko kesäkuun 125 euroon. Lisäksi yhden tuonnin tila, kokonaiset eri pituiset kuukaudet, osajakson rajapäiväsuodatus, puuttuva kattavuus, helmikuu ja karkausvuosi, vuodenvaihde, usean kuukauden jaksojen pituus/aukko, aiempi nollasumma, muuttumaton kulutus, tasatilanne, tuonti väärässä aikajärjestyksessä sekä historian säilyminen uudelleenavauksessa ja päällekkäisen tuonnin hylkäyksessä.
 
 ## P0-08: Varmuuskopio ja esittelyn viimeistely
 

@@ -89,14 +89,14 @@ Tyhjän historian kopio on sallittu. Palautus säilyttää tunnisteet ja luokitu
 
 ## Demojen odotusarvot
 
-Kaikki neljä CSV:tä ovat täysin fiktiivisiä ja sisältävät yhdeksän tapahtumaa. Tiedostot voi tuoda samalle uudelle demokäyttäjälle alla olevassa järjestyksessä ilman päällekkäisyyttä. Huhti–kesäkuussa valitaan kokonainen kuukausi, heinäkuussa oma ajanjakso 1.–15.7. Toukokuun tiedosto sisältää nyt tapahtuman 31.5., joten sen tuonti päättyen 30.5. hylätään.
+Kaikki neljä CSV:tä ovat täysin fiktiivisiä. Kokonaisissa kuukausidemoissa on yhdeksän tapahtumaa, lyhyemmässä osajaksossa kuusi. Osajakson summa erottuu kokonaisista kuukausista; rivimäärien ei tarvitse olla samoja testikattavuuden säilyttämiseksi. Tiedostot voi tuoda samalle uudelle demokäyttäjälle alla olevassa järjestyksessä ilman päällekkäisyyttä. Huhti–kesäkuussa valitaan kokonainen kuukausi, heinäkuussa oma ajanjakso 1.–15.7. Toukokuun tiedosto sisältää nyt tapahtuman 31.5., joten sen tuonti päättyen 30.5. hylätään.
 
-| Tiedosto | Ilmoitettu kattavuus | Menot | Palautukset | Menot päiviltä 1–15 |
-| --- | --- | ---: | ---: | ---: |
-| [demo-2026-04.csv](../frontend/tests/fixtures/demo-2026-04.csv) | 1.–30.4.2026 | 90,00 € | 5,00 € | 75,00 € |
-| [demo-2026-05.csv](../frontend/tests/fixtures/demo-2026-05.csv) | 1.–31.5.2026 | 145,00 € | 5,00 € | 125,00 € |
-| [s-pankki-demo-2026-06.csv](../frontend/tests/fixtures/s-pankki-demo-2026-06.csv) | 1.–30.6.2026 | 125,00 € | 0,00 € | 95,00 € |
-| [s-pankki-demo-2026-07-half.csv](../frontend/tests/fixtures/s-pankki-demo-2026-07-half.csv) | 1.–15.7.2026 | 90,00 € | 0,00 € | 90,00 € |
+| Tiedosto | Ilmoitettu kattavuus | Tapahtumia | Menot | Palautukset | Menot päiviltä 1–15 |
+| --- | --- | ---: | ---: | ---: | ---: |
+| [demo-2026-04.csv](../frontend/tests/fixtures/demo-2026-04.csv) | 1.–30.4.2026 | 9 | 90,00 € | 5,00 € | 75,00 € |
+| [demo-2026-05.csv](../frontend/tests/fixtures/demo-2026-05.csv) | 1.–31.5.2026 | 9 | 145,00 € | 5,00 € | 125,00 € |
+| [s-pankki-demo-2026-06.csv](../frontend/tests/fixtures/s-pankki-demo-2026-06.csv) | 1.–30.6.2026 | 9 | 125,00 € | 0,00 € | 95,00 € |
+| [s-pankki-demo-2026-07-half.csv](../frontend/tests/fixtures/s-pankki-demo-2026-07-half.csv) | 1.–15.7.2026 | 6 | 57,50 € | 0,00 € | 57,50 € |
 
 Jokaisessa on plusmerkkinen 2 000 euron tulo, viiden euron tunnistamaton Demo Kioski -meno sekä kaksi saman päivän samansuuruista Demo Market -ostosta. Kuukausidemot sisältävät menoja molemmilla puoliskoilla sekä ensimmäisenä ja viimeisenä päivänä. Heinäkuun osajakson rajapäivät ovat 1. ja 15.7. Rivit eivät ole aikajärjestyksessä, joten tapahtumanäkymän järjestäminen tulee myös esiin.
 
@@ -119,18 +119,18 @@ Marketin kaksi menoriviä ovat kummassakin tiedostossa identtisiä myös päivä
 
 Odotus: menot 90,00 → 145,00 euroa ja palautukset 5,00 euroa molemmissa. Havainnot: kokonaismuutos +55,00 euroa / +61,11 %, Ruokakauppa +30,00 euroa / +50 % ja uusi Tilaukset-meno 15,00 euroa. Palautetun varmuuskopion tulee antaa samat tulokset.
 
-Kesäkuun kokonaiset menot pienenevät toukokuusta 20,00 euroa / 13,79 %. Heinäkuun osajakso vertautuu sen sijaan vain kesäkuun päiviin 1–15: 95,00 → 90,00 euroa, muutos −5,00 euroa / −5,26 %. Kesäkuun 16.–30. päivän menot, yhteensä 30,00 euroa, jäävät tästä vertailusta pois mutta säilyvät historiassa.
+Kesäkuun kokonaiset menot pienenevät toukokuusta 20,00 euroa / 13,79 %. Heinäkuun osajakso vertautuu sen sijaan vain kesäkuun päiviin 1–15: 95,00 → 57,50 euroa, muutos −37,50 euroa / −39,47 %. Kesäkuun 16.–30. päivän menot, yhteensä 30,00 euroa, jäävät tästä vertailusta pois mutta säilyvät historiassa.
 
 | Osajakson menoryhmä | 1.–15.6. | 1.–15.7. |
 | --- | ---: | ---: |
-| Ruokakauppa | 60,00 € | 50,00 € |
-| Ravintolat | 20,00 € | 15,00 € |
+| Ruokakauppa | 60,00 € | 30,00 € |
+| Ravintolat | 20,00 € | 7,50 € |
 | Tilaukset | 15,00 € | 15,00 € |
-| Liikenne | 0,00 € | 5,00 € |
+| Liikenne | 0,00 € | 0,00 € |
 | Tunnistamattomat | 0,00 € | 5,00 € |
 
-Osajakson havainnot ovat kokonaismenojen pienentyminen sekä uusi Liikenne-meno. Liikenne ja Tunnistamattomat ovat tasatilanteessa; kategoriakoodi transport voittaa unknown-koodin. Uusi meno tarkoittaa tässä uutta kyseisellä vertailuvälillä, ei ettei koko historiassa olisi koskaan ollut kyseisen ryhmän menoja.
+Osajakson havainnot ovat kokonaismenojen pienentyminen sekä uusi Tunnistamattomat-meno. Liikenteessä ei ole muutosta. Uusi meno tarkoittaa tässä uutta kyseisellä vertailuvälillä, ei ettei koko historiassa olisi koskaan ollut kyseisen ryhmän menoja.
 
 Pienet aineistot osoittavat tuonnin, ryhmittelyn ja vertailun toimintaa, eivät oikean pankkiaineiston kattavaa tukea tai säännöllisten kulujen tunnistusta. Harvinaisemmat virhe- ja kokorajatilanteet testataan erillisillä testisyötteillä, ei paisuttamalla esittelytiedostoja.
 
-Aiemmin tuotuja demoja ei korvata tai täydennetä automaattisesti. Koko päivitetty esittelypolku kannattaa kokeilla uudella fiktiivisellä demokäyttäjällä: vanhan jakson uudelleentuonti estyy, eikä käyttäjän historiaa tarvitse poistaa. Neljän onnistuneen tuonnin jälkeen kannassa on 4 tuontia ja 36 tapahtumaa. Heinäkuun koko kuukauden tuonti osajakson päälle hylätään, ja viesti nimeää jo tallennetun välin 1.–15.7.
+Aiemmin tuotuja demoja ei korvata tai täydennetä automaattisesti. Koko päivitetty esittelypolku kannattaa kokeilla uudella fiktiivisellä demokäyttäjällä: vanhan jakson uudelleentuonti estyy, eikä käyttäjän historiaa tarvitse poistaa. Neljän onnistuneen tuonnin jälkeen kannassa on 4 tuontia ja 33 tapahtumaa. Heinäkuun koko kuukauden tuonti osajakson päälle hylätään, ja viesti nimeää jo tallennetun välin 1.–15.7.

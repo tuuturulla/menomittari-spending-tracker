@@ -1,10 +1,7 @@
 Kirjauspäivä;Maksupäivä;Summa;Tapahtumalaji;Maksaja;Saajan nimi;Saajan tilinumero;Saajan BIC-tunnus;Viitenumero;Viesti;Arkistointitunnus
-3.7.2026;3.7.2026;-25,00;Korttiosto;;Demo Market;DEMO-TILI;DEMO-BIC;;;DEMO-HEINA-001
-3.7.2026;3.7.2026;-25,00;Korttiosto;;Demo Market;DEMO-TILI;DEMO-BIC;;;DEMO-HEINA-002
-1.7.2026;1.7.2026;-5,00;Korttiosto;;Demo Cafe;DEMO-TILI;DEMO-BIC;;;DEMO-HEINA-003
-08.07.2026;08.07.2026;-5,00;Korttiosto;;;;;;Demo Cafe;DEMO-HEINA-004
+3.7.2026;3.7.2026;-15,00;Korttiosto;;Demo Market;DEMO-TILI;DEMO-BIC;;;DEMO-HEINA-001
+3.7.2026;3.7.2026;-15,00;Korttiosto;;Demo Market;DEMO-TILI;DEMO-BIC;;;DEMO-HEINA-002
+1.7.2026;1.7.2026;-7,50;Korttiosto;;Demo Cafe;DEMO-TILI;DEMO-BIC;;;DEMO-HEINA-003
 12.7.2026;12.7.2026;-15,00;Korttiosto;;Demo Stream;DEMO-TILI;DEMO-BIC;;;DEMO-HEINA-005
 15.7.2026;15.7.2026;+2000,00;Tilisiirto;Demo Employer;;;;;Demo salary;DEMO-HEINA-006
 15.7.2026;15.7.2026;-5,00;Korttiosto;;Demo Kioski;DEMO-TILI;DEMO-BIC;;;DEMO-HEINA-007
-10.7.2026;10.7.2026;-5,00;Korttiosto;;Demo Bus;DEMO-TILI;DEMO-BIC;;;DEMO-HEINA-008
-15.7.2026;15.7.2026;-5,00;Korttiosto;;Demo Cafe;DEMO-TILI;DEMO-BIC;;;DEMO-HEINA-009

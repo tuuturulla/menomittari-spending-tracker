@@ -112,7 +112,9 @@ Käyttöliittymä tekee analyysin vain valitun jakson vaihtuessa tai onnistuneen
 
 Alkuperäisissä huhti–toukokuun demoissa kaikki menot osuivat kuukauden alkupuolelle ja pankkimuodon demossa oli vain kolme tapahtumaa. Näillä tuonnin saattoi näyttää, mutta puolikkaan kuun vertailu ei havainnollistanut loppukuun menojen poissulkemista.
 
-Nyt kaikissa neljässä CSV:ssä on yhdeksän tapahtumaa. Huhti–toukokuun kokonaissummat säilyivät 90 ja 145 eurossa: ravintolamenoja jaettiin eri päiville ja pieni osa menoista siirrettiin tunnistamattomaan ryhmään. Saman päivän kaksi identtistä ruokakauppaostosta säilytettiin tarkoituksella. Tulot, tilisiirrot ja palautukset osoittavat demomuodossa, mitä ei lasketa menoihin. Pankkimuodossa on menoja ja tuloja sekä desimaalipilkun ja puuttuvan saajanimen tapauksia.
+Kokonaisissa kuukausidemoissa on yhdeksän tapahtumaa ja heinäkuun puolikkaassa kuusi. Osajaksoa lyhennettiin, jotta se erottuu esittelyssä kokonaisista kuukausista: kaksi 15 euron ruokakauppaostosta, 7,50 euron ravintolameno, 15 euron tilausmeno, 5 euron tunnistamaton meno ja yksi tulo. Menot ovat yhteensä 57,50 euroa. Samat rivimäärät eivät ole testikattavuuden edellytys, eikä puolikkaan kuukauden menosumman tarvitse yleisesti olla tasan puolet kokonaisen kuukauden menoista.
+
+Huhti–toukokuun kokonaissummat säilyivät 90 ja 145 eurossa: ravintolamenoja jaettiin eri päiville ja pieni osa menoista siirrettiin tunnistamattomaan ryhmään. Saman päivän kaksi identtistä ruokakauppaostosta säilytettiin tarkoituksella. Tulot, tilisiirrot ja palautukset osoittavat demomuodossa, mitä ei lasketa menoihin. Pankkimuodossa on menoja ja tuloja sekä desimaalipilkun ja kesäkuussa puuttuvan saajanimen tapauksia.
 
 Kesäkuun pankkidemoon lisättiin alku- ja loppukuun menoja. Uusi pankkimuotoinen osajakso on **1.–15.7.2026**, ei toinen kesäkuun tuonti: näin kaikki neljä tiedostoa voi tuoda samalle demokäyttäjälle ilman päällekkäisyyttä. Rajapäivien menot osoittavat, että molemmat rajat kuuluvat mukaan.
 
@@ -122,10 +124,10 @@ Tärkeä käsin tarkistettava ketju:
 kesäkuun koko tuonti: 125 €
   päivät 1–15:        95 €
   päivät 16–30:       30 €
-heinäkuun päivät 1–15: 90 €
+heinäkuun päivät 1–15: 57,50 €
 
-vertailu: 90 − 95 = −5 € eli −5,26 %
-ei:       90 − 125 = −35 €
+vertailu: 57,50 − 95 = −37,50 € eli −39,47 %
+ei:       57,50 − 125 = −67,50 €
 ```
 
 Tarkat tiedostot, rivimäärät, ryhmäsummat ja odotetut havainnot ovat yhdessä paikassa: [demojen odotusarvot](data-contract.md#demojen-odotusarvot). Lyhyet CSV:t ovat käsin luettavia esimerkkejä, eivät realistinen vuoden taloushistoria tai todiste säännöllisten kulujen tunnistamisesta.
@@ -147,7 +149,7 @@ Sovelluksen tuotantokoodia, käyttöliittymää, pankkisovitinta tai tietokantam
 
 Selaintarkistus tehtiin erillisessä Codexin sisäisen selaimen komponenttiesikatselussa portissa 5174, vain fiktiivisillä riveillä ja ilman kirjautumista tai tietokantakirjoituksia. Kuukausivalinta täytti toukokuun loppupäiväksi 31.5. ja karkausvuoden helmikuun loppupäiväksi 29.2. Kuukausi → oma jakso → kuukausi säilytti valinnan, ja lomake lähetti näkyvät päivät. Osajaksovertailu näytti 1.–15.4. vastaan 1.–15.5. sekä +5 euroa / +50 %. Uusi lomake mahtui 390 pikselin leveyteen ilman vaakavieritystä. Väliaikainen esikatselu poistettiin tarkistuksen jälkeen. Tämä ei korvaa P0-08:n koko sovelluksen käyttötestiä.
 
-Demoaineistojen tasapainotuksen lopullinen tarkistus 11.10.2026: frontendin kaikki 92 testiä 16 testitiedostossa läpäisivät Dockerissa. Tyyppitarkistus ja julkaisutiedostojen kokoaminen onnistuivat; lint-tarkistus ilmoitti 0 virhettä ja 0 varoitusta. Backendin koodia tai tietokantamallia ei muutettu, eikä tästä tarkennuksesta kirjata uutta backendin testitulosta. Koko sovelluksen oikean selaimen käyttötesti kuuluu edelleen P0-08:aan.
+Demoaineistojen tasapainotuksen ja osajakson lyhentämisen lopullinen tarkistus 11.10.2026: frontendin kaikki 92 testiä 16 testitiedostossa läpäisivät Dockerissa. Tyyppitarkistus ja julkaisutiedostojen kokoaminen onnistuivat; lint-tarkistus ilmoitti 0 virhettä ja 0 varoitusta. Backendin koodia tai tietokantamallia ei muutettu, eikä tästä tarkennuksesta kirjata uutta backendin testitulosta. Koko sovelluksen oikean selaimen käyttötesti kuuluu edelleen P0-08:aan.
 
 Tarkistuskomennot projektikansiossa:
 
@@ -165,8 +167,8 @@ Käytä uutta fiktiivistä demokäyttäjää, jos vanhat versiot on jo tuotu. P�
 1. Tuo [huhtikuun demo](../frontend/tests/fixtures/demo-2026-04.csv) kuukausivalinnalla huhtikuulle 2026. Päivät ovat `2026-04-01–2026-04-30`. Yhteenveto näyttää 90 euroa; vertailussa lukee, ettei aiempaa jaksoa ole.
 2. Tuo [toukokuun demo](../frontend/tests/fixtures/demo-2026-05.csv) kuukausivalinnalla toukokuulle 2026. Päivät ovat `2026-05-01–2026-05-31`. Tarkista 145 euroa, vertailu huhtikuuhun ja kolme havaintoa.
 3. Tuo [kesäkuun pankkidemo](../frontend/tests/fixtures/s-pankki-demo-2026-06.csv) kokonaiselle kesäkuulle. Menot ovat 125 euroa; vertailu käyttää koko toukokuun 145 euroa.
-4. Tuo [heinäkuun osajakso](../frontend/tests/fixtures/s-pankki-demo-2026-07-half.csv) **omana ajanjaksona** `2026-07-01–2026-07-15`. Tarkista 90 euroa, vertailun aiempi summa 95 euroa ja päivät 1.–15.6. Muutos on −5 euroa / −5,26 %.
-5. Vaihda valikosta kesäkuuhun: sen koko tuonnin yhteenveto on yhä 125 euroa. Neljässä tuonnissa on yhteensä 36 tapahtumaa.
+4. Tuo [heinäkuun osajakso](../frontend/tests/fixtures/s-pankki-demo-2026-07-half.csv) **omana ajanjaksona** `2026-07-01–2026-07-15`. Tarkista kuusi tapahtumaa, 57,50 euroa, vertailun aiempi summa 95 euroa ja päivät 1.–15.6. Muutos on −37,50 euroa / −39,47 %.
+5. Vaihda valikosta kesäkuuhun: sen koko tuonnin yhteenveto on yhä 125 euroa. Neljässä tuonnissa on yhteensä 33 tapahtumaa.
 6. Kokeile heinäkuun osajakson tiedostoa uudelleen koko heinäkuulle. Tuonti estyy ja viesti nimeää valitun sekä jo tallennetun jakson. Historia ei muutu. Tämä ei tarkoita, että osajakson tiedoston ilmoittaminen kokonaiseksi kuukaudeksi olisi oikein.
 7. Lue [change](../frontend/src/domain/analysis.ts)-funktion neljä palautettua kenttää ja etsi niitä vastaavat tekstit [AnalysisPanelista](../frontend/src/components/AnalysisPanel.tsx). Kysy itseltäsi: mistä aiempi summa tulee, mistä nykyinen, missä sentti muuttuu euroksi?
 

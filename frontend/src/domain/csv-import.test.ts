@@ -102,14 +102,14 @@ describe('CSV import domain', () => {
 
   // Keep every public demo small, but cover real import and comparison boundaries.
   it.each([
-    { name: 'April', csv: aprilCsv, start: '2026-04-01', end: '2026-04-30',
+    { name: 'April', csv: aprilCsv, start: '2026-04-01', end: '2026-04-30', count: 9,
       expenses: 9_000, refunds: 500, firstHalf: 7_500, firstDay: 1_000, lastDay: 500 },
-    { name: 'May', csv: mayCsv, start: '2026-05-01', end: '2026-05-31',
+    { name: 'May', csv: mayCsv, start: '2026-05-01', end: '2026-05-31', count: 9,
       expenses: 14_500, refunds: 500, firstHalf: 12_500, firstDay: 2_000, lastDay: 1_500 },
-    { name: 'June', csv: sPankkiCsv, start: '2026-06-01', end: '2026-06-30',
+    { name: 'June', csv: sPankkiCsv, start: '2026-06-01', end: '2026-06-30', count: 9,
       expenses: 12_500, refunds: 0, firstHalf: 9_500, firstDay: 750, lastDay: 500 },
-    { name: 'July half-month', csv: sPankkiHalfCsv, start: '2026-07-01', end: '2026-07-15',
-      expenses: 9_000, refunds: 0, firstHalf: 9_000, firstDay: 500, lastDay: 1_000 },
+    { name: 'July half-month', csv: sPankkiHalfCsv, start: '2026-07-01', end: '2026-07-15', count: 6,
+      expenses: 5_750, refunds: 0, firstHalf: 5_750, firstDay: 750, lastDay: 500 },
   ])('keeps the $name fixture balanced and hand-checkable', (demo) => {
     const rows = parseImportCsv(demo.csv, demo.start, demo.end)
     const summary = calculateSummary(
@@ -119,7 +119,7 @@ describe('CSV import domain', () => {
       .filter((row) => row.kind === 'expense' && matches(row.date))
       .reduce((sum, row) => sum + row.amount_cents, 0)
 
-    expect(rows).toHaveLength(9)
+    expect(rows).toHaveLength(demo.count)
     expect(summary).toMatchObject({ expense_cents: demo.expenses, refund_cents: demo.refunds })
     expect(summary.categories.find((item) => item.category_code === 'unknown')?.expense_cents)
       .toBe(500)
@@ -137,7 +137,7 @@ describe('CSV import domain', () => {
       row.date === marketPurchases[0].date && row.amount_cents === marketPurchases[0].amount_cents,
     )
     expect(matchingPurchases).toHaveLength(2)
-    expect(new Set(rows.map((row) => row.source_row)).size).toBe(9)
+    expect(new Set(rows.map((row) => row.source_row)).size).toBe(demo.count)
   })
 
   it('does not guess an S-Pankki layout when the complete header does not match', () => {
