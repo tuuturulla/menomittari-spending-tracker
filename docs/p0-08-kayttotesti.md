@@ -37,8 +37,8 @@ Docker-konteissa samalla lopullisella toteutuksella:
 
 Palautuksen integraatiotesti vertaa alkuperäisiä ja palautettuja tietueita kenttä kentältä sekä kaikkien neljän jakson analyysituloksia. Lisäksi testataan kesken kirjoituksen aiheutettu virhe: tuontitietueetkin peruuntuvat. Kahden yhteyden samanaikaisista palautuksista vain toinen hyväksytään.
 
-## Vielä tarkistettava
+## Käyttäjän vahvistama palautusdemo
 
-Erillisessä tyhjässä selainprofiilissa tehtävä palautus on tekemättä. Käytä [README:n palautusdemoa](../README.md#varmuuskopio-ja-lyhyt-palautusdemo): kirjaudu samalle fiktiiviselle tilille uudessa profiilissa, palauta tiedosto ja tarkista luvut sekä sivun uudelleenavaus. Älä tyhjennä alkuperäistä historiaa. Kirjaa tähän käytetty selain, versio ja tulos tarkistuksen jälkeen.
+Käyttäjä vahvisti 12.10.2026 palautuksen toimineen Chromen tyhjässä vierailijaprofiilissa. Chromen tarkkaa versiota ei ilmoitettu. Tämä on käyttäjän vahvistama tulos, ei agentin aiemman selainalkuperätestin laajennus. [README:n palautusdemo](../README.md#varmuuskopio-ja-lyhyt-palautusdemo) säilyy toistettavana tarkistusohjeena.
 
-P0-08 on tarkistettavana, ei vielä valmis. Laajempaa ulkoasu-uudistusta tai muiden selainten testikierrosta ei toteutettu tässä työosuudessa.
+P0-08 on käyttäjän hyväksymä ja yhdistetty mainiin. Laajempaa ulkoasu-uudistusta tai muiden selainten testikierrosta ei toteutettu tässä työosuudessa.

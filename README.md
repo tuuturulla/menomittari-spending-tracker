@@ -1,121 +1,88 @@
 # Menomittari
 
-Menomittari on kurssityönä toteutettava selainsovellus, joka auttaa ymmärtämään omaa rahankäyttöä. Se ryhmittelee menot, vertaa kahta ajanjaksoa ja näyttää, mikä kulutuksessa muuttui.
+Menomittari on full stack -kurssiprojekti: käyttäjä tuo fiktiivisen CSV-aineiston, tarkastelee menoja ja vertaa kahta ajanjaksoa. React/TypeScript-käyttöliittymä käsittelee taloushistorian paikallisesti IndexedDB:ssä. FastAPI-backend tallentaa vain käyttäjätilit ja kirjautumisistunnot SQLiteen.
 
-Nykyinen MVP on yksinkertainen sääntöpohjainen prototyyppi. Se ei vielä toteuta Menomittarin keskeistä tavoitetta tunnistaa säännöllisiä arjen kuluja ja tilauksia, eikä näytä vuoden rahankäytön yleiskuvaa. Tilaukset-ryhmään luokittelu ei tarkoita, että maksun toistuvuus olisi tunnistettu. Käyttöliittymän visuaalinen ilme on alustava ja palvelee kurssiesittelyä.
+Kurssiversio ei ole tuotantopalvelu. Se ei tunnista maksujen toistuvuutta, näytä vuoden yleiskuvaa tai synkronoi taloustietoja. Kaikki [MVP:n rajaukset](docs/project-plan.md#mvpn-rajaukset) ovat projektisuunnitelmassa.
 
-## Näin sovellusta käytetään
+## Käynnistäminen
 
-1. Tuo sovellukseen esimerkkitiedosto. Valitse kokonainen kuukausi tai ilmoita tiedoston oma ajanjakso.
-2. Tarkastele tapahtumia ja menoja ryhmittäin.
-3. Tuo toinen jakso ja katso muutokset. Kuukauden sisäinen jakso vertautuu edelliskuukauden vastaavaan väliin, esimerkiksi 1.–15.5. vastaan 1.–15.4. Kokonaiset kuukaudet vertautuvat kokonaisiin kuukausiin niiden pituuseroista huolimatta.
-
-Vertailuvälin pitää sisältyä kokonaan yhteen tallennettuun tuontiin. Päällekkäiset tuonnit estetään ja virheviesti kertoo kyseiset jaksot. Osajaksoja ei yhdistetä kokonaiseksi kuukaudeksi eikä aiempaa tuontia korvata.
-
-Ensimmäinen versio käyttää vain keksittyjä tapahtumia. Se lukee Menomittarin oman demomuodon sekä S-Pankin tilitapahtumaviennistä tunnetun CSV-kenttärakenteen, mutta ei PDF-tiliotteita. Pankkituen testiaineistot ovat täysin fiktiivisiä, eikä kurssiversiota ole vielä tarkoitettu oikeiden taloustietojen käsittelyyn. Koko rajaus on koottu yhteen paikkaan [projektisuunnitelman MVP:n rajaukset -osioon](docs/project-plan.md#mvpn-rajaukset).
-
-Pieni esittelypolku: tuo uudelle fiktiiviselle demokäyttäjälle huhtikuu, toukokuu ja kesäkuu 2026 kokonaisina kuukausina, sitten heinäkuun 1.–15. päivän demo omana ajanjaksona. Kokonaisissa kuukausidemoissa on yhdeksän tapahtumaa, lyhyemmässä osajaksossa kuusi. [Tiedostot, tarkistussummat ja osajakson vertailu](docs/data-contract.md#demojen-odotusarvot) on koottu aineistokuvaukseen. Aiemmin tuodut demot eivät päivity tiedostojen muuttuessa; päällekkäistä historiaa ei korvata.
-
-## Missä tiedot säilyvät?
-
-Tiedostot käsitellään ja taloushistoria tallennetaan omassa selaimessa. Tätä kutsutaan local-first-toteutukseksi. Tapahtumia ei lähetetä palvelimelle. Backend tallentaa erikseen vain käyttäjätilin ja kirjautumisistunnon tiedot.
-
-Tiedot eivät siirry automaattisesti toiselle laitteelle. Selaimen sivustotietojen poistaminen tai laitteen rikkoutuminen voi hävittää historian. Lataa varmuuskopio säännöllisesti ja säilytä kopio myös laitteen ulkopuolella turvallisesti. Käytä kurssiversiossa vain fiktiivisiä aineistoja.
-
-## Varmuuskopio ja lyhyt palautusdemo
-
-1. Rekisteröidy ja kirjaudu fiktiiviselle demotilille. Tuo yllä kuvattu neljän CSV:n ketju: historiaan tulee 4 tuontijaksoa ja 33 tapahtumaa.
-2. Valitse **Lataa varmuuskopio**. Varmista selaimen latauksista, että `YYYY-MM-DD.menomittari-backup.json` tallentui. Nimen päivämäärä on UTC-ajassa.
-3. Avaa sama sovellusosoite erillisessä tyhjässä selainprofiilissa ja kirjaudu samalle tilille. Tilin kirjautuminen ei siirrä taloushistoriaa; sen pitää olla tässä profiilissa tyhjä. Älä poista alkuperäisen profiilin tietoja.
-4. Valitse ladattu JSON kohdasta **Palautettava varmuuskopio** ja paina **Palauta varmuuskopio**. Tarkista 4 jaksoa, 33 tapahtumaa ja samat yhteenvedot. Heinäkuun menot ovat 57,50 € ja vertailussa kesäkuun 1.–15. päivän 95,00 €.
-5. Päivitä sivu ja tarkista säilyminen. Uusi palautus tähän jo täytettyyn historiaan estetään eikä se korvaa tietoja.
-
-JSON-kopio on salaamaton: tiedoston saaja voi lukea tapahtumat. Kopio sisältää tuontijaksot ja tapahtumat alkuperäisine tunnisteineen ja luokituksineen, ei käyttäjätiliä, salasanaa, istuntoa, alkuperäisiä CSV-tiedostoja tai valmiita analyysejä. Palautus tarkistaa koko tiedoston ennen kirjoitusta ja onnistuu kokonaan tai ei lainkaan. Enintään 16 MiB; vain siirtomuodon versio 1 ja EUR. Varmuuskopio ei ole automaattinen pilvitallennus tai synkronointi.
-
-## Projektin tila
-
-P0-01–P0-07-vaiheet ovat valmiit. P0-08:n varmuuskopio ja palautus on toteutettu ja tarkistettavana. Automaattiset tarkistukset sekä palautus erilliseen selainalkuperään onnistuivat; erillisen selainprofiilin palautusdemo on vielä tehtävä. Tarkka tilanne on [käyttötestiraportissa](docs/p0-08-kayttotesti.md). Laajempi ulkoasuviimeistely on erillinen työosuus.
-
-## Kehitysympäristön käynnistäminen
-
-Tarvitset Docker Desktopin tai muun ympäristön, jossa `docker compose` toimii. Node.js:ää, pnpm:ää tai Pythonia ei asenneta isäntäkoneelle. Siirry komentorivillä tähän `lopputyo/menomittari`-kansioon.
-
-Rakenna frontendin ja backendin kehityskuvat. Komento asentaa lukitut JavaScript- ja Python-riippuvuudet konttien sisälle:
+Tarvitset Docker Desktopin tai muun toimivan Docker Compose -ympäristön. Siirry tähän `lopputyo/menomittari`-kansioon. Node.js:ää, pnpm:ää tai Pythonia ei asenneta isäntäkoneelle; Python käyttää konteissa `uv`:ta, ei `pip`:iä.
 
 ```powershell
 docker compose build
-```
-
-Alusta tai päivitä backendin SQLite-tietokanta Alembic-migraatioilla:
-
-```powershell
 docker compose run --rm backend uv run --no-sync alembic upgrade head
-```
-
-Käynnistä sovellus:
-
-```powershell
 docker compose up
 ```
 
-Avaa frontend selaimessa <http://127.0.0.1:5173>. Backendin toimintakunnon voi tarkistaa osoitteesta <http://127.0.0.1:8000/api/health> ja sen automaattisen rajapintakuvauksen osoitteesta <http://127.0.0.1:8000/docs>.
+Ensimmäinen komento rakentaa lukitut kehityskuvat, toinen alustaa tai päivittää sovelluksen käyttäjäkannan, ja kolmas käynnistää sovelluksen. Avaa <http://127.0.0.1:5173>. Backendin health: <http://127.0.0.1:8000/api/health>; API-kuvaus: <http://127.0.0.1:8000/docs>.
 
-Kehitysympäristössä istuntoeväste käyttää `SameSite=Lax`-asetusta ja toimii paikallisen HTTP-yhteyden vuoksi ilman `Secure`-lippua. HTTPS-julkaisuympäristössä `MENOMITTARI_SESSION_COOKIE_SECURE` asetetaan arvoon `true`. `SameSite=None` hyväksytään vain yhdessä `Secure`-asetuksen kanssa.
+Vite seuraa tiedostoja polling-menetelmällä Windowsin Docker-liitoshakemiston läpi. Lähdekoodin tallentaminen päivittää näkymää. Vite-asetuksen muutoksen jälkeen käytä `docker compose restart frontend`.
 
-Pysäytä sovellus näppäinyhdistelmällä `Ctrl+C` ja poista käynnistetyt kontit sekä projektiverkko:
+Pysäytä `Ctrl+C`:llä ja poista kontit sekä projektiverkko komennolla `docker compose down`. Älä lisää `--volumes`-valintaa, jos haluat säilyttää backendin käyttäjäkannan.
+
+Kehityksen HTTP-istuntoeväste on `SameSite=Lax` ilman `Secure`-lippua. HTTPS-julkaisussa `MENOMITTARI_SESSION_COOKIE_SECURE=true`; `SameSite=None` edellyttää `Secure`-asetusta. Kehityskäynnistys ei ole tuotantojulkaisuohje.
+
+## Käyttö ja lyhyt esittely
+
+1. Luo fiktiivinen käyttäjätili ja kirjaudu sisään.
+2. Avaa **Tuo CSV**. Valitse esimerkkitiedosto ja kokonainen kuukausi tai tiedoston oma ajanjakso.
+3. Katso **Yhteenveto**: menot, palautukset, menoryhmät ja **Keskeiset muutokset**. Palautusten info toimii hiirellä, näppäimistöllä ja napautuksella; Escape sulkee tiedon.
+4. Avaa **Tapahtumat** rivien tarkasteluun. Jakson valinta säilyy osioiden välillä. **Varmuuskopio** on oma osionsa.
+
+Tuetut muodot ovat Menomittarin demo-CSV ja tunnettu S-Pankin tilitapahtuma-CSV-rakenne, eivät PDF-tiliotteet. Käytä vain fiktiivisiä tietoja.
+
+Esittelypolku uudelle demokäyttäjälle: huhtikuu, toukokuu ja kesäkuu 2026 kokonaisina kuukausina, sitten heinäkuun 1.–15. päivän demo omana ajanjaksona. Näin syntyy 4 tuontia ja 33 tapahtumaa. [Demoaineistot ja käsin tarkistettavat luvut](docs/data-contract.md#demojen-odotusarvot) ovat aineistosopimuksessa.
+
+Kuukauden sisäinen jakso vertautuu edelliskuukauden samoihin päiviin; kokonaiset kuukaudet kokonaisiin kuukausiin niiden pituuseroista huolimatta. Vertailuvälin pitää sisältyä kokonaan yhteen tallennettuun tuontiin. Päällekkäinen tuonti estetään, eikä osajaksoja yhdistetä tai aiempaa tuontia korvata. Palautukset näytetään erikseen eikä niitä vähennetä menoista.
+
+## Varmuuskopio ja lyhyt palautusdemo
+
+Taloushistoria säilyy vain nykyisessä selaimessa. Sivustotietojen poistaminen tai laitteen rikkoutuminen voi hävittää sen; kirjautuminen ei siirrä taloushistoriaa toiselle laitteelle.
+
+1. Tuo yllä kuvattu neljän CSV:n ketju ja valitse **Lataa varmuuskopio**.
+2. Varmista selaimen latauksista, että `YYYY-MM-DD.menomittari-backup.json` tallentui. Nimen päivämäärä on UTC-ajassa.
+3. Avaa sama sovellus erillisessä tyhjässä selainprofiilissa ja kirjaudu samalle tilille. Älä poista alkuperäisen profiilin historiaa.
+4. Valitse ladattu JSON ja paina **Palauta varmuuskopio**. Tarkista 4 jaksoa ja 33 tapahtumaa. Heinäkuun 57,50 € vertautuu kesäkuun 1.–15. päivän 95,00 euroon.
+5. Päivitä sivu ja tarkista säilyminen. Palautus jo täytettyyn historiaan estetään, eikä se korvaa tietoja.
+
+Kopio on salaamaton: tiedoston saaja voi lukea tapahtumat. Säilytä kopio turvallisesti myös laitteen ulkopuolella. Se sisältää tuontijaksot ja tapahtumat alkuperäisine tunnisteineen ja luokituksineen, ei käyttäjätiliä, salasanaa, istuntoa, alkuperäisiä CSV:tä tai valmiita analyysejä. Palautus hyväksyy vain tyhjän historian, enintään 16 MiB, siirtomuodon version 1 ja EUR. Se onnistuu kokonaan tai ei lainkaan. Tämä ei ole automaattinen pilvivarmistus tai synkronointi.
+
+## Tarkistukset yhdellä komennolla
+
+Dockerin ollessa käynnissä, PowerShellissä tästä projektikansiosta:
 
 ```powershell
-docker compose down
+.\scripts\check.ps1
 ```
 
-Vite seuraa lähdetiedostoja polling-menetelmällä, jotta muutokset välittyvät luotettavasti Windowsin Docker Desktop -liitoshakemiston läpi. Kun esimerkiksi `frontend/src/App.tsx` tallennetaan, avoimen selainikkunan pitäisi päivittyä ilman Docker-kuvan uudelleenrakennusta. Jos `vite.config.ts`-asetusta muutetaan palvelimen ollessa jo käynnissä, lataa asetus uudelleen komennolla `docker compose restart frontend`.
+Skripti rakentaa kehityskuvat ja ajaa frontendin testit, tyyppitarkistuksen, lintin ja julkaisuversiokoosteen sekä backendin migraatiotarkistuksen ja testit. Se pysähtyy ensimmäiseen virheeseen: exit-koodi on 1 epäonnistuessa ja 0 onnistuessa. Ensimmäinen rakennus voi hakea kuvia ja lukittuja riippuvuuksia verkosta, mutta mitään ei asenneta isäntäkoneelle.
 
-## Tarkistukset
+Migraatiot tehdään poistuvan testikontin `/tmp`-kantaan. Python-testit käyttävät omia tilapäisiä tai muistikantojaan; frontend-testit `fake-indexeddb`:tä. Skripti ei päivitä tavallista backend-kantaa, tyhjennä selainhistoriaa tai pysäytä käynnissä olevaa sovellusta. `build` tuottaa ohitetun `frontend/dist`-kansion. Selainkäyttötesti tehdään erikseen. Paikallinen skripti ei lisää Menomittaria nykyiseen GitLab-putkeen.
 
-Seuraavat komennot on todennettu Docker-konteissa. Ne eivät vaadi paikallista Node.js- tai Python-asennusta.
-
-Backend:
+Yksittäinen tarkistus tarvittaessa:
 
 ```powershell
-docker compose run --rm backend uv run --no-sync alembic upgrade head
-docker compose run --rm backend uv run --no-sync pytest -W error
+docker compose run --rm --no-deps frontend pnpm test
+docker compose run --rm --no-deps frontend pnpm typecheck
+docker compose run --rm --no-deps frontend pnpm lint
+docker compose run --rm --no-deps frontend pnpm build
+docker compose run --rm --no-deps backend uv run --no-sync pytest -W error
 ```
 
-- `alembic upgrade head` suorittaa kaikki vielä ajamattomat tietokantamigraatiot.
-- `pytest -W error` ajaa backendin testit ja käsittelee myös varoitukset virheinä.
+`test` ajaa Vitestin kerran, `typecheck` tarkistaa TypeScript-tyypit, `lint` käyttää Oxlintiä ja `build` kokoaa julkaisutiedostot. Backendin `pytest -W error` käsittelee varoitukset virheinä. Versiot ovat `frontend/package.json`- ja `frontend/pnpm-lock.yaml`-tiedostoissa sekä `backend/pyproject.toml`- ja `backend/uv.lock`-tiedostoissa.
 
-Frontend:
+## Tila ja dokumentaatio
 
-```powershell
-docker compose run --rm frontend pnpm test
-docker compose run --rm frontend pnpm typecheck
-docker compose run --rm frontend pnpm lint
-docker compose run --rm frontend pnpm build
-```
+P0-01–P0-08 on hyväksytty ja yhdistetty. Käyttäjä vahvisti palautusdemoa koskevan tarkistuksen Chromen vierailijaprofiilissa. P0-09 viimeistelee käyttöliittymän ja yhteisen tarkistuskomennon; ajantasainen tila on työlistassa.
 
-- `test` ajaa Vitest-testit kerran.
-- `typecheck` tarkistaa TypeScript-tyypit tuottamatta tiedostoja.
-- `lint` etsii tavallisia koodivirheitä Oxlintillä.
-- `build` tekee tyyppitarkistuksen ja kokoaa julkaisutiedostot `frontend/dist`-kansioon.
-
-Frontend-riippuvuuksien täsmälliset versiot ovat `frontend/package.json`- ja `frontend/pnpm-lock.yaml`-tiedostoissa. Backendin Python-riippuvuudet määritellään `backend/pyproject.toml`-tiedostossa ja lukitaan `backend/uv.lock`-tiedostoon. `uv` suoritetaan Docker-kontissa; `pip`:iä ei käytetä.
-
-## Dokumentaatio
-
-| Tiedosto | Sisältö |
+| Dokumentti | Vastuu |
 | --- | --- |
-| [Projektisuunnitelma](docs/project-plan.md) | Tavoite, kurssityön rajaus, aikataulu ja teknologiat |
-| [Työlista](docs/backlog.md) | Toteutusjärjestys ja valmistumisen ehdot |
-| [MVP-arvio](docs/mvp-arvio.md) | Toteutuksen suhde tuotetavoitteeseen, puutteet ja viimeistelyn prioriteetit |
-| [Arkkitehtuuri](docs/architecture.md) | Tekninen rakenne ja tallennus |
-| [Aineisto ja laskenta](docs/data-contract.md) | Tiedostomuoto, laskentasäännöt ja testien odotusarvot |
-| [Sovelluksen rajapinnat](docs/api.md) | Frontendin sisäiset toiminnot ja käyttäjätilien HTTP-rajapinta |
-| [P0-01-oppituntimateriaali](docs/p0-01-oppituntimateriaali.md) | Ensimmäisen toteutusvaiheen työseloste ja käsitteet |
-| [P0-02-oppituntimateriaali](docs/p0-02-oppituntimateriaali.md) | Backendin perustan työseloste ja käsitteet |
-| [P0-03-oppituntimateriaali](docs/p0-03-oppituntimateriaali.md) | Käyttäjätilien ja palvelinpuolisten istuntojen työseloste |
-| [P0-04-oppituntimateriaali](docs/p0-04-oppituntimateriaali.md) | IndexedDB:n, Dexien ja atomisen paikallistallennuksen työseloste |
-| [P0-05-oppituntimateriaali](docs/p0-05-oppituntimateriaali.md) | CSV-tuonnin, validoinnin ja kauppiasluokittelun työseloste |
-| [P0-06-oppituntimateriaali](docs/p0-06-oppituntimateriaali.md) | Tapahtumasivutuksen, yhteenvetolaskennan ja responsiivisen näkymän työseloste |
-| [P0-07-oppituntimateriaali](docs/p0-07-oppituntimateriaali.md) | Ajanjaksovertailun, muutosprosenttien ja havaintojen työseloste |
-| [P0-08-oppituntimateriaali](docs/p0-08-oppituntimateriaali.md) | Varmuuskopion, tiedoston tarkistusten ja atomisen palautuksen työseloste |
-| [P0-08-käyttötesti](docs/p0-08-kayttotesti.md) | Todennetut tulokset ja jäljellä oleva selainprofiilin palautusdemo |
+| [Projektisuunnitelma](docs/project-plan.md) | Tuotetavoite ja MVP:n rajaukset |
+| [Työlista](docs/backlog.md) | Työvaiheiden tilat ja hyväksymisehdot |
+| [MVP-arvio](docs/mvp-arvio.md) | Toteutuksen suhde tuotetavoitteeseen |
+| [Arkkitehtuuri](docs/architecture.md) | Osarajat, tallennus ja tietoraja |
+| [Aineisto ja laskenta](docs/data-contract.md) | CSV/JSON, laskentasäännöt ja demojen luvut |
+| [Rajapinnat](docs/api.md) | Sovellustoimintojen ja HTTP-rajapinnan sopimus |
+| [P0-08-käyttötesti](docs/p0-08-kayttotesti.md) | Tarkistukset ja vahvistettu palautusdemo |
+
+Työselosteet ja koodinlukuharjoitukset: [P0-01](docs/p0-01-oppituntimateriaali.md), [P0-02](docs/p0-02-oppituntimateriaali.md), [P0-03](docs/p0-03-oppituntimateriaali.md), [P0-04](docs/p0-04-oppituntimateriaali.md), [P0-05](docs/p0-05-oppituntimateriaali.md), [P0-06](docs/p0-06-oppituntimateriaali.md), [P0-07](docs/p0-07-oppituntimateriaali.md), [P0-08](docs/p0-08-oppituntimateriaali.md) ja [P0-09](docs/p0-09-oppituntimateriaali.md).

@@ -17,7 +17,7 @@ Oppimistavoitteet ovat selainsovelluksen rakentaminen, paikallisen ja palvelinpu
 - Kuukausivalinta tai oma tuontijakso. Kuukauden sisäistä jaksoa verrataan edelliskuukauden vastaavaan väliin; kokonaisia kuukausia voidaan verrata eri pituuksista huolimatta. Enintään kolme muutoksesta kertovaa havaintoa.
 - Varmuuskopion lataaminen ja palauttaminen tyhjään sovellukseen.
 - Käyttäjätilin luominen, kirjautuminen ja uloskirjautuminen.
-- Yksi selkeä sivu, joka mukautuu myös puhelimen levyiseen näkymään.
+- Yksi selainsovellus: erillinen kirjautumisnäkymä ja kirjautuneen käyttäjän Yhteenveto-, Tapahtumat-, Tuo CSV- ja Varmuuskopio-osiot. Näkymä mukautuu myös puhelimen leveyteen.
 
 Käyttö esitetään pienillä, keksityillä aineistoilla yhdessä työpöytäselaimessa. Historiaa voi tallentaa useammalta jaksolta. Vertailuvälin on sisällyttävä kokonaan yhteen aiempaan tuontiin; laskenta poimii siitä vain vertailuvälin tapahtumat. Usean kuukauden yli ulottuva oma jakso käyttää edelleen lähintä aiempaa, yhtä pitkää ja peräkkäistä tuontia. Tarkat tiedosto- ja laskentasäännöt ovat [aineistokuvauksessa](data-contract.md).
 
@@ -36,7 +36,7 @@ Tämä osio on MVP-rajausten ensisijainen lähde. Muut dokumentit voivat selitt�
 | Paikallinen talousdata | CSV, tapahtumat, kategoriat ja analyysi käsitellään ja säilytetään käyttäjäkohtaisessa IndexedDB-kannassa nykyisessä selaimessa. Varmuuskopio viedään paikallisena salaamattomana JSON-tiedostona. | Taloustietojen palvelin- tai pilvitallennus, salattu synkronointi ja automaattinen laitteiden välinen siirto. |
 | Backend | FastAPI tallentaa vain käyttäjätilit ja palvelinpuoliset kirjautumisistunnot SQLiteen. | CSV:t, tapahtumat, summat, kuvaukset, kategoriat tai analyysit backendissä. |
 | Analyysi | Yhden kuukauden sisäinen jakso vertautuu edelliskuukauden samoihin päivämääriin; kokonainen kuukausi koko edelliskuukauteen ilman normalisointia. Vertailu vaatii yhden koko vertailuvälin kattavan tuonnin. Puuttuvat päivät tai edelliskuukaudesta puuttuva osajakson päivämäärä estävät vertailun. Usean kuukauden yli ulottuvat omat jaksot käyttävät aiempaa peräkkäisten, yhtä pitkien tuontien sääntöä. Näytetään enintään kolme sääntöpohjaista havaintoa. | Edellisiin N päivään vertailu valinnaisena tilana, useiden tuontien kokoaminen vertailuväliksi, koko historian tai vuoden rahankäytön yleiskuva, normaalitason oppiminen pitkästä historiasta, käytösmuutosten tai hintojen syiden päättely, ennusteet ja henkilökohtaiset säästöehdotukset. |
-| Visuaalinen ilme | Tavoitteena on luettava ja responsiivinen kurssiesittely, jossa jaksot, summat ja muutokset erottuvat. Menoryhmien vertailun esitystapa on alustava. | Viimeistelty käyttäjäsovelluksen visuaalinen ilme ja yhdellä vilkaisulla hahmotettava yleisnäkymä; niiden suunnittelu on vielä avoin. |
+| Visuaalinen ilme | P0-09 viimeistelee osionavigoinnin, nykyisen jakson menoyhteenvedon ja menoryhmien pylväsvertailun. Muutos näytetään summista erillään. Mittarimato ja hillitty kultainen korostus tukevat tunnistettavaa ilmettä. | Uudet analyysit, koko vuoden yleisnäkymä, talouden pisteytys, animaatiot ja kattava brändijärjestelmä. |
 | Käyttöympäristö | Kurssiesittely yhdessä työpöytäselaimessa; näkymä mukautuu puhelimen leveyteen. | Julkinen tuotantokäyttö, erillinen mobiilisovellus, asennettava offline-sovellus, automaattinen välilehtien synkronointi ja kattava selain- tai laitetestaus. |
 
 Rajausten laajentaminen edellyttää omaa suunnittelua ja testausta. Esimerkiksi usean tilin tuki muuttaa tietomallia ja päällekkäisyyssääntöä: sama ajanjakso olisi sallittu eri tileillä mutta ei saman tilin kahdessa tuonnissa. Omien tilien väliset siirrot pitäisi samalla tunnistaa, jotta ne eivät näy kokonaisuudessa sekä menona että tulona.
@@ -60,7 +60,7 @@ Backend tallentaa vain käyttäjätilit ja kirjautumisistunnot. CSV-tiedostot, t
 
 Suunnitteluarvio on **25–32 tuntia**, noin 4–6 kuuden tunnin työpäivää, kun kehitysympäristö on käytettävissä. Tämä ei ole toteutukseen perustuva mittaus. Uusien työkalujen opettelu tai asennusongelmat voivat kasvattaa aikaa.
 
-[Työlista](backlog.md) jakaa työn kahdeksaan kokonaisuuteen. Arvio tarkistetaan heti ensimmäisen toimivan tiedostotuonnin jälkeen. Jos aikaa on vähemmän, esittelyn laajuudesta sovitaan erikseen. Tunnistautumisen turvallisuutta, tallennuksen oikeellisuutta, laskennan tarkistuksia tai palautuksen testausta ei jätetä huomaamatta pois.
+[Työlista](backlog.md) jakaa toiminnallisen MVP:n kahdeksaan kokonaisuuteen ja sovitun käyttöliittymäviimeistelyn P0-09:ään. Alkuperäinen työmääräarvio ei sisällä myöhemmin sovittua P0-09:ää. Tunnistautumisen turvallisuutta, tallennuksen oikeellisuutta, laskennan tarkistuksia tai palautuksen testausta ei jätetä huomaamatta pois.
 
 Työ on esittelyvalmis, kun käyttäjä voi rekisteröityä ja kirjautua, kaksi aineistoa voidaan tuoda, vertailu antaa odotetut luvut, historia säilyy sivun uudelleenavauksessa ja varmuuskopio palautuu toisessa selaimen käyttöympäristössä. Käynnistys ja nämä tarkistukset on dokumentoitu.
 

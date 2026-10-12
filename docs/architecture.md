@@ -29,6 +29,8 @@ Varmuuskopion vienti käyttää samaa yhteistä lukutransaktiota. `application/b
 
 Tuontijakso ja analyysin vertailuväli ovat eri asioita: edelliskuukauden tuonnista voidaan laskea vain vastaavat päivät. Vertailuväli ja vertailutapa kuuluvat laskennan tulokseen, eivät IndexedDB:n skeemaan. Kuukausivalinta ja tämä päiväsuodatus eivät muuta tallennettuja tuonteja tai tapahtumatunnisteita.
 
+Osionavigointi on Appin paikallista React-tilaa, ei uusi backend-reitti. Yksi TransactionHistory pysyy liitettynä näkymään osioiden vaihtuessa, jotta valittu jakso ja tapahtumasivu säilyvät. Piilotetut lomakkeet eivät ole näkyvissä tai näppäimistön kohdistusjärjestyksessä. CategoryComparison skaalaa jo lasketut summat yhteiseksi pylväsesitykseksi ja näyttää muutoksen omassa sarakkeessaan; se ei laske uutta analyysiä. InfoHint tekee palautusten selityksen saataville myös ilman hiirtä. Brändikuva toimitetaan paikallisesti Viten kokoamana resurssina.
+
 ## Backendin vastuu ja tietoraja
 
 FastAPI-backend vastaa käyttäjän rekisteröinnistä, kirjautumisesta, kirjautumistilan tarkistamisesta ja uloskirjautumisesta. SQLAlchemy käyttää MVP:ssä SQLitea, ja Alembic hallitsee tietokannan rakenteen muutokset. Python-riippuvuudet lukitaan ja suoritetaan `uv`:lla backendin Docker-kontissa.

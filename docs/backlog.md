@@ -1,6 +1,6 @@
 # Kurssityön työlista
 
-Tämä lista kuvaa [projektisuunnitelman](project-plan.md) toteutuksen. Kaikki kahdeksan tehtävää kuuluvat ensimmäiseen versioon. Tehtävä on valmis vasta, kun sen toiminta on tarkistettu ja työn tekijä on hyväksynyt sen.
+Tämä lista kuvaa [projektisuunnitelman](project-plan.md) toteutuksen. P0-01–P0-08 muodostavat toiminnallisen MVP:n; P0-09 viimeistelee sen sovitun esitystavan. Tehtävä on valmis vasta, kun sen toiminta on tarkistettu ja työn tekijä on hyväksynyt sen.
 
 ## Eteneminen
 
@@ -13,7 +13,8 @@ Tämä lista kuvaa [projektisuunnitelman](project-plan.md) toteutuksen. Kaikki k
 | P0-05 | Tiedoston tuonti ja luokittelu | P0-04 | 3–4 h | Valmis |
 | P0-06 | Tapahtumat ja yhteenveto | P0-05 | 3–4 h | Valmis |
 | P0-07 | Vertailu ja havainnot | P0-06 | 2–3 h | Valmis |
-| P0-08 | Varmuuskopio ja esittelyn viimeistely | P0-07 | 3–4 h | Tarkistettavana |
+| P0-08 | Varmuuskopio ja esittelyn viimeistely | P0-07 | 3–4 h | Valmis |
+| P0-09 | Käyttöliittymän viimeistely ja yhteiset tarkistukset | P0-08 | Ei arvioitu | Tarkistettavana |
 
 Alkuperäinen toteutusarvio on 23–28 tuntia, lisäksi 2–4 tuntia yhteiseen läpikäyntiin ja korjauksiin. Ensimmäisen toimivan tiedostotuonnin jälkeen jäljellä olevien P0-06–P0-08-vaiheiden toteutusarvio on 8–11 tuntia, lisäksi 2–4 tuntia yhteiseen läpikäyntiin ja korjauksiin. Tilat: Ei aloitettu, Työn alla, Estynyt, Tarkistettavana, Valmis.
 
@@ -120,4 +121,18 @@ Kirjattava käyttötesti oikeassa työpöytäselaimessa:
 
 Kirjaa selaimen nimi ja versio sekä tulokset. Automaattinen selaintestaus ja muiden selainten testikierrokset eivät ole kurssiversion valmistumisehtoja.
 
-Tarkistettu toteutus ja käyttötestin tulokset: [P0-08-käyttötesti](p0-08-kayttotesti.md). Palautus erilliseen selainalkuperään onnistui, mutta kohdan 5 erillisen selainprofiilin tarkistus on vielä tekemättä. Tehtävää ei merkitä valmiiksi ennen tätä tarkistusta ja käyttäjän hyväksyntää.
+Tarkistettu toteutus ja käyttötestin tulokset: [P0-08-käyttötesti](p0-08-kayttotesti.md). Käyttäjä vahvisti palautuksen onnistuneen Chromen tyhjässä vierailijaprofiilissa ja hyväksyi mainiin yhdistetyn toteutuksen.
+
+## P0-09: Käyttöliittymän viimeistely ja yhteiset tarkistukset
+
+Valmistumisen ehdot:
+
+- Kirjautuminen on oma näkymänsä; kirjautuneen käyttäjän osiot ovat Yhteenveto, Tapahtumat, Tuo CSV ja Varmuuskopio. Jakson valinta säilyy yhteenvedon ja tapahtumien välillä.
+- Menot ja muutos ovat helposti silmäiltäviä. Menoryhmien vertailussa aiempi ja nykyinen summa ovat yhteisellä pylväsasteikolla, ja muutos on erillisessä kohdassa. Kaikki viisi menoryhmää säilyvät.
+- Otsikko on Keskeiset muutokset. Palautukset näytetään ennallaan; info kertoo, ettei niitä vähennetä menoista, myös näppäimistöllä ja napauttamalla.
+- Havaintokortti kertoo suoraan muutoksen suunnan tai uuden menon sekä eurot ja tarvittaessa prosentin. Tarkat vertailuluvut ja tulkinta ovat sirossa infopisteessä. Yleinen vertailuhuomautus on infossa; osajakso nimetään lyhyesti myös näkyvässä tekstissä.
+- Nollapalautuksia ei näytetä. Muutoskortin prosentti on oma sanallinen tietonsa; vertailusumman yhteydessä näkyvät todelliset vertailupäivät. Kirjautumissivun nimi ja maskotti ovat työtilaa suurempia.
+- Mittarimato on hillitty paikallinen brändikuva. Vihreä ja kultainen korostus eivät arvioi käyttäjän rahankäytön hyvyyttä tai huonoutta.
+- Käyttöliittymä toimii leveänä ja 390 pikselin levyisenä, näppäimistöllä, tyhjällä historialla ja vertailun estyessä. Tuonnin ja palautuksen palaute näkyy oman toiminnon vieressä.
+- Yksi dokumentoitu PowerShell-komento ajaa tarkistukset Dockerissa, pysähtyy virheeseen eikä muuta käyttäjän historiaa tai backend-kantaa.
+- Laskentasäännöt, tietomalli ja backendin vastuu eivät muutu. Mukana ovat regressiotestit ja työseloste; vanhoja oppituntimateriaaleja ei muokata.
