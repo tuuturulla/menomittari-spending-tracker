@@ -1,0 +1,2 @@
+# Bash scripts need LF endings, including Windows checkouts with autocrlf enabled.
+scripts/*.sh text eol=lf
