@@ -60,7 +60,7 @@ Backend tallentaa vain käyttäjätilit ja kirjautumisistunnot. CSV-tiedostot, t
 
 Suunnitteluarvio on **25–32 tuntia**, noin 4–6 kuuden tunnin työpäivää, kun kehitysympäristö on käytettävissä. Tämä ei ole toteutukseen perustuva mittaus. Uusien työkalujen opettelu tai asennusongelmat voivat kasvattaa aikaa.
 
-[Työlista](backlog.md) jakaa toiminnallisen MVP:n kahdeksaan kokonaisuuteen ja sovitun käyttöliittymäviimeistelyn P0-09:ään. Alkuperäinen työmääräarvio ei sisällä myöhemmin sovittua P0-09:ää. Tunnistautumisen turvallisuutta, tallennuksen oikeellisuutta, laskennan tarkistuksia tai palautuksen testausta ei jätetä huomaamatta pois.
+[Työlista](backlog.md) jakaa toiminnallisen MVP:n kahdeksaan kokonaisuuteen ja käyttöliittymäviimeistelyn P0-09:ään. Työmääräarvio koskee P0-01–P0-08-vaiheita.
 
 Työ on esittelyvalmis, kun käyttäjä voi rekisteröityä ja kirjautua, kaksi aineistoa voidaan tuoda, vertailu antaa odotetut luvut, historia säilyy sivun uudelleenavauksessa ja varmuuskopio palautuu toisessa selaimen käyttöympäristössä. Käynnistys ja nämä tarkistukset on dokumentoitu.
 
@@ -70,4 +70,4 @@ Sama paikallinen tietokanta voi säilyä myöhemmässä tuotteessa. SQLAlchemy j
 
 Mahdollinen kaupallinen julkaisu tarvitsee erillisen turvallisuus- ja käytettävyysarvioinnin. Paikallinen käsittely vähentää palvelimelle päätyvää tietoa, mutta ei yksin takaa tietoturvaa. Maksullinen salattu synkronointi on mahdollinen jatkosuunta. 
 
-Nykyisen toteutuksen suhde tuotetavoitteeseen ja esittelyn kannalta tärkeät puutteet on koottu [MVP-arvioon](mvp-arvio.md). Arvio ei lisää toteutustehtäviä ilman erillistä päätöstä.
+Nykyisen toteutuksen suhde tuotetavoitteeseen ja esittelyn kannalta tärkeät puutteet on koottu [MVP-arvioon](mvp-arvio.md).

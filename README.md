@@ -6,15 +6,20 @@ Kurssiversio ei ole tuotantopalvelu. Se ei tunnista maksujen toistuvuutta, näyt
 
 ## Käynnistäminen
 
-Tarvitset Docker Desktopin tai muun toimivan Docker Compose -ympäristön. Siirry tähän `lopputyo/menomittari`-kansioon. Node.js:ää, pnpm:ää tai Pythonia ei asenneta isäntäkoneelle; Python käyttää konteissa `uv`:ta, ei `pip`:iä.
+Tarvitset Dockerin Linux-konttituella ja Docker Compose v2:n, verkkoyhteyden ensimmäiseen rakennukseen sekä selaimen. Yhteinen testikomento tarvitsee lisäksi Bashin (Windowsissa esimerkiksi Git Bash). Node.js:ää, pnpm:ää tai Pythonia ei asenneta isäntäkoneelle; Python käyttää konteissa `uv`:ta.
 
-```powershell
+Kloonaa kurssirepository tai pura sen ZIP ja avaa `lopputyo/menomittari`-kansio. Kopioi koko kansio: mukana tarvitaan myös Dockerfilet, lukitustiedostot, testiaineistot ja kuvat. Erillistä `.env`-tiedostoa tai valmiita käyttäjätunnuksia ei tarvita.
+
+```bash
+cd lopputyo/menomittari
 docker compose build
 docker compose run --rm backend uv run --no-sync alembic upgrade head
 docker compose up
 ```
 
-Ensimmäinen komento rakentaa lukitut kehityskuvat, toinen alustaa tai päivittää sovelluksen käyttäjäkannan, ja kolmas käynnistää sovelluksen. Avaa <http://127.0.0.1:5173>. Backendin health: <http://127.0.0.1:8000/api/health>; API-kuvaus: <http://127.0.0.1:8000/docs>.
+`docker compose build` rakentaa lukitut kehityskuvat, migraatiokomento alustaa tai päivittää sovelluksen käyttäjäkannan ja `docker compose up` käynnistää sovelluksen. Avaa <http://127.0.0.1:5173>. Backendin health: <http://127.0.0.1:8000/api/health>; API-kuvaus: <http://127.0.0.1:8000/docs>.
+
+Komennot ajetaan kurssirepositoryn juuresta alkaen; jos olet jo Menomittari-kansiossa, jätä `cd` pois. Porttien 5173 ja 8000 tulee olla vapaita. Odota molempien palvelujen käynnistymistä ja käytä täsmälleen yllä olevaa frontend-osoitetta, ei `localhost`-vaihtoehtoa: CORS ja selainhistoria riippuvat osoitteesta. Luo oma fiktiivinen tili kirjautumissivun **Luo käyttäjätili** -toiminnolla (salasana 12–128 merkkiä).
 
 Vite seuraa tiedostoja polling-menetelmällä Windowsin Docker-liitoshakemiston läpi. Lähdekoodin tallentaminen päivittää näkymää. Vite-asetuksen muutoksen jälkeen käytä `docker compose restart frontend`.
 
@@ -32,6 +37,8 @@ Kehityksen HTTP-istuntoeväste on `SameSite=Lax` ilman `Secure`-lippua. HTTPS-ju
 Tuetut muodot ovat Menomittarin demo-CSV ja tunnettu S-Pankin tilitapahtuma-CSV-rakenne, eivät PDF-tiliotteet. Käytä vain fiktiivisiä tietoja.
 
 Esittelypolku uudelle demokäyttäjälle: huhtikuu, toukokuu ja kesäkuu 2026 kokonaisina kuukausina, sitten heinäkuun 1.–15. päivän demo omana ajanjaksona. Näin syntyy 4 tuontia ja 33 tapahtumaa. [Demoaineistot ja käsin tarkistettavat luvut](docs/data-contract.md#demojen-odotusarvot) ovat aineistosopimuksessa.
+
+CSV-tiedostot ovat kansiossa [frontend/tests/fixtures](frontend/tests/fixtures): `demo-2026-04.csv`, `demo-2026-05.csv`, `s-pankki-demo-2026-06.csv` ja `s-pankki-demo-2026-07-half.csv`. Tiedostonvalitsimessa valitaan nämä paikallisesta projektikopiosta.
 
 Kuukauden sisäinen jakso vertautuu edelliskuukauden samoihin päiviin; kokonaiset kuukaudet kokonaisiin kuukausiin niiden pituuseroista huolimatta. Vertailuvälin pitää sisältyä kokonaan yhteen tallennettuun tuontiin. Päällekkäinen tuonti estetään, eikä osajaksoja yhdistetä tai aiempaa tuontia korvata. Palautukset näytetään erikseen eikä niitä vähennetä menoista.
 
@@ -57,13 +64,13 @@ bash scripts/check.sh
 
 Skripti rakentaa kehityskuvat ja ajaa frontendin testit, tyyppitarkistuksen, lintin ja julkaisuversiokoosteen sekä backendin migraatiotarkistuksen ja testit. Se pysähtyy ensimmäiseen virheeseen: exit-koodi on 1 epäonnistuessa ja 0 onnistuessa. Ensimmäinen rakennus voi hakea kuvia ja lukittuja riippuvuuksia verkosta, mutta mitään ei asenneta isäntäkoneelle.
 
-Tarvitset Bashin ja sen komentopolussa toimivan Docker Composen. PowerShelliä ei tarvita. Git Bashissa skripti estää Docker-argumenttien automaattisen polkumuunnoksen, jotta kontin `/tmp`-testikantapolku säilyy oikein. Bash-tiedostoille on asetettu LF-rivinvaihdot Gitissä. Linux- ja macOS-käyttöä ei ole vielä todennettu.
+Tarvitset Bashin ja sen komentopolussa toimivan Docker Composen. Git Bashissa skripti estää Docker-argumenttien automaattisen polkumuunnoksen, jotta kontin `/tmp`-testikantapolku säilyy oikein. Bash-tiedostoille on asetettu LF-rivinvaihdot Gitissä. [Toistettavuuden tarkistus](docs/toistettavuus.md) kuvaa testatun ympäristön; Linux- ja macOS-käyttöä ei ole vielä todennettu.
 
 Migraatiot tehdään poistuvan testikontin `/tmp`-kantaan. Python-testit käyttävät omia tilapäisiä tai muistikantojaan; frontend-testit `fake-indexeddb`:tä. Skripti ei päivitä tavallista backend-kantaa, tyhjennä selainhistoriaa tai pysäytä käynnissä olevaa sovellusta. `build` tuottaa ohitetun `frontend/dist`-kansion. Selainkäyttötesti tehdään erikseen. Paikallinen skripti ei lisää Menomittaria nykyiseen GitLab-putkeen.
 
 Yksittäinen tarkistus tarvittaessa:
 
-```powershell
+```bash
 docker compose run --rm --no-deps frontend pnpm test
 docker compose run --rm --no-deps frontend pnpm typecheck
 docker compose run --rm --no-deps frontend pnpm lint
@@ -75,7 +82,7 @@ docker compose run --rm --no-deps backend uv run --no-sync pytest -W error
 
 ## Tila ja dokumentaatio
 
-P0-01–P0-08 on hyväksytty ja yhdistetty. Käyttäjä vahvisti palautusdemoa koskevan tarkistuksen Chromen vierailijaprofiilissa. P0-09 viimeistelee käyttöliittymän ja yhteisen tarkistuskomennon; ajantasainen tila on työlistassa.
+Ajantasaiset työvaiheiden tilat ovat [työlistassa](docs/backlog.md). Käynnistys ja käyttö eivät edellytä oppituntimateriaalien lukemista.
 
 | Dokumentti | Vastuu |
 | --- | --- |
@@ -86,5 +93,6 @@ P0-01–P0-08 on hyväksytty ja yhdistetty. Käyttäjä vahvisti palautusdemoa k
 | [Aineisto ja laskenta](docs/data-contract.md) | CSV/JSON, laskentasäännöt ja demojen luvut |
 | [Rajapinnat](docs/api.md) | Sovellustoimintojen ja HTTP-rajapinnan sopimus |
 | [P0-08-käyttötesti](docs/p0-08-kayttotesti.md) | Tarkistukset ja vahvistettu palautusdemo |
+| [Toistettavuus](docs/toistettavuus.md) | Versionhallinnan tiedostoista tehdyn puhtaan kopion tarkistus |
 
 Työselosteet ja koodinlukuharjoitukset: [P0-01](docs/p0-01-oppituntimateriaali.md), [P0-02](docs/p0-02-oppituntimateriaali.md), [P0-03](docs/p0-03-oppituntimateriaali.md), [P0-04](docs/p0-04-oppituntimateriaali.md), [P0-05](docs/p0-05-oppituntimateriaali.md), [P0-06](docs/p0-06-oppituntimateriaali.md), [P0-07](docs/p0-07-oppituntimateriaali.md), [P0-08](docs/p0-08-oppituntimateriaali.md) ja [P0-09](docs/p0-09-oppituntimateriaali.md).

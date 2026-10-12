@@ -37,8 +37,8 @@ Docker-konteissa samalla lopullisella toteutuksella:
 
 Palautuksen integraatiotesti vertaa alkuperäisiä ja palautettuja tietueita kenttä kentältä sekä kaikkien neljän jakson analyysituloksia. Lisäksi testataan kesken kirjoituksen aiheutettu virhe: tuontitietueetkin peruuntuvat. Kahden yhteyden samanaikaisista palautuksista vain toinen hyväksytään.
 
-## Käyttäjän vahvistama palautusdemo
+## Erillisen selainprofiilin palautusdemo
 
-Käyttäjä vahvisti 12.10.2026 palautuksen toimineen Chromen tyhjässä vierailijaprofiilissa. Chromen tarkkaa versiota ei ilmoitettu. Tämä on käyttäjän vahvistama tulos, ei agentin aiemman selainalkuperätestin laajennus. [README:n palautusdemo](../README.md#varmuuskopio-ja-lyhyt-palautusdemo) säilyy toistettavana tarkistusohjeena.
+12.10.2026 tehty manuaalinen palautuskokeilu Chromen tyhjässä vierailijaprofiilissa onnistui projektin tekijän ilmoituksen mukaan. Selaimen tarkkaa versiota ei kirjattu. Tulos on erillinen yllä kuvatusta Chromium-testistä. Kokeilun toistamisohje on [README:n palautusdemossa](../README.md#varmuuskopio-ja-lyhyt-palautusdemo).
 
-P0-08 on käyttäjän hyväksymä ja yhdistetty mainiin. Laajempaa ulkoasu-uudistusta tai muiden selainten testikierrosta ei toteutettu tässä työosuudessa.
+Raportti koskee P0-08-vaihetta; siinä ei testattu P0-09:n ulkoasumuutoksia tai laajaa selainvalikoimaa.

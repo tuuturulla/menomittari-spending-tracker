@@ -16,7 +16,7 @@ Tämä lista kuvaa [projektisuunnitelman](project-plan.md) toteutuksen. P0-01–
 | P0-08 | Varmuuskopio ja esittelyn viimeistely | P0-07 | 3–4 h | Valmis |
 | P0-09 | Käyttöliittymän viimeistely ja yhteiset tarkistukset | P0-08 | Ei arvioitu | Tarkistettavana |
 
-Alkuperäinen toteutusarvio on 23–28 tuntia, lisäksi 2–4 tuntia yhteiseen läpikäyntiin ja korjauksiin. Ensimmäisen toimivan tiedostotuonnin jälkeen jäljellä olevien P0-06–P0-08-vaiheiden toteutusarvio on 8–11 tuntia, lisäksi 2–4 tuntia yhteiseen läpikäyntiin ja korjauksiin. Tilat: Ei aloitettu, Työn alla, Estynyt, Tarkistettavana, Valmis.
+Tilat: Ei aloitettu, Työn alla, Estynyt, Tarkistettavana, Valmis.
 
 ## P0-01: Sovelluksen runko
 
@@ -74,7 +74,7 @@ Valmistumisen ehdot:
 - Tuonnin tulos näkyy heti tuontipainikkeen alla erottuvassa, kohdistettavassa ilmoituksessa, ei tapahtumahistorian tai uloskirjautumisen alapuolella.
 - Kiinteät kauppiassäännöt antavat oikean ryhmän; tuntematon nimi jää tunnistamattomaksi.
 
-Tarkistus: molemmat demot, lainatut kentät, ääkköset, tyhjä tai virheellinen tiedosto, väärä summa/päivä, ylitetyt rajat ja päällekkäinen jakso. Tässä kohdassa päivitetään jäljellä olevan työn aika-arvio.
+Tarkistus: molemmat demot, lainatut kentät, ääkköset, tyhjä tai virheellinen tiedosto, väärä summa/päivä, ylitetyt rajat ja päällekkäinen jakso.
 
 ## P0-06: Tapahtumat ja yhteenveto
 
@@ -83,7 +83,7 @@ Valmistumisen ehdot:
 - Käyttäjä voi valita tallennetun jakson ja selata sen tapahtumia 50 rivin sivuina.
 - Näkyvissä ovat menot yhteensä, menoryhmät ja palautukset erikseen. Tulot ja tilisiirrot eivät kasvata menoja.
 - Valittu ajanjakso, tyhjä tila ja virheilmoitukset ovat selkeitä. Tapahtumien kuvaukset näytetään tekstinä, ei suoritettavana sivukoodina.
-- Yksi yksinkertainen sivu toimii leveässä ja 390 pikselin levyisessä näkymässä; erillisiä kaavioita ei tehdä.
+- Tapahtumat ja yhteenveto toimivat leveässä ja 390 pikselin levyisessä näkymässä. P0-09 viimeistelee osiojaon ja vertailun pylväsesityksen.
 
 Tarkistus: demojen 90 ja 145 euron menot sekä kummankin 5 euron palautukset. Lisäksi tuntematon menoryhmä, pelkkiä tuloja sisältävä jakso ja jakson vaihtaminen.
 
@@ -121,7 +121,7 @@ Kirjattava käyttötesti oikeassa työpöytäselaimessa:
 
 Kirjaa selaimen nimi ja versio sekä tulokset. Automaattinen selaintestaus ja muiden selainten testikierrokset eivät ole kurssiversion valmistumisehtoja.
 
-Tarkistettu toteutus ja käyttötestin tulokset: [P0-08-käyttötesti](p0-08-kayttotesti.md). Käyttäjä vahvisti palautuksen onnistuneen Chromen tyhjässä vierailijaprofiilissa ja hyväksyi mainiin yhdistetyn toteutuksen.
+Käyttötestin tulokset ja erillisen selainprofiilin palautuskokeilu: [P0-08-käyttötesti](p0-08-kayttotesti.md).
 
 ## P0-09: Käyttöliittymän viimeistely ja yhteiset tarkistukset
 
@@ -135,4 +135,4 @@ Valmistumisen ehdot:
 - Mittarimato on hillitty paikallinen brändikuva. Vihreä ja kultainen korostus eivät arvioi käyttäjän rahankäytön hyvyyttä tai huonoutta.
 - Käyttöliittymä toimii leveänä ja 390 pikselin levyisenä, näppäimistöllä, tyhjällä historialla ja vertailun estyessä. Tuonnin ja palautuksen palaute näkyy oman toiminnon vieressä.
 - Yksi dokumentoitu Bash-komento ajaa tarkistukset Dockerissa, pysähtyy virheeseen eikä muuta käyttäjän historiaa tai backend-kantaa.
-- Laskentasäännöt, tietomalli ja backendin vastuu eivät muutu. Mukana ovat regressiotestit ja työseloste; vanhoja oppituntimateriaaleja ei muokata.
+- Laskentasäännöt, tietomalli ja backendin vastuu eivät muutu. Mukana ovat regressiotestit ja työseloste.
