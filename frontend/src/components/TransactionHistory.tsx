@@ -12,12 +12,16 @@ import {
 import { CATEGORY_NAMES, type TransactionKind } from '../domain/transactions'
 import type { Analysis } from '../domain/analysis'
 import type { ImportRecord } from '../storage/types'
-import { AnalysisPanel } from './AnalysisPanel'
+import { AnalysisPanel, ChangeMetric } from './AnalysisPanel'
+import { InfoHint } from './InfoHint'
+import mascot from '../assets/mittarimato.png'
 import { formatCurrency, formatDate, formatPeriod } from './format'
 
 interface TransactionHistoryProps {
   storage: HistoryStorage & AnalysisStorage
   refreshKey: number
+  mode?: 'overview' | 'transactions'
+  onImport?: () => void
 }
 
 interface ImportsLoad {
@@ -74,20 +78,22 @@ export function TransactionList({ page }: { page: TransactionPage }) {
   )
 }
 
-function SummaryPanel({ view }: { view: TransactionView }) {
+export function SummaryPanel({ view, analysis }: { view: TransactionView; analysis?: Analysis | null }) {
   return (
     <>
       <div className="summary-metrics">
-        <div>
-          <span>Menot yhteensä</span>
-          <strong>{formatCurrency(view.summary.expense_cents)}</strong>
+        <div className="expense-metric">
+          <span className="metric-label">Menot yhteensä</span>
+          <strong className="metric-value">{formatCurrency(view.summary.expense_cents)}</strong>
+          <span className="metric-context">{view.transactions.total} tapahtumaa</span>
+          {view.summary.refund_cents > 0 && <span className="refund-metric">Palautukset erikseen: {formatCurrency(view.summary.refund_cents)}{' '}
+            <InfoHint label="Tietoa palautusten laskennasta">Palautuksia ei vähennetä menoista. Ne näytetään erikseen; tulot ja tilisiirrot eivät kuulu menoihin.</InfoHint>
+          </span>}
         </div>
-        <div>
-          <span>Palautukset erikseen</span>
-          <strong>{formatCurrency(view.summary.refund_cents)}</strong>
-        </div>
+        {analysis?.comparison.totals && <ChangeMetric values={analysis.comparison.totals} baselinePeriod={analysis.comparison.baseline_period} />}
       </div>
 
+      {!analysis?.comparison.totals && (
       <section className="category-section" aria-labelledby="category-title">
         <h4 id="category-title">Menot ryhmittäin</h4>
         <ul className="category-summary">
@@ -99,6 +105,7 @@ function SummaryPanel({ view }: { view: TransactionView }) {
           ))}
         </ul>
       </section>
+      )}
     </>
   )
 }
@@ -107,6 +114,8 @@ function SummaryPanel({ view }: { view: TransactionView }) {
 export function TransactionHistory({
   storage,
   refreshKey,
+  mode = 'overview',
+  onImport,
 }: TransactionHistoryProps) {
   const [selectedImportId, setSelectedImportId] = useState('')
   const [offset, setOffset] = useState(0)
@@ -252,14 +261,17 @@ export function TransactionHistory({
 
   return (
     <section className="history-card" aria-labelledby="history-title">
-      <h3 id="history-title">Tapahtumat ja yhteenveto</h3>
+      <h2 id="history-title">{mode === 'overview' ? 'Yhteenveto' : 'Tapahtumat'}</h2>
 
       {loadingImports && <p className="status-message">Ladataan tallennettuja jaksoja…</p>}
 
       {!loadingImports && imports.length === 0 && !error && (
-        <p className="empty-state">
-          Ei tallennettuja jaksoja. Tuo ensin CSV-tiedosto yllä olevalla lomakkeella.
-        </p>
+        <div className="empty-history">
+          <img src={mascot} alt="" width="112" height="112" />
+          <h3>Aloitetaan omasta historiastasi</h3>
+          <p className="empty-state">Ei tallennettuja jaksoja. Tuo ensin fiktiivinen CSV-tiedosto Tuo CSV -osiosta.</p>
+          {onImport && <button type="button" onClick={onImport}>Tuo ensimmäinen CSV</button>}
+        </div>
       )}
 
       {imports.length > 0 && (
@@ -288,15 +300,16 @@ export function TransactionHistory({
           <p className="selected-period">
             Valittu ajanjakso: <strong>{formatPeriod(selectedImport)}</strong>
           </p>
-          <SummaryPanel view={view} />
+          {mode === 'overview' && <SummaryPanel view={view} analysis={currentAnalysisLoad?.analysis} />}
           {loadingAnalysis && <p className="status-message">Lasketaan vertailua…</p>}
           {currentAnalysisLoad?.error && (
             <p className="error-message">{currentAnalysisLoad.error}</p>
           )}
-          {currentAnalysisLoad?.analysis && (
-            <AnalysisPanel analysis={currentAnalysisLoad.analysis} />
+          {mode === 'overview' && currentAnalysisLoad?.analysis && (
+            <AnalysisPanel analysis={currentAnalysisLoad.analysis} showTotal={false} />
           )}
 
+          {mode === 'transactions' && (
           <section className="transactions-section" aria-labelledby="transactions-title">
             <div className="section-heading">
               <div>
@@ -326,6 +339,7 @@ export function TransactionHistory({
             </div>
             {page && <TransactionList page={page} />}
           </section>
+          )}
         </div>
       )}
     </section>

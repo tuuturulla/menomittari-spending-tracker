@@ -1,5 +1,6 @@
 /** Format stored ISO dates and integer cents for the Finnish user interface. */
 import type { ImportRecord } from '../storage/types'
+import type { ChangeValues } from '../domain/analysis'
 
 const euroFormatter = new Intl.NumberFormat('fi-FI', {
   style: 'currency',
@@ -35,4 +36,11 @@ export function formatDate(isoDate: string): string {
 
 export function formatPeriod(period: Pick<ImportRecord, 'period_start' | 'period_end'>): string {
   return `${formatDate(period.period_start)}–${formatDate(period.period_end)}`
+}
+
+/** Label changes without treating lower spending as a guaranteed saving. */
+export function changeLabel(values: Pick<ChangeValues, 'previous_cents' | 'current_cents' | 'delta_cents'>): string {
+  if (values.delta_cents === 0) return 'ei muutosta'
+  if (values.previous_cents === 0) return `uusi meno · ${formatCurrency(values.current_cents)}`
+  return `${formatCurrency(Math.abs(values.delta_cents))} ${values.delta_cents > 0 ? 'enemmän' : 'vähemmän'}`
 }

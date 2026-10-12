@@ -1,9 +1,15 @@
 /** Show the selected period's comparison and factual insights without recalculating them. */
 import type { Analysis, ChangeValues, ComparisonStatus } from '../domain/analysis'
-import { formatCurrency, formatPercent, formatPeriod, formatSignedCurrency } from './format'
+import { changeLabel, formatCurrency, formatPeriod } from './format'
+import { CategoryComparison } from './CategoryComparison'
+import { InfoHint } from './InfoHint'
+import { InsightCard } from './InsightCard'
+import { calendarMonthPeriod } from '../domain/periods'
+import type { DatePeriod } from '../domain/periods'
 
 interface AnalysisPanelProps {
   analysis: Analysis
+  showTotal?: boolean
 }
 
 const BLOCKED_MESSAGES: Record<Exclude<ComparisonStatus, 'comparable'>, string> = {
@@ -14,87 +20,75 @@ const BLOCKED_MESSAGES: Record<Exclude<ComparisonStatus, 'comparable'>, string> 
   unavailable_dates: 'Vastaavia päivämääriä ei ole edelliskuukaudessa. Osajaksoa ei lyhennetä automaattisesti.',
 }
 
-function ChangeLine({ values }: { values: ChangeValues }) {
-  // A zero baseline has no percentage; describe the visible change instead.
-  if (values.previous_cents === 0) {
-    return (
-      <span>
-        Aiemmin {formatCurrency(0)} → nyt {formatCurrency(values.current_cents)} ·{' '}
-        {values.current_cents === 0
-          ? 'ei muutosta'
-          : `muutos ${formatSignedCurrency(values.delta_cents)} (uusi meno)`}
-      </span>
-    )
-  }
-
-  return (
-    <span>
-      Aiemmin {formatCurrency(values.previous_cents)} → nyt{' '}
-      {formatCurrency(values.current_cents)} · muutos{' '}
-      {formatSignedCurrency(values.delta_cents)} ({formatPercent(values.delta_percent)})
-    </span>
-  )
+/** Present already-calculated changes, including a zero baseline, without new arithmetic. */
+export function ChangeMetric({ values, baselinePeriod }: { values: ChangeValues; baselinePeriod: DatePeriod | null }) {
+  const percentage = values.delta_percent === null ? null :
+    new Intl.NumberFormat('fi-FI', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(values.delta_percent))
+  return <div className="comparison-total">
+    <span className="metric-label">Menojen muutos</span>
+    <strong className="metric-value change-value">{changeLabel(values)}</strong>
+    {percentage !== null && <strong className="change-percent">
+      {values.delta_cents === 0 ? 'Menot ennallaan' : `Menot ${values.delta_cents > 0 ? 'kasvoivat' : 'laskivat'}`} {percentage} %
+    </strong>}
+    <div className="change-baseline">
+      <span className="metric-context">Vertailujakson menot{baselinePeriod && <span className="baseline-dates">{formatPeriod(baselinePeriod)}</span>}</span>
+      <strong>{formatCurrency(values.previous_cents)}</strong>
+    </div>
+  </div>
 }
 
-export function AnalysisPanel({ analysis }: AnalysisPanelProps) {
+export function AnalysisPanel({ analysis, showTotal = true }: AnalysisPanelProps) {
   const { comparison, insights } = analysis
+  const month = calendarMonthPeriod(comparison.current_period.period_start.slice(0, 7))
+  // Only declared calendar coverage identifies a partial month; purchase dates cannot.
+  const partialMonth = comparison.mode === 'previous_month' && month !== null &&
+    (month.period_start !== comparison.current_period.period_start || month.period_end !== comparison.current_period.period_end)
 
   return (
     <section className="analysis-section" aria-labelledby="comparison-title">
+      <div className="comparison-heading">
       <h4 id="comparison-title">
         {comparison.mode === 'previous_month'
           ? 'Vertailu edelliskuukauden vastaavaan ajanjaksoon'
           : 'Vertailu aiempaan jaksoon'}
       </h4>
+      <InfoHint label="Tietoa vertailun tulkinnasta">Vertailu perustuu ilmoitettujen jaksojen aineistoon. Maksujen ajoitus voi vaikuttaa muutokseen; pienempi menosumma ei yksin tarkoita säästöä.</InfoHint>
+      </div>
       {comparison.baseline_period && (
         <p className="comparison-periods">
           {comparison.status === 'comparable' ? 'Aiempi' : 'Tarvittava vertailuväli'}{' '}
           {formatPeriod(comparison.baseline_period)} → valittu {formatPeriod(comparison.current_period)}
         </p>
       )}
-      <p className="field-hint">
-        Vertailu perustuu ilmoitettujen jaksojen aineistoon. Maksujen ajoitus voi vaikuttaa muutokseen;
-        pienempi menosumma ei yksin tarkoita säästöä.
-      </p>
+      {partialMonth && comparison.status === 'comparable' && (
+        <p className="partial-period-note">Osajakso: verrataan edelliskuukauden samoja päiviä.</p>
+      )}
 
       {comparison.status !== 'comparable' ? (
         <p className="empty-state">{BLOCKED_MESSAGES[comparison.status]}</p>
       ) : (
         <>
-          {comparison.totals && (
-            <div className="comparison-total">
-              <strong>Menojen muutos</strong>
-              <ChangeLine values={comparison.totals} />
-            </div>
-          )}
+          {showTotal && comparison.totals && <ChangeMetric values={comparison.totals} baselinePeriod={comparison.baseline_period} />}
 
+          <div className="analysis-columns">
           <section aria-labelledby="category-comparison-title">
             <h5 id="category-comparison-title">Menoryhmien vertailu</h5>
-            <ul className="comparison-categories">
-              {comparison.categories.map((category) => (
-                <li key={category.category_code}>
-                  <strong>{category.name}</strong>
-                  <ChangeLine values={category} />
-                </li>
-              ))}
-            </ul>
+            <CategoryComparison categories={comparison.categories} />
           </section>
 
           <section aria-labelledby="insights-title">
-            <h5 id="insights-title">Havainnot</h5>
+            <h5 id="insights-title">Keskeiset muutokset</h5>
             {insights.length === 0 ? (
               <p className="empty-state">Näillä säännöillä ei löytynyt havaintoja.</p>
             ) : (
               <ol className="insight-list">
                 {insights.map((item) => (
-                  <li key={item.code}>
-                    <strong>{item.message}</strong>
-                    <p><ChangeLine values={item} /></p>
-                  </li>
+                  <InsightCard key={item.code} insight={item} />
                 ))}
               </ol>
             )}
           </section>
+          </div>
         </>
       )}
     </section>

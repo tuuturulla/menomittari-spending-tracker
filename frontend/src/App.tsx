@@ -13,6 +13,8 @@ import {
 import { TransactionHistory } from './components/TransactionHistory'
 import { CsvImportForm } from './components/CsvImportForm'
 import { BackupPanel } from './components/BackupPanel'
+import { ApplicationNav, type AppSection } from './components/ApplicationNav'
+import mascot from './assets/mittarimato.png'
 import { type ImportPeriodSelection } from './components/ImportPeriodFields'
 import {
   createLocalStorage,
@@ -34,6 +36,7 @@ function App() {
   const [busy, setBusy] = useState(true)
   const [importBusy, setImportBusy] = useState(false)
   const [backupBusy, setBackupBusy] = useState(false)
+  const [section, setSection] = useState<AppSection>('overview')
   const [importPeriod, setImportPeriod] = useState(EMPTY_IMPORT_PERIOD)
   const [historyRevision, setHistoryRevision] = useState(0)
   const [message, setMessage] = useState('Tarkistetaan kirjautumistila…')
@@ -104,6 +107,7 @@ function App() {
       } else {
         const authenticatedUser = await login(email, password)
         setUser(authenticatedUser)
+        setSection('overview')
         form.reset()
         setMessage('Kirjautuminen onnistui.')
       }
@@ -124,6 +128,8 @@ function App() {
     try {
       await logout()
       setUser(null)
+      setImportPeriod(EMPTY_IMPORT_PERIOD)
+      setSection('overview')
       setImportMessage('')
       setImportError('')
       setMessage('Olet kirjautunut ulos.')
@@ -183,25 +189,29 @@ function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell ${user ? 'signed-in' : 'signed-out'}`}>
       <section className="intro" aria-labelledby="app-title">
-        <p className="eyebrow">Kurssiprojekti</p>
-        <h1 id="app-title">Menomittari</h1>
+        <header className="app-header">
+        <div className="brand"><img src={mascot} alt="" width="56" height="56" /><h1 id="app-title">Menomittari</h1></div>
+        {user && <div className="account-controls"><span>{user.email}</span>
+          <button className="secondary-button" type="button" onClick={signOut}
+            disabled={busy || importBusy || backupBusy}>Kirjaudu ulos</button></div>}
+        </header>
+        {user && error && <p className="error-message" role="alert">{error}</p>}
+        {!user && (
         <p className="lead">
           Selainsovellus oman rahankäytön tarkasteluun ja kahden ajanjakson
           vertailuun. Taloustiedot pysyvät tässä selaimessa.
         </p>
+        )}
 
-        <section className="auth-card" aria-labelledby="auth-title">
+        <section className={user ? 'workspace' : 'auth-card'} aria-label={user ? 'Oma taloushistoria' : 'Käyttäjätili'}>
           {user ? (
             <div className="account-panel">
-              <p className="eyebrow">Kirjautunut käyttäjä</p>
-              <h2 id="auth-title">{user.email}</h2>
-              <p className="account-summary">
-                Istunto on backendissä, mutta taloustiedot tallennetaan
-                vain tähän selaimeen.
-              </p>
+              <p className="local-notice">Taloushistoria pysyy tässä selaimessa. Käytä kurssiversiossa vain fiktiivisiä tietoja.</p>
+              <ApplicationNav selected={section} disabled={busy || importBusy || backupBusy} onSelect={setSection} />
 
+              <div hidden={section !== 'import'}>
               <CsvImportForm
                 busy={importBusy}
                 disabled={busy || backupBusy}
@@ -212,7 +222,9 @@ function App() {
                 message={importMessage}
                 error={importError}
               />
+              </div>
 
+              <div hidden={section !== 'backup'}>
               <BackupPanel
                 key={user.id}
                 storage={currentStorage}
@@ -220,22 +232,20 @@ function App() {
                 onBusyChange={setBackupBusy}
                 onRestored={() => setHistoryRevision((current) => current + 1)}
               />
+              </div>
 
+              {/* Keep one history mounted so period selection survives section navigation. */}
+              <div hidden={section !== 'overview' && section !== 'transactions'}>
               {currentStorage && (
                 <TransactionHistory
                   storage={currentStorage}
                   refreshKey={historyRevision}
+                  mode={section === 'transactions' ? 'transactions' : 'overview'}
+                  onImport={() => setSection('import')}
                 />
               )}
-
-              <button
-                className="secondary-button"
-                type="button"
-                onClick={signOut}
-                disabled={busy || importBusy || backupBusy}
-              >
-                Kirjaudu ulos
-              </button>
+              {!currentStorage && !error && <p role="status">Avataan paikallista historiaa…</p>}
+              </div>
             </div>
           ) : (
             <>
@@ -300,10 +310,10 @@ function App() {
             </>
           )}
 
-          <div className="feedback" aria-live="polite">
+          {!user && <div className="feedback" aria-live="polite">
             {message && <p className="success-message">{message}</p>}
             {error && <p className="error-message">{error}</p>}
-          </div>
+          </div>}
         </section>
       </section>
     </main>

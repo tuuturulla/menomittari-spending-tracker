@@ -25,6 +25,21 @@ function expense(importId: string, cents: number): AnalysisTransaction {
 }
 
 describe('analysis panel', () => {
+  it('keeps the long interpretation note in detail for complete months', () => {
+    const completeMay = { ...may, period_end: '2026-05-31' }
+    const html = renderToStaticMarkup(<AnalysisPanel analysis={analyzePeriods(completeMay, [april, completeMay], [expense('april', 1000), expense('may', 1500)])} />)
+    const visible = html.replace(/<span[^>]*role="tooltip"[\s\S]*?<\/span>/g, '')
+    expect(html).toContain('Tietoa vertailun tulkinnasta')
+    expect(visible).not.toContain('Vertailu perustuu')
+    expect(visible).not.toContain('Osajakso:')
+    expect(visible).not.toContain('Aiemmin')
+    expect(visible).toContain('Kokonaismenot')
+  })
+  it('marks an actual partial month with a short visible notice', () => {
+    const partialMay = { ...may, period_end: '2026-05-15' }
+    const html = renderToStaticMarkup(<AnalysisPanel analysis={analyzePeriods(partialMay, [april, partialMay], [expense('april', 1000), expense('may', 1500)])} />)
+    expect(html).toContain('Osajakso: verrataan edelliskuukauden samoja päiviä.')
+  })
   it('shows both periods and a readable blocked reason with one import', () => {
     const analysis = analyzePeriods(april, [april], [expense('april', 9_000)])
     const html = renderToStaticMarkup(<AnalysisPanel analysis={analysis} />)
@@ -44,6 +59,7 @@ describe('analysis panel', () => {
     expect(html).toContain('uusi meno')
     expect(html).not.toContain('Ei laskettavissa')
     expect(html).toContain('Kokonaismenot kasvoivat.')
+    expect(html).toContain('Keskeiset muutokset')
   })
 
   it('calls an unchanged zero category no change and keeps defined percentages', () => {
