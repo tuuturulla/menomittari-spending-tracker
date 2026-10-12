@@ -4,6 +4,49 @@ Tekninen kuvaus toteuttajille. Tuotteen tavoite ja [MVP:n rajaukset](project-pla
 
 ## Osat ja tiedonkulku
 
+```mermaid
+flowchart TD
+    USER["Käyttäjä"] --> UI
+
+    subgraph BROWSER["Käyttäjän selain — frontend"]
+        UI["React + TypeScript<br/>App.tsx ja components<br/>Näkymät ja käyttäjän valinnat"]
+        APP["application<br/>Tuonti, analyysin kokoaminen<br/>ja varmuuskopiot"]
+        DOMAIN["domain<br/>Validointi, luokittelu<br/>ja laskentasäännöt"]
+        STORAGE["storage + Dexie<br/>Paikallisen tietokannan luku ja kirjoitus"]
+        IDB[("IndexedDB<br/>Käyttäjäkohtainen taloushistoria<br/>imports + transactions")]
+        UI <-->|"Toiminnot ja tulokset"| APP
+        APP <-->|"Tarkistukset ja laskentatulokset"| DOMAIN
+        APP <-->|"Tallenna ja lue"| STORAGE
+        STORAGE <-->|"Tietueet"| IDB
+    end
+
+    CSV["Paikallinen CSV-tiedosto"] -->|"Luku Papa Parsella"| APP
+    APP -->|"Vienti tiedostoksi"| BACKUP["Paikallinen JSON-varmuuskopio"]
+    BACKUP -->|"Tarkistus ja palautus<br/>vain tyhjään historiaan"| APP
+
+    subgraph DOCKER["Docker — paikallinen kehitysympäristö"]
+        VITE["Frontend-kontti: Vite<br/>Toimittaa käyttöliittymän koodin selaimelle"]
+        API["Backend-kontti: FastAPI + Python<br/>Rekisteröinti, kirjautuminen<br/>ja istuntojen käsittely"]
+        ORM["SQLAlchemy<br/>Käyttäjä- ja istuntotietojen luku ja kirjoitus"]
+        SQL[("SQLite: menomittari.db<br/>users + sessions<br/>Säilyy backend_data-volumessa")]
+        ALEMBIC["Alembic<br/>Tietokannan rakenteen migraatiot"]
+        API <-->|"Tietokantatoiminnot"| ORM
+        ORM <-->|"Tietueet"| SQL
+        ALEMBIC -.->|"Päivittää rakennetta"| SQL
+    end
+
+    VITE -.->|"JavaScript ja CSS"| UI
+    UI <-->|"Käyttäjätilipyynnöt HTTP:llä<br/>ja istuntoeväste"| API
+    COMPOSE["Docker Compose<br/>compose.yaml"] -.->|"Käynnistää"| VITE
+    COMPOSE -.->|"Käynnistää"| API
+```
+
+Frontend ja talouslaskenta suoritetaan selaimessa. Taloushistoria tallennetaan IndexedDB:hen, eikä sitä lähetetä backendille. FastAPI käsittelee käyttäjätilit ja istunnot, jotka tallennetaan SQLiteen. Tietokantojen välillä ei ole synkronointia.
+
+Kaavion Vite-palvelin koskee kehitysympäristöä. Tuotantojulkaisussa Vite kokoaa `frontend/dist`-tiedostot, jotka web-palvelin tai hosting-palvelu toimittaa selaimelle; Viten kehityspalvelinta ei tarvita.
+
+### Koodin sijainnit
+
 ```text
 frontend/src/App.tsx       Käyttäjätilit ja paikalliset toiminnot yhdistävä React-näkymä
 frontend/src/components/  Tuonti, varmuuskopio, tapahtumanäkymä ja vertailun esitys
@@ -15,10 +58,6 @@ backend/app/api/           käyttäjätilien HTTP-reitit
 backend/app/services/      tunnistautuminen ja istuntojen käsittely
 backend/app/db/            SQLAlchemy-mallit ja tietokantayhteys
 backend/migrations/        Alembic-migraatiot
-
-App/components -> application -> domain
-                  -> storage -> IndexedDB
-App -> HTTP /api/auth -> FastAPI -> SQLAlchemy -> SQLite
 ```
 
 Application käyttää muutamaa tallennusfunktiota, jotka palauttavat tavallisia TypeScript-tietoja. Dexie-oliot eivät leviä muihin osiin. Domain saa aineiston parametreina eikä käytä tietokantaa, Reactia tai selain-API:a. UI muotoilee luvut, mutta ei laske toista versiota yhteenvedosta.
