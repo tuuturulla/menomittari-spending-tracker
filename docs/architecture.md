@@ -4,42 +4,7 @@ Tekninen kuvaus toteuttajille. Tuotteen tavoite ja [MVP:n rajaukset](project-pla
 
 ## Osat ja tiedonkulku
 
-```mermaid
-flowchart TD
-    USER["Käyttäjä"] --> UI
-
-    subgraph BROWSER["Käyttäjän selain — frontend"]
-        UI["React + TypeScript<br/>App.tsx ja components<br/>Näkymät ja käyttäjän valinnat"]
-        APP["application<br/>Tuonti, analyysin kokoaminen<br/>ja varmuuskopiot"]
-        DOMAIN["domain<br/>Validointi, luokittelu<br/>ja laskentasäännöt"]
-        STORAGE["storage + Dexie<br/>Paikallisen tietokannan luku ja kirjoitus"]
-        IDB[("IndexedDB<br/>Käyttäjäkohtainen taloushistoria<br/>imports + transactions")]
-        UI <-->|"Toiminnot ja tulokset"| APP
-        APP <-->|"Tarkistukset ja laskentatulokset"| DOMAIN
-        APP <-->|"Tallenna ja lue"| STORAGE
-        STORAGE <-->|"Tietueet"| IDB
-    end
-
-    CSV["Paikallinen CSV-tiedosto"] -->|"Luku Papa Parsella"| APP
-    APP -->|"Vienti tiedostoksi"| BACKUP["Paikallinen JSON-varmuuskopio"]
-    BACKUP -->|"Tarkistus ja palautus<br/>vain tyhjään historiaan"| APP
-
-    subgraph DOCKER["Docker — paikallinen kehitysympäristö"]
-        VITE["Frontend-kontti: Vite<br/>Toimittaa käyttöliittymän koodin selaimelle"]
-        API["Backend-kontti: FastAPI + Python<br/>Rekisteröinti, kirjautuminen<br/>ja istuntojen käsittely"]
-        ORM["SQLAlchemy<br/>Käyttäjä- ja istuntotietojen luku ja kirjoitus"]
-        SQL[("SQLite: menomittari.db<br/>users + sessions<br/>Säilyy backend_data-volumessa")]
-        ALEMBIC["Alembic<br/>Tietokannan rakenteen migraatiot"]
-        API <-->|"Tietokantatoiminnot"| ORM
-        ORM <-->|"Tietueet"| SQL
-        ALEMBIC -.->|"Päivittää rakennetta"| SQL
-    end
-
-    VITE -.->|"JavaScript ja CSS"| UI
-    UI <-->|"Käyttäjätilipyynnöt HTTP:llä<br/>ja istuntoeväste"| API
-    COMPOSE["Docker Compose<br/>compose.yaml"] -.->|"Käynnistää"| VITE
-    COMPOSE -.->|"Käynnistää"| API
-```
+![nimi](images/flow.png)
 
 Frontend ja talouslaskenta suoritetaan selaimessa. Taloushistoria tallennetaan IndexedDB:hen, eikä sitä lähetetä backendille. FastAPI käsittelee käyttäjätilit ja istunnot, jotka tallennetaan SQLiteen. Tietokantojen välillä ei ole synkronointia.
 

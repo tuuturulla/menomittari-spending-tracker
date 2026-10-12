@@ -14,7 +14,7 @@ Tämä lista kuvaa [projektisuunnitelman](project-plan.md) toteutuksen. P0-01–
 | P0-06 | Tapahtumat ja yhteenveto | P0-05 | 3–4 h | Valmis |
 | P0-07 | Vertailu ja havainnot | P0-06 | 2–3 h | Valmis |
 | P0-08 | Varmuuskopio ja esittelyn viimeistely | P0-07 | 3–4 h | Valmis |
-| P0-09 | Käyttöliittymän viimeistely ja yhteiset tarkistukset | P0-08 | Ei arvioitu | Tarkistettavana |
+| P0-09 | Käyttöliittymän viimeistely ja yhteiset tarkistukset | P0-08 | Ei arvioitu | Valmis |
 
 Tilat: Ei aloitettu, Työn alla, Estynyt, Tarkistettavana, Valmis.
 

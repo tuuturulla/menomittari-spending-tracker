@@ -88,11 +88,9 @@ Ajantasaiset työvaiheiden tilat ovat [työlistassa](docs/backlog.md). Käynnist
 | --- | --- |
 | [Projektisuunnitelma](docs/project-plan.md) | Tuotetavoite ja MVP:n rajaukset |
 | [Työlista](docs/backlog.md) | Työvaiheiden tilat ja hyväksymisehdot |
-| [MVP-arvio](docs/mvp-arvio.md) | Toteutuksen suhde tuotetavoitteeseen |
 | [Arkkitehtuuri](docs/architecture.md) | Osarajat, tallennus ja tietoraja |
 | [Aineisto ja laskenta](docs/data-contract.md) | CSV/JSON, laskentasäännöt ja demojen luvut |
 | [Rajapinnat](docs/api.md) | Sovellustoimintojen ja HTTP-rajapinnan sopimus |
 | [P0-08-käyttötesti](docs/p0-08-kayttotesti.md) | Tarkistukset ja vahvistettu palautusdemo |
-| [Toistettavuus](docs/toistettavuus.md) | Versionhallinnan tiedostoista tehdyn puhtaan kopion tarkistus |
 
 Työselosteet ja koodinlukuharjoitukset: [P0-01](docs/p0-01-oppituntimateriaali.md), [P0-02](docs/p0-02-oppituntimateriaali.md), [P0-03](docs/p0-03-oppituntimateriaali.md), [P0-04](docs/p0-04-oppituntimateriaali.md), [P0-05](docs/p0-05-oppituntimateriaali.md), [P0-06](docs/p0-06-oppituntimateriaali.md), [P0-07](docs/p0-07-oppituntimateriaali.md), [P0-08](docs/p0-08-oppituntimateriaali.md) ja [P0-09](docs/p0-09-oppituntimateriaali.md).
