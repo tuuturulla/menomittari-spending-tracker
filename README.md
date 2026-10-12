@@ -49,13 +49,15 @@ Kopio on salaamaton: tiedoston saaja voi lukea tapahtumat. Säilytä kopio turva
 
 ## Tarkistukset yhdellä komennolla
 
-Dockerin ollessa käynnissä, PowerShellissä tästä projektikansiosta:
+Dockerin ollessa käynnissä, Bashissa tästä projektikansiosta (Windowsissa esimerkiksi Git Bash):
 
-```powershell
-.\scripts\check.ps1
+```bash
+bash scripts/check.sh
 ```
 
 Skripti rakentaa kehityskuvat ja ajaa frontendin testit, tyyppitarkistuksen, lintin ja julkaisuversiokoosteen sekä backendin migraatiotarkistuksen ja testit. Se pysähtyy ensimmäiseen virheeseen: exit-koodi on 1 epäonnistuessa ja 0 onnistuessa. Ensimmäinen rakennus voi hakea kuvia ja lukittuja riippuvuuksia verkosta, mutta mitään ei asenneta isäntäkoneelle.
+
+Tarvitset Bashin ja sen komentopolussa toimivan Docker Composen. PowerShelliä ei tarvita. Git Bashissa skripti estää Docker-argumenttien automaattisen polkumuunnoksen, jotta kontin `/tmp`-testikantapolku säilyy oikein. Bash-tiedostoille on asetettu LF-rivinvaihdot Gitissä. Linux- ja macOS-käyttöä ei ole vielä todennettu.
 
 Migraatiot tehdään poistuvan testikontin `/tmp`-kantaan. Python-testit käyttävät omia tilapäisiä tai muistikantojaan; frontend-testit `fake-indexeddb`:tä. Skripti ei päivitä tavallista backend-kantaa, tyhjennä selainhistoriaa tai pysäytä käynnissä olevaa sovellusta. `build` tuottaa ohitetun `frontend/dist`-kansion. Selainkäyttötesti tehdään erikseen. Paikallinen skripti ei lisää Menomittaria nykyiseen GitLab-putkeen.
 

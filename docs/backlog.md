@@ -134,5 +134,5 @@ Valmistumisen ehdot:
 - Nollapalautuksia ei näytetä. Muutoskortin prosentti on oma sanallinen tietonsa; vertailusumman yhteydessä näkyvät todelliset vertailupäivät. Kirjautumissivun nimi ja maskotti ovat työtilaa suurempia.
 - Mittarimato on hillitty paikallinen brändikuva. Vihreä ja kultainen korostus eivät arvioi käyttäjän rahankäytön hyvyyttä tai huonoutta.
 - Käyttöliittymä toimii leveänä ja 390 pikselin levyisenä, näppäimistöllä, tyhjällä historialla ja vertailun estyessä. Tuonnin ja palautuksen palaute näkyy oman toiminnon vieressä.
-- Yksi dokumentoitu PowerShell-komento ajaa tarkistukset Dockerissa, pysähtyy virheeseen eikä muuta käyttäjän historiaa tai backend-kantaa.
+- Yksi dokumentoitu Bash-komento ajaa tarkistukset Dockerissa, pysähtyy virheeseen eikä muuta käyttäjän historiaa tai backend-kantaa.
 - Laskentasäännöt, tietomalli ja backendin vastuu eivät muutu. Mukana ovat regressiotestit ja työseloste; vanhoja oppituntimateriaaleja ei muokata.

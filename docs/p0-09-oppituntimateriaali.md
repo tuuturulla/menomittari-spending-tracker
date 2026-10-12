@@ -21,7 +21,7 @@ Mittarimato on paikallinen brändikuva otsikossa ja tyhjän historian aloitukses
 | [InfoHint.tsx](../frontend/src/components/InfoHint.tsx) | Palautusten lisätieto hiirelle, näppäimistölle ja napautukselle. |
 | [InsightCard.tsx](../frontend/src/components/InsightCard.tsx) | Lyhyt havainto ja sen tarkempi selitys infossa. |
 | [App.css](../frontend/src/App.css) | Asettelu, kultainen korostus ja mobiilin pinoutuminen. |
-| [check.ps1](../scripts/check.ps1) | Yksi Docker-tarkistuskierros ja virheeseen pysähtyminen. |
+| [check.sh](../scripts/check.sh) | Yksi Docker-tarkistuskierros ja virheeseen pysähtyminen Bashilla. |
 
 ## Osio ja ajanjakso ovat eri tiloja
 
@@ -59,19 +59,30 @@ Havaintokortin otsikko kertoo muutoksen suoraan: ”Kokonaismenot pienenivät”
 
 ## Tarkistukset yhdellä komennolla
 
-```powershell
-.\scripts\check.ps1
+```bash
+bash scripts/check.sh
 ```
 
 Skripti löytää projektikansion omasta sijainnistaan. Se tarkistaa Dockerin, rakentaa lukitut kuvat ja ajaa frontendin testit, tyyppitarkistuksen, lintin ja julkaisuversiokoosteen. Backendille se ajaa Alembicin migraatiot, tarkistaa mallien ja migraatioiden vastaavuuden sekä suorittaa testit.
 
-Jokaisen ulkoisen komennon `$LASTEXITCODE` tarkistetaan. `throw` pysäyttää kierroksen; `finally` palauttaa alkuperäisen työhakemiston. Virhe palauttaa exit-koodin 1 ja onnistuminen 0. Pelkkä komentolista voisi jatkaa virheen jälkeen ja näyttää lopuksi onnistumisen.
+PowerShell-versio korvattiin Bashilla käyttäjän työskentelytavan mukaisesti. `set -euo pipefail` pysäyttää käsittelemättömät komentovirheet, puuttuvien muuttujien käytön ja putkien virheet. `run_checked_docker` tarkistaa Dockerin paluukoodin myös itse, jotta virheviesti kertoo epäonnistuneen vaiheen. Virhe palauttaa exit-koodin 1 ja onnistuminen 0. Pelkkä komentolista voisi jatkaa virheen jälkeen ja näyttää lopuksi onnistumisen.
+
+### Bash-skriptin lukeminen
+
+1. `#!/usr/bin/env bash` kertoo skriptin komentotulkin. Komento `bash scripts/check.sh` valitsee Bashin myös suoraan.
+2. `${BASH_SOURCE[0]}` antaa skriptin polun. `dirname` ja `cd` löytävät projektihakemiston; lainausmerkit säilyttävät myös välilyöntejä sisältävät polut yhtenä argumenttina. Skripti ajetaan omassa Bash-prosessissa, joten sen `cd` ei vaihda kutsuvan komentotulkin hakemistoa. Älä käytä `source`-komentoa tämän skriptin ajamiseen.
+3. Funktiossa `$1` on vaiheen nimi. `shift` poistaa sen argumenttilistasta ja `"$@"` välittää loput Dockerille erillisinä argumentteina, ei yhtenä tekstijonona.
+4. `if ...; then ...; else ...; fi` erottaa onnistumisen ja virheen. `$?` poimitaan heti epäonnistuneen Docker-kutsun jälkeen ennen muita komentoja. `>&2` ohjaa virheviestin stderr-virtaan.
+5. `for task_check in test typecheck lint build` ajaa neljä frontend-tarkistusta järjestyksessä. Backendin `sh -c` saa yhden lainatun komentojonon, jonka `&&` pysäyttää seuraavat tarkistukset ensimmäiseen virheeseen.
+6. `MSYS_NO_PATHCONV=1` koskee Docker-kutsua: Git Bash ei saa muuntaa kontin `/tmp`-polkua Windows-poluksi. `.gitattributes` säilyttää Bash-tiedostojen LF-rivinvaihdot Windows-checkoutissakin.
 
 Migraatiot käyttävät poistuvan kontin `/tmp`-kantaa. Python-testit käyttävät omia tilapäisiä tai muistikantojaan; frontendin tallennustestit `fake-indexeddb`:tä. Tavallista käyttäjäkantaa ei migroida testikierroksessa eikä selainhistoriaa tyhjennetä. Node.js ja Python pysyvät konteissa; Python käyttää `uv`:ta. Selainkäyttötesti ei ole automaattisesti mukana eikä paikallinen skripti muuta GitLab-putkea.
 
 ## Tarkistusnäyttö
 
-12.10.2026 Docker-tarkistuksessa frontendissä oli 171 hyväksyttyä testiä ja backendissä 9. Tyyppitarkistus, lint ja julkaisuversio onnistuivat. Migraatiot nousivat versioon 0002, ja `alembic check` ei löytänyt puuttuvia muutoksia. Simuloitu frontendin exit-koodi 42 keskeytti skriptin ja palautti 1.
+12.10.2026 Git Bashilla ajetussa Docker-tarkistuksessa frontendissä oli 171 hyväksyttyä testiä ja backendissä 9. Tyyppitarkistus, lint ja julkaisuversio onnistuivat. Migraatiot nousivat versioon 0002, ja `alembic check` ei löytänyt puuttuvia muutoksia. Bash-syntaksi tarkistettiin komennolla `bash -n scripts/check.sh`.
+
+Dockerin testikorvikkeella simuloitiin exit-koodi 42 erikseen kaikissa kahdeksassa vaiheessa: kierros pysähtyi kyseiseen vaiheeseen, myöhemmät tarkistukset jäivät ajamatta ja skripti palautti 1. Onnistumisen testikorvike ajoi kaikki vaiheet ja palautti 0 myös projektihakemiston ulkopuolelta kutsuttaessa. Puuttuva Docker-komento pysäytti suorituksen ennen tarkistuksia. Testikorvike ei ajanut Dockeria tai kirjoittanut tiedostoja. Linux- ja macOS-isäntäympäristöjä ei testattu.
 
 Selaintarkistus tehtiin Codexin sisäisessä Chromium-selaimessa erillisessä osoitteessa `http://127.0.0.1:5184`, fiktiivisen testikäyttäjän kannassa. Tilapäinen testisivu simuloi vain kirjautumisvastaukset; App, CSV-tuonti, laskenta ja IndexedDB olivat varsinaista toteutusta. Tämä tarkisti käyttöliittymää, ei korvannut backendin tunnistautumistestejä. Testiapurit poistettiin ennen commitointia.
 
@@ -83,6 +94,6 @@ Tarkistettiin tyhjän historian ohjaus tuontiin, neljän jakson luvut, valinnan 
 2. Miksi `hidden` säilyttää komponentin tilan, mutta ehdollinen poistaminen voisi nollata sen?
 3. Lue CategoryComparisonin `maximum`. Miksi siihen otetaan kaikkien ryhmien molemmat sarjat?
 4. Mitkä InfoHintin tilat avaavat tiedon? Miten Escape sulkee sen kohdistusta siirtämättä?
-5. Etsi check.ps1:n `$LASTEXITCODE` ja `finally`. Mitä kumpikin suojaa?
+5. Etsi check.sh:n `shift`, `"$@"` ja `$?`. Mitä Dockerille välitetään ja milloin virhekoodi talletetaan?
 
 MVP:n rajat eivät muuttuneet laskennan tai tietojen käsittelyn osalta: ei toistuvuuden tunnistusta, vuoden yleiskuvaa, tuontien yhdistelyä tai taloustietojen palvelintallennusta. Tarkat rajaukset ovat [projektisuunnitelmassa](project-plan.md#mvpn-rajaukset).
