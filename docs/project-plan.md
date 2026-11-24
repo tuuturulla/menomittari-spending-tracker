@@ -69,5 +69,3 @@ Työ on esittelyvalmis, kun käyttäjä voi rekisteröityä ja kirjautua, kaksi 
 Sama paikallinen tietokanta voi säilyä myöhemmässä tuotteessa. SQLAlchemy ja Alembic mahdollistavat käyttäjä- ja istuntotietokannan siirtämisen myöhemmin PostgreSQL:ään. Selkeät osarajat ja versionoitu varmuuskopio helpottavat kehittämistä, mutta eivät tee taloustietojen synkronoinnista automaattista.
 
 Mahdollinen kaupallinen julkaisu tarvitsee erillisen turvallisuus- ja käytettävyysarvioinnin. Paikallinen käsittely vähentää palvelimelle päätyvää tietoa, mutta ei yksin takaa tietoturvaa. Maksullinen salattu synkronointi on mahdollinen jatkosuunta. 
-
-Nykyisen toteutuksen suhde tuotetavoitteeseen ja esittelyn kannalta tärkeät puutteet on koottu [MVP-arvioon](mvp-arvio.md).

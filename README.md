@@ -1,6 +1,22 @@
 # Menomittari
 
-Menomittari on full stack -kurssiprojekti: käyttäjä tuo fiktiivisen CSV-aineiston, tarkastelee menoja ja vertaa kahta ajanjaksoa. React/TypeScript-käyttöliittymä käsittelee taloushistorian paikallisesti IndexedDB:ssä. FastAPI-backend tallentaa vain käyttäjätilit ja kirjautumisistunnot SQLiteen.
+*A local-first spending tracker: import bank transactions as CSV, group your spending and compare two periods. Financial data never leaves the browser. Built with React, TypeScript, FastAPI and IndexedDB, together with a coding agent (human in the loop). Documentation is in Finnish.*
+
+![Menomittarin yhteenvetonäkymä fiktiivisellä demoaineistolla](docs/images/menomittari-yhteenveto.png)
+
+Menomittari on full stack -sovellus: käyttäjä tuo tilitapahtumat CSV-tiedostona, tarkastelee menoja ja vertaa kahta ajanjaksoa. React/TypeScript-käyttöliittymä käsittelee taloushistorian paikallisesti IndexedDB:ssä. FastAPI-backend tallentaa vain käyttäjätilit ja kirjautumisistunnot SQLiteen.
+
+## Miten projekti tehtiin
+
+Menomittari on oma ideani, ja toteutin sen Web-ohjelmoinnin kurssin lopputyönä elo–lokakuussa 2026. Koodin kirjoitti koodausagentti, mutta päätökset tein minä. Ihminen oli mukana jokaisessa vaiheessa (*human in the loop*):
+
+- **Minä:** tuotetavoite ja MVP:n rajaus, arkkitehtuuri- ja teknologiavalinnat agentin kanssa keskustellen, agentin työohje ([AGENTS.md](AGENTS.md)) sekä jokaisen vaiheen testaus selaimessa ja hyväksyntä.
+- **Agentti:** koodi, automaattiset testit ja jokaisen vaiheen työseloste suunnitelmien pohjalta.
+- **Työtapa:** jokainen vaihe tehtiin omalla haarallaan. Agentti ei saanut yhdistää muutoksia päähaaraan, vaan tarkistin ja yhdistin ne itse.
+
+Työselosteet (`docs/p0-XX-oppituntimateriaali.md`) ovat agentin kirjoittamia selityksiä jokaisen vaiheen valinnoista ja toteutuksesta. Kävin ne läpi, jotta ymmärrän ja voin perustella ratkaisut.
+
+## Rajaukset
 
 Kurssiversio ei ole tuotantopalvelu. Se ei tunnista maksujen toistuvuutta, näytä vuoden yleiskuvaa tai synkronoi taloustietoja. Kaikki [MVP:n rajaukset](docs/project-plan.md#mvpn-rajaukset) ovat projektisuunnitelmassa.
 
@@ -8,10 +24,11 @@ Kurssiversio ei ole tuotantopalvelu. Se ei tunnista maksujen toistuvuutta, näyt
 
 Tarvitset Dockerin Linux-konttituella ja Docker Compose v2:n, verkkoyhteyden ensimmäiseen rakennukseen sekä selaimen. Yhteinen testikomento tarvitsee lisäksi Bashin (Windowsissa esimerkiksi Git Bash). Node.js:ää, pnpm:ää tai Pythonia ei asenneta isäntäkoneelle; Python käyttää konteissa `uv`:ta.
 
-Kloonaa kurssirepository tai pura sen ZIP ja avaa `lopputyo/menomittari`-kansio. Kopioi koko kansio: mukana tarvitaan myös Dockerfilet, lukitustiedostot, testiaineistot ja kuvat. Erillistä `.env`-tiedostoa tai valmiita käyttäjätunnuksia ei tarvita.
+Kloonaa repository. Erillistä `.env`-tiedostoa tai valmiita käyttäjätunnuksia ei tarvita.
 
 ```bash
-cd lopputyo/menomittari
+git clone https://github.com/tuuturulla/menomittari-spending-tracker.git
+cd menomittari-spending-tracker
 docker compose build
 docker compose run --rm backend uv run --no-sync alembic upgrade head
 docker compose up
@@ -19,7 +36,7 @@ docker compose up
 
 `docker compose build` rakentaa lukitut kehityskuvat, migraatiokomento alustaa tai päivittää sovelluksen käyttäjäkannan ja `docker compose up` käynnistää sovelluksen. Avaa <http://127.0.0.1:5173>. Backendin health: <http://127.0.0.1:8000/api/health>; API-kuvaus: <http://127.0.0.1:8000/docs>.
 
-Komennot ajetaan kurssirepositoryn juuresta alkaen; jos olet jo Menomittari-kansiossa, jätä `cd` pois. Porttien 5173 ja 8000 tulee olla vapaita. Odota molempien palvelujen käynnistymistä ja käytä täsmälleen yllä olevaa frontend-osoitetta, ei `localhost`-vaihtoehtoa: CORS ja selainhistoria riippuvat osoitteesta. Luo oma fiktiivinen tili kirjautumissivun **Luo käyttäjätili** -toiminnolla (salasana 12–128 merkkiä).
+Porttien 5173 ja 8000 tulee olla vapaita. Odota molempien palvelujen käynnistymistä ja käytä täsmälleen yllä olevaa frontend-osoitetta, ei `localhost`-vaihtoehtoa: CORS ja selainhistoria riippuvat osoitteesta. Luo oma fiktiivinen tili kirjautumissivun **Luo käyttäjätili** -toiminnolla (salasana 12–128 merkkiä).
 
 Vite seuraa tiedostoja polling-menetelmällä Windowsin Docker-liitoshakemiston läpi. Lähdekoodin tallentaminen päivittää näkymää. Vite-asetuksen muutoksen jälkeen käytä `docker compose restart frontend`.
 
@@ -64,9 +81,9 @@ bash scripts/check.sh
 
 Skripti rakentaa kehityskuvat ja ajaa frontendin testit, tyyppitarkistuksen, lintin ja julkaisuversiokoosteen sekä backendin migraatiotarkistuksen ja testit. Se pysähtyy ensimmäiseen virheeseen: exit-koodi on 1 epäonnistuessa ja 0 onnistuessa. Ensimmäinen rakennus voi hakea kuvia ja lukittuja riippuvuuksia verkosta, mutta mitään ei asenneta isäntäkoneelle.
 
-Tarvitset Bashin ja sen komentopolussa toimivan Docker Composen. Git Bashissa skripti estää Docker-argumenttien automaattisen polkumuunnoksen, jotta kontin `/tmp`-testikantapolku säilyy oikein. Bash-tiedostoille on asetettu LF-rivinvaihdot Gitissä. [Toistettavuuden tarkistus](docs/toistettavuus.md) kuvaa testatun ympäristön; Linux- ja macOS-käyttöä ei ole vielä todennettu.
+Tarvitset Bashin ja sen komentopolussa toimivan Docker Composen. Git Bashissa skripti estää Docker-argumenttien automaattisen polkumuunnoksen, jotta kontin `/tmp`-testikantapolku säilyy oikein. Bash-tiedostoille on asetettu LF-rivinvaihdot Gitissä. Skripti on testattu Windowsissa Git Bashilla; Linux- ja macOS-käyttöä ei ole vielä todennettu.
 
-Migraatiot tehdään poistuvan testikontin `/tmp`-kantaan. Python-testit käyttävät omia tilapäisiä tai muistikantojaan; frontend-testit `fake-indexeddb`:tä. Skripti ei päivitä tavallista backend-kantaa, tyhjennä selainhistoriaa tai pysäytä käynnissä olevaa sovellusta. `build` tuottaa ohitetun `frontend/dist`-kansion. Selainkäyttötesti tehdään erikseen. Paikallinen skripti ei lisää Menomittaria nykyiseen GitLab-putkeen.
+Migraatiot tehdään poistuvan testikontin `/tmp`-kantaan. Python-testit käyttävät omia tilapäisiä tai muistikantojaan; frontend-testit `fake-indexeddb`:tä. Skripti ei päivitä tavallista backend-kantaa, tyhjennä selainhistoriaa tai pysäytä käynnissä olevaa sovellusta. `build` tuottaa ohitetun `frontend/dist`-kansion. Selainkäyttötesti tehdään erikseen.
 
 Yksittäinen tarkistus tarvittaessa:
 

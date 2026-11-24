@@ -85,7 +85,7 @@ Vaiheen lopuksi kaikki tarkistukset ajettiin Docker-kontissa:
 
 ## Kokeile ja varmista itse
 
-1. Aja `docker compose build` projektin `lopputyo/menomittari`-kansiossa.
+1. Aja `docker compose build` projektin juurikansiossa.
 2. Aja `docker compose up` ja avaa <http://127.0.0.1:5173>.
 3. Muuta hetkeksi `App.tsx`-tiedoston otsikkoa ja tallenna tiedosto. Viten pitäisi päivittää avoin näkymä noin sekunnin sisällä ilman Docker-kuvan uudelleenrakennusta. Jos muutosta ei näy, varmista `docker compose ps` -komennolla, että frontend on käynnissä, ja käynnistä palvelu tarvittaessa uudelleen komennolla `docker compose restart frontend`.
 4. Palauta otsikko ja aja neljä README:n tarkistuskomentoa.

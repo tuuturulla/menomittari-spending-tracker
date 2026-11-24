@@ -76,7 +76,7 @@ PowerShell-versio korvattiin Bashilla käyttäjän työskentelytavan mukaisesti.
 5. `for task_check in test typecheck lint build` ajaa neljä frontend-tarkistusta järjestyksessä. Backendin `sh -c` saa yhden lainatun komentojonon, jonka `&&` pysäyttää seuraavat tarkistukset ensimmäiseen virheeseen.
 6. `MSYS_NO_PATHCONV=1` koskee Docker-kutsua: Git Bash ei saa muuntaa kontin `/tmp`-polkua Windows-poluksi. `.gitattributes` säilyttää Bash-tiedostojen LF-rivinvaihdot Windows-checkoutissakin.
 
-Migraatiot käyttävät poistuvan kontin `/tmp`-kantaa. Python-testit käyttävät omia tilapäisiä tai muistikantojaan; frontendin tallennustestit `fake-indexeddb`:tä. Tavallista käyttäjäkantaa ei migroida testikierroksessa eikä selainhistoriaa tyhjennetä. Node.js ja Python pysyvät konteissa; Python käyttää `uv`:ta. Selainkäyttötesti ei ole automaattisesti mukana eikä paikallinen skripti muuta GitLab-putkea.
+Migraatiot käyttävät poistuvan kontin `/tmp`-kantaa. Python-testit käyttävät omia tilapäisiä tai muistikantojaan; frontendin tallennustestit `fake-indexeddb`:tä. Tavallista käyttäjäkantaa ei migroida testikierroksessa eikä selainhistoriaa tyhjennetä. Node.js ja Python pysyvät konteissa; Python käyttää `uv`:ta. Selainkäyttötesti ei ole automaattisesti mukana.
 
 ## Tarkistusnäyttö
 

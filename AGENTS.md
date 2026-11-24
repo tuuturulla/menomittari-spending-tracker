@@ -1,13 +1,15 @@
 # Agentin työohje
 
-Koskee vain lopputyo/menomittari-kansiota. Git-repositoryn juuri on sara_pyky_web-ohjelmointi, jossa on myös kurssiharjoituksia. Älä muuta harjoituksia. Tämä on projektin ainoa agenttikohtainen ohjetiedosto.
+Koskee koko Menomittari-repositorya. Tämä on projektin ainoa agenttikohtainen ohjetiedosto.
+
+> Projekti kehitettiin alun perin kurssirepositoryn alikansiossa, ja tämä ohje ohjasi koodausagentin työtä koko kehityksen ajan. Ohje on julkaistu sellaisenaan, jotta työtapa näkyy; vain kurssirepositoryyn liittyvät viittaukset on yleistetty.
 
 ## Ehdoton main-suoja
 
 - Älä committoi, yhdistä, cherry-pickaa tai puske mainiin äläkä siirrä sen viitettä muullakaan tavalla.
 - Kielto koskee myös etäpalvelun rajapintoja, mainiin osoittavia refspecejä, kaikkien haarojen pushia, peilausta, MR:n hyväksymistä/yhdistämistä ja automergeä.
 - Käyttäjä lukee muutokset ja suorittaa yhdistämisen itse. Testitulokset, itsenäinen työskentely tai yleinen commitointilupa eivät korvaa tätä.
-- Älä muuta tai kierrä haarasuojausta. Ohjetiedosto ei ole tekninen esto; GitLabin suojausta ei ole todennettu tai asetettu tämän dokumentin perusteella.
+- Älä muuta tai kierrä haarasuojausta. Ohjetiedosto ei ole tekninen esto; etäpalvelun haarasuojausta ei ole todennettu tai asetettu tämän dokumentin perusteella.
 
 ## Aloitus
 
@@ -19,7 +21,7 @@ Koskee vain lopputyo/menomittari-kansiota. Git-repositoryn juuri on sara_pyky_we
 
 Käytä tehtävähaaraa, esimerkiksi menomittari/p0-01-runko. Tarkista nimen vapaus. Älä korvaa olemassa olevaa haaraa tai stäshää, nollaa tai committoi muiden muutoksia. Samaan tehtävään kuuluvat muutokset voi säilyttää luomalla uuden haaran nykyisessä työpuussa mainin viitettä muuttamatta.
 
-Rinnakkaiseen tai taustalla tehtävään työhön käytä erillistä worktreetä kurssirepositoryn ulkopuolella. Committoimattomat muutokset eivät siirry siihen; käytä hyväksyttyä commitoitua lähtötilaa. Älä poista worktreetä tai haaraa automaattisesti.
+Rinnakkaiseen tai taustalla tehtävään työhön käytä erillistä worktreetä repositoryn työpuun ulkopuolella. Committoimattomat muutokset eivät siirry siihen; käytä hyväksyttyä commitoitua lähtötilaa. Älä poista worktreetä tai haaraa automaattisesti.
 
 Agentti saa tehdä committeja tarkistetulle aktiiviselle tehtävähaaralle ilman erillistä lupaa, kun muutokset kuuluvat käyttäjän antamaan toimeksiantoon. Tee pieniä, loogisia committeja, jotta historia pysyy selkeänä ja muutosten syyt ovat jäljitettävissä. Yksi commit käsittelee yhtä kokonaisuutta; erota toisistaan itsenäisesti tarkastettavat toteutus-, testi- ja dokumentaatiomuutokset, mutta älä pilko tiiviisti yhteen kuuluvaa muutosta keinotekoisesti.
 
